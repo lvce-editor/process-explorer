@@ -3,6 +3,7 @@
   "version": "0.0.0-dev",
   "description": "Process Explorer",
   "main": "src/processExplorerMain.js",
+  "bin": "bin/processExplorer.js",
   "type": "module",
   "scripts": {
     "test": "node --unhandled-rejections=warn --experimental-vm-modules ./node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
