@@ -74,6 +74,22 @@ await bundleJs({
   ],
 })
 
+await cp(join(root, 'bin'), join(root, 'dist', 'bin'), {
+  recursive: true,
+})
+
+const replace = async ({ path, occurrence, replacement }) => {
+  const content = await readFile(path, 'utf8')
+  const newContent = content.replace(occurrence, replacement)
+  await writeFile(path, newContent)
+}
+
+await replace({
+  path: join(root, 'dist', 'bin', 'processExplorer.js'),
+  occurrence: 'src/processExplorerMain.js',
+  replacement: 'dist/index.js',
+})
+
 const version = await getVersion()
 
 const packageJson = await readJson(join(root, 'package.json'))
