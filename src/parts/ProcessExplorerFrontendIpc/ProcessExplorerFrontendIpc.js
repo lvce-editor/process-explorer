@@ -7,7 +7,7 @@ export const state = {
   ipc: undefined,
 }
 
-export const send = (method, ...params) => {
+const send = (method, ...params) => {
   const { ipc } = state
   if (!ipc) {
     return
