@@ -1,12 +1,12 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import * as Assert from '../Assert/Assert.js'
-import * as EncodingType from '../EncodingType/EncodingType.js'
-import * as IsEnoentError from '../IsEnoentError/IsEnoentError.js'
-import * as IsEsrchError from '../IsEsrchError/IsEsrchError.js'
-import * as IsMacos from '../IsMacos/IsMacos.js'
-import * as ParseMemory from '../ParseMemory/ParseMemory.js'
-import { VError } from '../VError/VError.js'
+import * as Assert from '../Assert/Assert.ts'
+import * as EncodingType from '../EncodingType/EncodingType.ts'
+import * as IsEnoentError from '../IsEnoentError/IsEnoentError.ts'
+import * as IsEsrchError from '../IsEsrchError/IsEsrchError.ts'
+import * as IsMacos from '../IsMacos/IsMacos.ts'
+import * as ParseMemory from '../ParseMemory/ParseMemory.ts'
+import { VError } from '../VError/VError.ts'
 
 const getContent = async (pid) => {
   try {
@@ -14,7 +14,10 @@ const getContent = async (pid) => {
     const content = await readFile(filePath, EncodingType.Utf8)
     return content
   } catch (error) {
-    if (IsEnoentError.isEnoentError(error) || IsEsrchError.isEsrchError(error)) {
+    if (
+      IsEnoentError.isEnoentError(error) ||
+      IsEsrchError.isEsrchError(error)
+    ) {
       return ''
     }
     throw error

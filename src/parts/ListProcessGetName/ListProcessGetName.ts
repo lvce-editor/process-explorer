@@ -1,4 +1,4 @@
-import * as Assert from '../Assert/Assert.js'
+import * as Assert from '../Assert/Assert.ts'
 
 export const getName = (pid, cmd, rootPid, pidMap) => {
   Assert.number(pid)

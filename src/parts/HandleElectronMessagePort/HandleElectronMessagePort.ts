@@ -1,10 +1,10 @@
-import * as Assert from '../Assert/Assert.js'
-import * as HandleIpc from '../HandleIpc/HandleIpc.js'
-import * as IpcChild from '../IpcChild/IpcChild.js'
-import * as IpcChildType from '../IpcChildType/IpcChildType.js'
-import * as IpcId from '../IpcId/IpcId.js'
-import * as ParentIpc from '../ParentIpc/ParentIpc.js'
-import * as ProcessExplorerFrontendIpc from '../ProcessExplorerFrontendIpc/ProcessExplorerFrontendIpc.js'
+import * as Assert from '../Assert/Assert.ts'
+import * as HandleIpc from '../HandleIpc/HandleIpc.ts'
+import * as IpcChild from '../IpcChild/IpcChild.ts'
+import * as IpcChildType from '../IpcChildType/IpcChildType.ts'
+import * as IpcId from '../IpcId/IpcId.ts'
+import * as ParentIpc from '../ParentIpc/ParentIpc.ts'
+import * as ProcessExplorerFrontendIpc from '../ProcessExplorerFrontendIpc/ProcessExplorerFrontendIpc.ts'
 
 export const handleElectronMessagePort = async (messagePort, ipcId) => {
   Assert.object(messagePort)

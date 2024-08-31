@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals'
-import * as ListProcessGetName from '../src/parts/ListProcessGetName/ListProcessGetName.js'
+import * as ListProcessGetName from '../src/parts/ListProcessGetName/ListProcessGetName.ts'
 
 test('getName - detect chrome devtools', () => {
   const pid = 200152
@@ -9,7 +9,9 @@ test('getName - detect chrome devtools', () => {
   const pidMap = {
     200152: 'chrome-devtools',
   }
-  expect(ListProcessGetName.getName(pid, cmd, rootPid, pidMap)).toBe('chrome-devtools')
+  expect(ListProcessGetName.getName(pid, cmd, rootPid, pidMap)).toBe(
+    'chrome-devtools',
+  )
 })
 
 test('getName - detect renderer', () => {
@@ -45,7 +47,9 @@ test('getName - detect extension host helper process', () => {
   const cmd = 'node dist/extensionHostHelperProcessMain.js'
   const rootPid = 1
   const pidMap = {}
-  expect(ListProcessGetName.getName(pid, cmd, rootPid, pidMap)).toBe('extension-host-helper-process')
+  expect(ListProcessGetName.getName(pid, cmd, rootPid, pidMap)).toBe(
+    'extension-host-helper-process',
+  )
 })
 
 test('getName - detect sublime', () => {
@@ -53,5 +57,7 @@ test('getName - detect sublime', () => {
   const cmd = '/opt/sublime_text/sublime_text --fwdargv0 /usr/bin/subl'
   const rootPid = 1
   const pidMap = {}
-  expect(ListProcessGetName.getName(pid, cmd, rootPid, pidMap)).toBe('sublime-text')
+  expect(ListProcessGetName.getName(pid, cmd, rootPid, pidMap)).toBe(
+    'sublime-text',
+  )
 })

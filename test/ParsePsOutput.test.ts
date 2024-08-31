@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals'
-import * as ParsePsOutput from '../src/parts/ParsePsOutput/ParsePsOutput.js'
+import * as ParsePsOutput from '../src/parts/ParsePsOutput/ParsePsOutput.ts'
 
 test('parsePsOutput - linux', () => {
   const output = `1       0  0.0  0.1 /sbin/init splash

@@ -1,5 +1,5 @@
-import * as IsDlOpenError from '../IsDlOpenError/IsDlOpenError.js'
-import { VError } from '../VError/VError.js'
+import * as IsDlOpenError from '../IsDlOpenError/IsDlOpenError.ts'
+import { VError } from '../VError/VError.ts'
 
 export const loadWindowProcessTree = async () => {
   try {
