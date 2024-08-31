@@ -1,4 +1,4 @@
-import * as Assert from '../Assert/Assert.js'
+import * as Assert from '../Assert/Assert.ts'
 
 export const getName = (pid, cmd, rootPid, pidMap) => {
   Assert.number(pid)
@@ -14,10 +14,10 @@ export const getName = (pid, cmd, rootPid, pidMap) => {
   if (cmd.includes('--type=gpu-process')) {
     return 'gpu-process'
   }
-  if (cmd.includes('extensionHostMain.js')) {
+  if (cmd.includes('extensionHostMain.ts')) {
     return 'extension-host'
   }
-  if (cmd.includes('ptyHostMain.js')) {
+  if (cmd.includes('ptyHostMain.ts')) {
     return 'pty-host'
   }
   if (cmd.includes('--lvce-window-kind=process-explorer')) {
@@ -32,13 +32,13 @@ export const getName = (pid, cmd, rootPid, pidMap) => {
   if (cmd.includes('--type=utility')) {
     return 'utility'
   }
-  if (cmd.includes('tsserver.js')) {
-    return 'tsserver.js'
+  if (cmd.includes('tsserver.ts')) {
+    return 'tsserver.ts'
   }
-  if (cmd.includes('typingsInstaller.js')) {
-    return 'typingsInstaller.js'
+  if (cmd.includes('typingsInstaller.ts')) {
+    return 'typingsInstaller.ts'
   }
-  if (cmd.includes('extensionHostHelperProcessMain.js')) {
+  if (cmd.includes('extensionHostHelperProcessMain.ts')) {
     return 'extension-host-helper-process'
   }
   if (cmd.includes('/bin/rg') || cmd.includes('rg.exe')) {

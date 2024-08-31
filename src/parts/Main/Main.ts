@@ -1,6 +1,6 @@
-import * as Listen from '../Listen/Listen.js'
-import * as CommandState from '../CommandState/CommandState.js'
-import * as CommandMap from '../CommandMap/CommandMap.js'
+import * as Listen from '../Listen/Listen.ts'
+import * as CommandState from '../CommandState/CommandState.ts'
+import * as CommandMap from '../CommandMap/CommandMap.ts'
 
 export const main = async () => {
   CommandState.registerCommands(CommandMap.commandMap)

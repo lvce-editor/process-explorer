@@ -1,6 +1,6 @@
-import * as Callback from '../Callback/Callback.js'
-import * as Command from '../Command/Command.js'
-import * as JsonRpc from '../JsonRpc/JsonRpc.js'
+import * as Callback from '../Callback/Callback.ts'
+import * as Command from '../Command/Command.ts'
+import * as JsonRpc from '../JsonRpc/JsonRpc.ts'
 
 const preparePrettyError = (error) => {
   return error
@@ -15,5 +15,13 @@ const requiresSocket = () => {
 }
 
 export const handleMessage = (event) => {
-  return JsonRpc.handleJsonRpcMessage(event.target, event.data, Command.execute, Callback.resolve, preparePrettyError, logError, requiresSocket)
+  return JsonRpc.handleJsonRpcMessage(
+    event.target,
+    event.data,
+    Command.execute,
+    Callback.resolve,
+    preparePrettyError,
+    logError,
+    requiresSocket,
+  )
 }

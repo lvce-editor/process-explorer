@@ -1,10 +1,14 @@
-import * as IsWindows from '../IsWindows/IsWindows.js'
+import * as IsWindows from '../IsWindows/IsWindows.ts'
 
 const getModule = () => {
   if (IsWindows.isWindows) {
-    return import('../ListProcessesWithMemoryUsageWindows/ListProcessesWithMemoryUsageWindows.js')
+    return import(
+      '../ListProcessesWithMemoryUsageWindows/ListProcessesWithMemoryUsageWindows.ts'
+    )
   }
-  return import('../ListProcessesWithMemoryUsageUnix/ListProcessesWithMemoryUsageUnix.js')
+  return import(
+    '../ListProcessesWithMemoryUsageUnix/ListProcessesWithMemoryUsageUnix.ts'
+  )
 }
 
 export const listProcessesWithMemoryUsage = async (rootPid) => {

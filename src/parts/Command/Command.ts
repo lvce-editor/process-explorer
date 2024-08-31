@@ -1,4 +1,4 @@
-import * as CommandState from '../CommandState/CommandState.js'
+import * as CommandState from '../CommandState/CommandState.ts'
 
 export const execute = (command, ...args) => {
   const fn = CommandState.getCommand(command)

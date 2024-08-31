@@ -1,8 +1,8 @@
-import * as AddAccurateMemoryUsage from '../AddAccurateMemoryUsage/AddAccurateMemoryUsage.js'
-import * as CreatePidMap from '../CreatePidMap/CreatePidMap.js'
-import * as GetPsOutput from '../GetPsOutput/GetPsOutput.js'
-import * as HasPositiveMemoryUsage from '../HasPositiveMemoryUsage/HasPositiveMemoryUsage.js'
-import * as ParsePsOutput from '../ParsePsOutput/ParsePsOutput.js'
+import * as AddAccurateMemoryUsage from '../AddAccurateMemoryUsage/AddAccurateMemoryUsage.ts'
+import * as CreatePidMap from '../CreatePidMap/CreatePidMap.ts'
+import * as GetPsOutput from '../GetPsOutput/GetPsOutput.ts'
+import * as HasPositiveMemoryUsage from '../HasPositiveMemoryUsage/HasPositiveMemoryUsage.ts'
+import * as ParsePsOutput from '../ParsePsOutput/ParsePsOutput.ts'
 
 export const listProcessesWithMemoryUsage = async (rootPid) => {
   // console.time('getPsOutput')
@@ -14,8 +14,12 @@ export const listProcessesWithMemoryUsage = async (rootPid) => {
   const parsed = ParsePsOutput.parsePsOutput(stdout, rootPid, pidMap)
   // console.timeEnd('parsePsOutput')
   // console.time('addAccurateMemoryUsage')
-  const parsedWithAccurateMemoryUsage = await Promise.all(parsed.map(AddAccurateMemoryUsage.addAccurateMemoryUsage))
+  const parsedWithAccurateMemoryUsage = await Promise.all(
+    parsed.map(AddAccurateMemoryUsage.addAccurateMemoryUsage),
+  )
   // console.timeEnd('addAccurateMemoryUsage')
-  const filtered = parsedWithAccurateMemoryUsage.filter(HasPositiveMemoryUsage.hasPositiveMemoryUsage)
+  const filtered = parsedWithAccurateMemoryUsage.filter(
+    HasPositiveMemoryUsage.hasPositiveMemoryUsage,
+  )
   return filtered
 }
