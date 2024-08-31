@@ -1,11 +1,11 @@
 import { beforeEach, expect, jest, test } from '@jest/globals'
-import { VError } from '../src/parts/VError/VError.js'
+import { VError } from '../src/parts/VError/VError.ts'
 
 beforeEach(() => {
   jest.resetAllMocks()
 })
 
-jest.unstable_mockModule('../src/parts/CreatePidMap/CreatePidMap.js', () => ({
+jest.unstable_mockModule('../src/parts/CreatePidMap/CreatePidMap.ts', () => ({
   createPidMap() {
     return {}
   },

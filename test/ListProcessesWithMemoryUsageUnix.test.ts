@@ -1,5 +1,5 @@
 import { beforeEach, expect, jest, test } from '@jest/globals'
-import * as ErrorCodes from '../src/parts/ErrorCodes/ErrorCodes.js'
+import * as ErrorCodes from '../src/parts/ErrorCodes/ErrorCodes.ts'
 
 beforeEach(() => {
   jest.resetAllMocks()
@@ -11,7 +11,7 @@ jest.unstable_mockModule('node:child_process', () => ({
   }),
 }))
 
-jest.unstable_mockModule('../src/parts/IsMacos/IsMacos.js', () => ({
+jest.unstable_mockModule('../src/parts/IsMacos/IsMacos.ts', () => ({
   isMacos: true,
 }))
 
