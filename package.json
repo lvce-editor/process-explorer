@@ -2,7 +2,7 @@
   "name": "@lvce-editor/process-explorer",
   "version": "0.0.0-dev",
   "description": "Process Explorer",
-  "main": "src/processExplorerMain.js",
+  "main": "src/processExplorerMain.ts",
   "bin": "bin/processExplorer.js",
   "type": "module",
   "scripts": {
