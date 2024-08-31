@@ -5,6 +5,7 @@ import * as ListProcessGetName from '../ListProcessGetName/ListProcessGetName.ts
 import * as WindowsProcessTree from '../WindowsProcessTree/WindowsProcessTree.ts'
 import * as WindowsProcessTreeDataFlag from '../WindowsProcessTreeDataFlag/WindowsProcessTreeDataFlag.ts'
 import * as CreatePidMap from '../CreatePidMap/CreatePidMap.ts'
+import type { IProcessCpuInfo } from '@vscode/windows-process-tree'
 
 /**
  * @param {import('@vscode/windows-process-tree').IProcessCpuInfo} item
@@ -26,13 +27,8 @@ const toResultItem = (item, rootPid, pidMap) => {
   }
 }
 
-/**
- *
- * @param {import('@vscode/windows-process-tree').IProcessCpuInfo[]} completeProcessList
- * @param {number} rootPid
- */
-const toResult = (completeProcessList, rootPid, pidMap) => {
-  const results = []
+const toResult = (completeProcessList, rootPid: number, pidMap) => {
+  const results: IProcessCpuInfo[] = []
   for (const item of completeProcessList) {
     results.push(toResultItem(item, rootPid, pidMap))
   }

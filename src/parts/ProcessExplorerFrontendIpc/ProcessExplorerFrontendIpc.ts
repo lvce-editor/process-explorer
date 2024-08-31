@@ -1,6 +1,7 @@
-export const state = {
-  /**
-   * @type {any}
-   */
+interface State {
+  ipc: any
+}
+
+export const state: State = {
   ipc: undefined,
 }

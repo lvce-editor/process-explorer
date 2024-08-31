@@ -30,7 +30,7 @@ export const parsePsOutput = (stdout, rootPid, pidMap) => {
     return []
   }
   const lines = SplitLines.splitLines(stdout)
-  const result = []
+  const result: any[] = []
   const depthMap = Object.create(null)
   depthMap[rootPid] = 1
   const parsedLines = lines.map(parsePsOutputLine)
