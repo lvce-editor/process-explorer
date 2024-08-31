@@ -63,7 +63,7 @@ await mkdir(dist, { recursive: true })
 
 await bundleJs({
   cwd: root,
-  from: 'src/processExplorerMain.js',
+  from: 'src/processExplorerMain.ts',
   platform: 'node',
   outFile: 'dist/dist/index.js',
   external: [
