@@ -1,4 +1,7 @@
-import type { IProcessInfo } from '@vscode/windows-process-tree'
+import type {
+  IProcessCpuInfo,
+  IProcessInfo,
+} from '@vscode/windows-process-tree'
 import * as LoadWindowsProcessTree from '../LoadWindowsProcessTree/LoadWindowsProcessTree.ts'
 import * as Promises from '../Promises/Promises.ts'
 
@@ -15,15 +18,10 @@ export const getProcessList = async (
   return promise
 }
 
-/**
- *
- * @param {any[]} processList
- * @returns Promise< WindowsProcessTree.IProcessCpuInfo[]>
- */
-export const addCpuUsage = async (processList) => {
+export const addCpuUsage = async (processList: IProcessCpuInfo[]) => {
   const WindowsProcessTree =
     await LoadWindowsProcessTree.loadWindowProcessTree()
-  const { resolve, promise } = Promises.withResolvers()
+  const { resolve, promise } = Promises.withResolvers<IProcessCpuInfo[]>()
   WindowsProcessTree.getProcessCpuUsage(processList, resolve)
   return promise
 }
