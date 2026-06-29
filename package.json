@@ -6,10 +6,11 @@
   "bin": "bin/processExplorer.js",
   "type": "module",
   "scripts": {
+    "build": "node scripts/build.js",
+    "lint": "eslint . && prettier --check .",
     "test": "node --unhandled-rejections=warn --experimental-vm-modules ./node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
     "test:watch": "node --unhandled-rejections=warn --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch",
-    "type-check": "tsc",
-    "build": "node scripts/build.js"
+    "type-check": "tsc"
   },
   "keywords": [
     "Lvce Editor"

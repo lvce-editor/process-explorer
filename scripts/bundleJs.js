@@ -35,7 +35,8 @@ export const bundleJs = async ({
     )
     if (typescript) {
       const { babel } = await import('@rollup/plugin-babel')
-      const { default: pluginTypeScript } = await import('@babel/preset-typescript')
+      const { default: pluginTypeScript } =
+        await import('@babel/preset-typescript')
       plugins.push(
         babel({
           babelHelpers: 'bundled',

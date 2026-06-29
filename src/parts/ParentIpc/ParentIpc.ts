@@ -8,6 +8,6 @@ export const state: State = {
   ipc: undefined,
 }
 
-export const invoke = (method, ...params) => {
+export const invoke = (method: string, ...params: readonly unknown[]) => {
   return JsonRpc.invoke(state.ipc, method, ...params)
 }
