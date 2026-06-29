@@ -12,8 +12,8 @@ export const withResolvers = <T>() => {
     _reject = reject
   })
   return {
-    resolve: _resolve,
-    reject: _reject,
     promise,
+    reject: _reject,
+    resolve: _resolve,
   }
 }

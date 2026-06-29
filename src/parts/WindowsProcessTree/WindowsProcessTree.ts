@@ -11,7 +11,7 @@ export const getProcessList = async (
 ): Promise<IProcessInfo[] | undefined> => {
   const WindowsProcessTree =
     await LoadWindowsProcessTree.loadWindowProcessTree()
-  const { resolve, promise } = Promises.withResolvers<
+  const { promise, resolve } = Promises.withResolvers<
     IProcessInfo[] | undefined
   >()
   WindowsProcessTree.getProcessList(rootPid, resolve, flags)
@@ -21,7 +21,7 @@ export const getProcessList = async (
 export const addCpuUsage = async (processList: IProcessCpuInfo[]) => {
   const WindowsProcessTree =
     await LoadWindowsProcessTree.loadWindowProcessTree()
-  const { resolve, promise } = Promises.withResolvers<IProcessCpuInfo[]>()
+  const { promise, resolve } = Promises.withResolvers<IProcessCpuInfo[]>()
   WindowsProcessTree.getProcessCpuUsage(processList, resolve)
   return promise
 }

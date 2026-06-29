@@ -12,9 +12,9 @@ const parsePsOutputLine = (line) => {
   const matches = PID_CMD.exec(line.trim())
   if (matches && matches.length === 6) {
     return {
+      cmd: matches[5],
       pid: Number.parseInt(matches[1]),
       ppid: Number.parseInt(matches[2]),
-      cmd: matches[5],
       // load: parseInt(matches[3]),
       // mem: parseInt(matches[4]),
     }
@@ -35,7 +35,7 @@ export const parsePsOutput = (stdout, rootPid, pidMap) => {
   depthMap[rootPid] = 1
   const parsedLines = lines.map(parsePsOutputLine)
   for (const parsedLine of parsedLines) {
-    const { pid, ppid, cmd } = parsedLine
+    const { cmd, pid, ppid } = parsedLine
     const depth = pid === rootPid ? 1 : depthMap[ppid]
     if (!depth) {
       continue
