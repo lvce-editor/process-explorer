@@ -96,9 +96,11 @@
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.29.7",
+    "@lvce-editor/eslint-config": "^14.0.1",
     "@rollup/plugin-babel": "^7.1.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@types/node": "^20.12.8",
+    "eslint": "^10.6.0",
     "execa": "^9.6.1",
     "jest": "^30.4.2",
     "prettier": "^3.9.3",
