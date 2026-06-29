@@ -23,14 +23,16 @@ jest.unstable_mockModule('@vscode/windows-process-tree', () => {
 })
 
 const WindowsProcessTree = await import('@vscode/windows-process-tree')
-const ListProcessesWithMemoryUsage = await import('../src/parts/ListProcessesWithMemoryUsageWindows/ListProcessesWithMemoryUsageWindows.js')
+const ListProcessesWithMemoryUsage =
+  await import('../src/parts/ListProcessesWithMemoryUsageWindows/ListProcessesWithMemoryUsageWindows.js')
 
 test('listProcessesWithMemoryUsage', async () => {
   // @ts-ignore
   WindowsProcessTree.getProcessList.mockImplementation((rootPid, callback) => {
     callback([
       {
-        commandLine: 'C:\\Users\\test-user\\Documents\\app\\packages\\main-process\\node_modules\\electron\\dist\\electron.exe .',
+        commandLine:
+          'C:\\Users\\test-user\\Documents\\app\\packages\\main-process\\node_modules\\electron\\dist\\electron.exe .',
         cpu: 0.19305019305019305,
         memory: 95_653_888,
         name: 'electron.exe',
@@ -88,7 +90,8 @@ test('listProcessesWithMemoryUsage', async () => {
   WindowsProcessTree.getProcessCpuUsage.mockImplementation((list, callback) => {
     callback([
       {
-        commandLine: 'C:\\Users\\test-user\\Documents\\app\\packages\\main-process\\node_modules\\electron\\dist\\electron.exe .',
+        commandLine:
+          'C:\\Users\\test-user\\Documents\\app\\packages\\main-process\\node_modules\\electron\\dist\\electron.exe .',
         cpu: 0.19305019305019305,
         memory: 95_653_888,
         name: 'electron.exe',
@@ -142,7 +145,9 @@ test('listProcessesWithMemoryUsage', async () => {
       },
     ])
   })
-  expect(await ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(25_666)).toEqual([
+  expect(
+    await ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(25_666),
+  ).toEqual([
     {
       cmd: 'C:\\Users\\test-user\\Documents\\app\\packages\\main-process\\node_modules\\electron\\dist\\electron.exe .',
       memory: 95_653_888,
@@ -196,5 +201,7 @@ test('listProcessesWithMemoryUsage - error - rootPid not found', async () => {
   await expect(
     ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(25_666),
     // @ts-ignore
-  ).rejects.toThrow(new VError('Failed to list processes: Root process 25666 not found'))
+  ).rejects.toThrow(
+    new VError('Failed to list processes: Root process 25666 not found'),
+  )
 })

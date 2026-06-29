@@ -1,6 +1,89 @@
 import * as Assert from '../Assert/Assert.ts'
 
-export const getName = (pid, cmd, rootPid, pidMap) => {
+interface ProcessNamePattern {
+  readonly matches: (cmd: string) => boolean
+  readonly name: string
+}
+
+const processNamePatterns: readonly ProcessNamePattern[] = [
+  {
+    matches: (cmd) => cmd.includes('--type=zygote'),
+    name: 'zygote',
+  },
+  {
+    matches: (cmd) => cmd.includes('--type=gpu-process'),
+    name: 'gpu-process',
+  },
+  {
+    matches: (cmd) => cmd.includes('extensionHostMain.js'),
+    name: 'extension-host',
+  },
+  {
+    matches: (cmd) => cmd.includes('ptyHostMain.js'),
+    name: 'pty-host',
+  },
+  {
+    matches: (cmd) => cmd.includes('--lvce-window-kind=process-explorer'),
+    name: 'process-explorer',
+  },
+]
+
+const fallbackProcessNamePatterns: readonly ProcessNamePattern[] = [
+  {
+    matches: (cmd) => cmd.includes('--type=renderer'),
+    name: 'renderer',
+  },
+  {
+    matches: (cmd) => cmd.includes('--type=utility'),
+    name: 'utility',
+  },
+  {
+    matches: (cmd) => cmd.includes('tsserver.js'),
+    name: 'tsserver.js',
+  },
+  {
+    matches: (cmd) => cmd.includes('typingsInstaller.js'),
+    name: 'typingsInstaller.js',
+  },
+  {
+    matches: (cmd) => cmd.includes('extensionHostHelperProcessMain.js'),
+    name: 'extension-host-helper-process',
+  },
+  {
+    matches: (cmd) => cmd.includes('/bin/rg') || cmd.includes('rg.exe'),
+    name: 'ripgrep',
+  },
+  {
+    matches: (cmd) => cmd.startsWith('bash'),
+    name: 'bash',
+  },
+  {
+    matches: (cmd) => cmd.startsWith('/opt/sublime_text/sublime_text '),
+    name: 'sublime-text',
+  },
+  {
+    matches: (cmd) => cmd.includes('\\conhost.exe'),
+    name: 'conhost.exe',
+  },
+]
+
+const getPatternName = (cmd: string): string => {
+  return processNamePatterns.find((pattern) => pattern.matches(cmd))?.name || ''
+}
+
+const getFallbackPatternName = (cmd: string): string => {
+  return (
+    fallbackProcessNamePatterns.find((pattern) => pattern.matches(cmd))?.name ||
+    ''
+  )
+}
+
+export const getName = (
+  pid: number,
+  cmd: string,
+  rootPid: number,
+  pidMap: Readonly<Record<number, string>>,
+) => {
   Assert.number(pid)
   Assert.string(cmd)
   Assert.number(rootPid)
@@ -8,50 +91,16 @@ export const getName = (pid, cmd, rootPid, pidMap) => {
   if (pid === rootPid) {
     return 'main'
   }
-  if (cmd.includes('--type=zygote')) {
-    return 'zygote'
-  }
-  if (cmd.includes('--type=gpu-process')) {
-    return 'gpu-process'
-  }
-  if (cmd.includes('extensionHostMain.js')) {
-    return 'extension-host'
-  }
-  if (cmd.includes('ptyHostMain.js')) {
-    return 'pty-host'
-  }
-  if (cmd.includes('--lvce-window-kind=process-explorer')) {
-    return 'process-explorer'
+  const patternName = getPatternName(cmd)
+  if (patternName) {
+    return patternName
   }
   if (pid in pidMap) {
-    return pidMap[pid] || `<unknown>`
+    return pidMap[pid] || '<unknown>'
   }
-  if (cmd.includes('--type=renderer')) {
-    return `renderer`
+  const fallbackPatternName = getFallbackPatternName(cmd)
+  if (fallbackPatternName) {
+    return fallbackPatternName
   }
-  if (cmd.includes('--type=utility')) {
-    return 'utility'
-  }
-  if (cmd.includes('tsserver.js')) {
-    return 'tsserver.js'
-  }
-  if (cmd.includes('typingsInstaller.js')) {
-    return 'typingsInstaller.js'
-  }
-  if (cmd.includes('extensionHostHelperProcessMain.js')) {
-    return 'extension-host-helper-process'
-  }
-  if (cmd.includes('/bin/rg') || cmd.includes('rg.exe')) {
-    return 'ripgrep'
-  }
-  if (cmd.startsWith('bash')) {
-    return 'bash'
-  }
-  if (cmd.startsWith(`/opt/sublime_text/sublime_text `)) {
-    return 'sublime-text'
-  }
-  if (cmd.includes('\\conhost.exe')) {
-    return 'conhost.exe'
-  }
-  return `${cmd}`
+  return cmd
 }

@@ -18,10 +18,13 @@ export const getProcessList = async (
   return promise
 }
 
-export const addCpuUsage = async (processList: IProcessCpuInfo[]) => {
+export const addCpuUsage = async (
+  processList: ReadonlyArray<Readonly<IProcessCpuInfo>>,
+) => {
   const WindowsProcessTree =
     await LoadWindowsProcessTree.loadWindowProcessTree()
   const { promise, resolve } = Promises.withResolvers<IProcessCpuInfo[]>()
-  WindowsProcessTree.getProcessCpuUsage(processList, resolve)
+  const mutableProcessList = processList.map((process) => ({ ...process }))
+  WindowsProcessTree.getProcessCpuUsage(mutableProcessList, resolve)
   return promise
 }

@@ -5,24 +5,60 @@ import * as Character from '../Character/Character.ts'
 import * as ListProcessGetName from '../ListProcessGetName/ListProcessGetName.ts'
 import * as SplitLines from '../SplitLines/SplitLines.ts'
 
-const PID_CMD = /^\s*(\d+)\s+(\d+)\s+([\d.]+)\s+([\d.]+)\s+(.+)$/s
+interface ParsedPsLine {
+  readonly cmd: string
+  readonly pid: number
+  readonly ppid: number
+}
 
-const parsePsOutputLine = (line) => {
+const isSpace = (character: string): boolean => {
+  return character === ' ' || character === '\t'
+}
+
+const readField = (line: string, startIndex: number) => {
+  let start = startIndex
+  while (start < line.length && isSpace(line[start])) {
+    start++
+  }
+  let end = start
+  while (end < line.length && !isSpace(line[end])) {
+    end++
+  }
+  return {
+    nextIndex: end,
+    value: line.slice(start, end),
+  }
+}
+
+const parsePsOutputLine = (line: string): ParsedPsLine => {
   Assert.string(line)
-  const matches = PID_CMD.exec(line.trim())
-  if (matches && matches.length === 6) {
+  const trimmedLine = line.trim()
+  const pidField = readField(trimmedLine, 0)
+  const ppidField = readField(trimmedLine, pidField.nextIndex)
+  const loadField = readField(trimmedLine, ppidField.nextIndex)
+  const memoryField = readField(trimmedLine, loadField.nextIndex)
+  const cmd = trimmedLine.slice(memoryField.nextIndex).trim()
+  if (
+    pidField.value &&
+    ppidField.value &&
+    loadField.value &&
+    memoryField.value &&
+    cmd
+  ) {
     return {
-      cmd: matches[5],
-      pid: Number.parseInt(matches[1]),
-      ppid: Number.parseInt(matches[2]),
-      // load: parseInt(matches[3]),
-      // mem: parseInt(matches[4]),
+      cmd,
+      pid: Number.parseInt(pidField.value),
+      ppid: Number.parseInt(ppidField.value),
     }
   }
   throw new Error(`line could not be parsed: ${line}`)
 }
 
-export const parsePsOutput = (stdout, rootPid, pidMap) => {
+export const parsePsOutput = (
+  stdout: string,
+  rootPid: number,
+  pidMap: Readonly<Record<number, string>>,
+) => {
   Assert.string(stdout)
   Assert.number(rootPid)
   Assert.object(pidMap)
