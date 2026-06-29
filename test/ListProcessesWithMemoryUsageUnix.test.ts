@@ -71,7 +71,7 @@ test('listProcessesWithMemoryUsage', async () => {
     {
       cmd: '/usr/libexec/gsd-keyboard',
       depth: 1,
-      memory: 3375104,
+      memory: 3_375_104,
       name: '/usr/libexec/gsd-keyboard',
       pid: 2127,
       ppid: 1442,
@@ -79,7 +79,7 @@ test('listProcessesWithMemoryUsage', async () => {
     {
       cmd: '/usr/libexec/gsd-media-keys',
       depth: 1,
-      memory: 3375104,
+      memory: 3_375_104,
       name: '/usr/libexec/gsd-media-keys',
       pid: 2130,
       ppid: 1442,
@@ -87,7 +87,7 @@ test('listProcessesWithMemoryUsage', async () => {
     {
       cmd: '/usr/libexec/gsd-power',
       depth: 1,
-      memory: 3375104,
+      memory: 3_375_104,
       name: '/usr/libexec/gsd-power',
       pid: 2133,
       ppid: 1442,
@@ -95,7 +95,7 @@ test('listProcessesWithMemoryUsage', async () => {
     {
       cmd: '/usr/libexec/gsd-print-notifications',
       depth: 1,
-      memory: 3375104,
+      memory: 3_375_104,
       name: '/usr/libexec/gsd-print-notifications',
       pid: 2134,
       ppid: 1442,
@@ -103,7 +103,7 @@ test('listProcessesWithMemoryUsage', async () => {
     {
       cmd: '/usr/libexec/gsd-rfkill',
       depth: 1,
-      memory: 3375104,
+      memory: 3_375_104,
       name: '/usr/libexec/gsd-rfkill',
       pid: 2135,
       ppid: 1442,
@@ -111,7 +111,7 @@ test('listProcessesWithMemoryUsage', async () => {
     {
       cmd: '/usr/libexec/gsd-screensaver-proxy',
       depth: 1,
-      memory: 3375104,
+      memory: 3_375_104,
       name: '/usr/libexec/gsd-screensaver-proxy',
       pid: 2136,
       ppid: 1442,
@@ -119,7 +119,7 @@ test('listProcessesWithMemoryUsage', async () => {
     {
       cmd: '/usr/libexec/gsd-sharing',
       depth: 1,
-      memory: 3375104,
+      memory: 3_375_104,
       name: '/usr/libexec/gsd-sharing',
       pid: 2138,
       ppid: 1442,
@@ -139,15 +139,15 @@ test('listProcessesWithMemoryUsage - bug with parsing this specific line', async
   fsPromises.readFile.mockImplementation(() => '41700 2023 1199 224 0 5027 0')
   // @ts-ignore
   expect(
-    await ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(25666),
+    await ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(25_666),
   ).toEqual([
     {
       cmd: '/snap/code/97/usr/share/code/code --ms-enable-electron-run-as-node --max-old-space-size=3072 /snap/code/97/usr/share/code/resources/app/extensions/node_modules/typescript/lib/tsserver.js --useInferredProjectPerProjectRoot --disableAutomaticTypingAcquisition --enableTelemetry --cancellationPipeName /tmp/vscode-typescript1000/25df66cb1c287c2f519c/tscancellation-9462d6e60479e4eb5d2f.tmp* --locale en --noGetErrOnBackgroundUpdate --validateDefaultNpmLocation --useNodeIpc',
       depth: 1,
-      memory: 3375104,
+      memory: 3_375_104,
       name: 'main',
-      pid: 25666,
-      ppid: 24775,
+      pid: 25_666,
+      ppid: 24_775,
     },
   ])
 })
@@ -174,15 +174,15 @@ test('listProcessesWithMemoryUsage - detect chrome devtools', async () => {
   fsPromises.readFile.mockImplementation(() => '41700 2023 1199 224 0 5027 0')
   // @ts-ignore
   expect(
-    await ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(25666),
+    await ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(25_666),
   ).toEqual([
     {
       cmd: '/snap/code/97/usr/share/code/code --ms-enable-electron-run-as-node --max-old-space-size=3072 /snap/code/97/usr/share/code/resources/app/extensions/node_modules/typescript/lib/tsserver.js --useInferredProjectPerProjectRoot --disableAutomaticTypingAcquisition --enableTelemetry --cancellationPipeName /tmp/vscode-typescript1000/25df66cb1c287c2f519c/tscancellation-9462d6e60479e4eb5d2f.tmp* --locale en --noGetErrOnBackgroundUpdate --validateDefaultNpmLocation --useNodeIpc',
       depth: 1,
-      memory: 3375104,
+      memory: 3_375_104,
       name: 'main',
-      pid: 25666,
-      ppid: 24775,
+      pid: 25_666,
+      ppid: 24_775,
     },
   ])
 })
@@ -212,7 +212,7 @@ test('listProcessesWithMemoryUsage - error - ESRCH', async () => {
     {
       cmd: '/usr/libexec/gsd-media-keys',
       depth: 1,
-      memory: 3375104,
+      memory: 3_375_104,
       name: '/usr/libexec/gsd-media-keys',
       pid: 2130,
       ppid: 1442,

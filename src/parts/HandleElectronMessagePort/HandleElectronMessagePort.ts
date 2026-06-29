@@ -10,8 +10,8 @@ export const handleElectronMessagePort = async (messagePort, ipcId) => {
   Assert.object(messagePort)
   // Assert.number(ipcId)
   const ipc = await IpcChild.listen({
-    method: IpcChildType.ElectronMessagePort,
     messagePort,
+    method: IpcChildType.ElectronMessagePort,
   })
   HandleIpc.handleIpc(ipc)
   if (ipcId === IpcId.MainProcess) {

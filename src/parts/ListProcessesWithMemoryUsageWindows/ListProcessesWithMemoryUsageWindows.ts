@@ -1,11 +1,11 @@
 // listProcesses windows implementation based on https://github.com/microsoft/vscode/blob/c0769274fa136b45799edeccc0d0a2f645b75caf/src/vs/base/node/ps.ts (License MIT)
 
-import { VError } from '../VError/VError.ts'
+import type { IProcessCpuInfo } from '@vscode/windows-process-tree'
+import * as CreatePidMap from '../CreatePidMap/CreatePidMap.ts'
 import * as ListProcessGetName from '../ListProcessGetName/ListProcessGetName.ts'
+import { VError } from '../VError/VError.ts'
 import * as WindowsProcessTree from '../WindowsProcessTree/WindowsProcessTree.ts'
 import * as WindowsProcessTreeDataFlag from '../WindowsProcessTreeDataFlag/WindowsProcessTreeDataFlag.ts'
-import * as CreatePidMap from '../CreatePidMap/CreatePidMap.ts'
-import type { IProcessCpuInfo } from '@vscode/windows-process-tree'
 
 /**
  * @param {import('@vscode/windows-process-tree').IProcessCpuInfo} item
@@ -14,6 +14,8 @@ import type { IProcessCpuInfo } from '@vscode/windows-process-tree'
  */
 const toResultItem = (item, rootPid, pidMap) => {
   return {
+    cmd: item.commandLine,
+    memory: item.memory,
     name: ListProcessGetName.getName(
       item.pid,
       item.commandLine,
@@ -22,16 +24,11 @@ const toResultItem = (item, rootPid, pidMap) => {
     ),
     pid: item.pid,
     ppid: item.ppid,
-    memory: item.memory,
-    cmd: item.commandLine,
   }
 }
 
 const toResult = (completeProcessList, rootPid: number, pidMap) => {
-  const results: IProcessCpuInfo[] = []
-  for (const item of completeProcessList) {
-    results.push(toResultItem(item, rootPid, pidMap))
-  }
+  const results: IProcessCpuInfo[] = Array.from(completeProcessList, item => toResultItem(item, rootPid, pidMap));
   return results
 }
 
