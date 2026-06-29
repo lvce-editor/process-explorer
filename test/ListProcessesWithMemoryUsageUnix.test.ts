@@ -16,7 +16,7 @@ jest.unstable_mockModule('../src/parts/IsMacos/IsMacos.ts', () => ({
 }))
 
 jest.unstable_mockModule('node:path', () => ({
-  join: (...parts: any[]) => {
+  join: (...parts: readonly any[]) => {
     return parts.join('/')
   },
 }))
@@ -35,9 +35,8 @@ jest.unstable_mockModule('../src/parts/CreatePidMap/CreatePidMap.js', () => ({
 
 const childProcess = await import('node:child_process')
 const fsPromises = await import('node:fs/promises')
-const ListProcessesWithMemoryUsage = await import(
-  '../src/parts/ListProcessesWithMemoryUsageUnix/ListProcessesWithMemoryUsageUnix.js'
-)
+const ListProcessesWithMemoryUsage =
+  await import('../src/parts/ListProcessesWithMemoryUsageUnix/ListProcessesWithMemoryUsageUnix.js')
 
 class NodeError extends Error {
   code: any

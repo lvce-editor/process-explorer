@@ -8,9 +8,9 @@ import * as IsMacos from '../IsMacos/IsMacos.ts'
 import * as ParseMemory from '../ParseMemory/ParseMemory.ts'
 import { VError } from '../VError/VError.ts'
 
-const getContent = async (pid) => {
+const getContent = async (pid: number) => {
   try {
-    const filePath = join('/proc', `${pid}`, 'statm')
+    const filePath = join('/proc', String(pid), 'statm')
     const content = await readFile(filePath, EncodingType.Utf8)
     return content
   } catch (error) {
@@ -24,7 +24,7 @@ const getContent = async (pid) => {
   }
 }
 
-export const getAccurateMemoryUsage = async (pid) => {
+export const getAccurateMemoryUsage = async (pid: number) => {
   try {
     Assert.number(pid)
     if (IsMacos.isMacOs) {

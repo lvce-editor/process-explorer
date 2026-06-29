@@ -28,7 +28,9 @@ const toResultItem = (item, rootPid, pidMap) => {
 }
 
 const toResult = (completeProcessList, rootPid: number, pidMap) => {
-  const results: IProcessCpuInfo[] = Array.from(completeProcessList, item => toResultItem(item, rootPid, pidMap));
+  const results: IProcessCpuInfo[] = Array.from(completeProcessList, (item) =>
+    toResultItem(item, rootPid, pidMap),
+  )
   return results
 }
 
