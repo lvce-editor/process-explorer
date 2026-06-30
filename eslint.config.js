@@ -11,6 +11,7 @@ export default [
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@cspell/spellchecker': 'off',
       'github-actions/ci-versions': 'off',
+      'devcontainer/post-create-command': 'off',
       'tsconfig/no-implicit-any': 'off',
       'tsconfig/dont-skip-lib-check': 'off',
     },
