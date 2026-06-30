@@ -1,6 +1,7 @@
 {
   "name": "@lvce-editor/process-explorer-monorepo",
   "version": "0.0.0-dev",
+  "private": true,
   "description": "Process Explorer",
   "main": "src/processExplorerMain.ts",
   "bin": "bin/processExplorer.js",
