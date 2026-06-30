@@ -20,7 +20,7 @@ export const getProcessList = async (
 
 export const addCpuUsage = async (
   processList: ReadonlyArray<Readonly<IProcessCpuInfo>>,
-) => {
+): Promise<IProcessCpuInfo[]> => {
   const WindowsProcessTree =
     await LoadWindowsProcessTree.loadWindowProcessTree()
   const { promise, resolve } = Promises.withResolvers<IProcessCpuInfo[]>()

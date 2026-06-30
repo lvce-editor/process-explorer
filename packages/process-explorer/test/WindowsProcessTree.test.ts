@@ -15,7 +15,11 @@ const WindowsProcessTreeModule = await import('@vscode/windows-process-tree')
 test('getProcessList', async () => {
   // @ts-ignore
   WindowsProcessTreeModule.getProcessList.mockImplementation(
-    (pid, callback, flags) => {
+    (
+      pid: number,
+      callback: (processList: readonly unknown[]) => void,
+      flags: number,
+    ): void => {
       callback([])
     },
   )

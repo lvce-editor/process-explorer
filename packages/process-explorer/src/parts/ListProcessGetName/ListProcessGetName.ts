@@ -83,7 +83,7 @@ export const getName = (
   cmd: string,
   rootPid: number,
   pidMap: Readonly<Record<number, string>>,
-) => {
+): string => {
   Assert.number(pid)
   Assert.string(cmd)
   Assert.number(rootPid)

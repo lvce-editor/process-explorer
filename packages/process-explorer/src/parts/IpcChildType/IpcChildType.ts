@@ -4,7 +4,7 @@ export const ElectronUtilityProcess = 3
 export const ElectronMessagePort = 4
 export const WebSocket = 6
 
-export const Auto = () => {
+export const Auto = (): number => {
   const { argv } = process
   if (argv.includes('--ipc-type=node-worker')) {
     return NodeWorker
