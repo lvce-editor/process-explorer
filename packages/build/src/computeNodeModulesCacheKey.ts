@@ -21,6 +21,7 @@ const getPackageLocations = (): string[] => {
 
 const locations: string[] = [
   'lerna.json',
+  '.nvmrc',
   ...getPackageLocations(),
   '.github/workflows/pr.yml',
   '.github/workflows/ci.yml',
