@@ -6,12 +6,12 @@
   "bin": "bin/processExplorer.js",
   "type": "module",
   "scripts": {
-    "build": "node scripts/build.js",
-    "lint": "eslint . && prettier --check .",
-    "test": "node --unhandled-rejections=warn --experimental-vm-modules ./node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
-    "test:watch": "node --unhandled-rejections=warn --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch",
-    "type-check": "tsc",
-    "postinstall": "lerna bootstrap --ci"
+    "build": "node packages/build/src/build.ts",
+    "postinstall": "lerna bootstrap --ci",
+    "lint": "eslint . && prettier --check . && knip --no-config-hints",
+    "test": "lerna run test",
+    "test:watch": "cd packages/process-explorer && npm run test:watch",
+    "type-check": "tsc -b"
   },
   "keywords": [
     "Lvce Editor"

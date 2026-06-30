@@ -1,25 +1,8 @@
 {
-  "compilerOptions": {
-    "lib": ["esnext"],
-    "target": "esnext",
-    "checkJs": true,
-    "module": "NodeNext",
-    "types": ["node"],
-    "moduleResolution": "nodenext",
-    "isolatedModules": true,
-    "exactOptionalPropertyTypes": true,
-    "forceConsistentCasingInFileNames": true,
-    "noUncheckedSideEffectImports": true,
-    "noImplicitAny": false,
-    "skipLibCheck": true,
-    "rootDir": ".",
-    "noEmit": true,
-    "allowSyntheticDefaultImports": true,
-    "assumeChangesOnlyAffectDirectDependencies": true,
-    "strict": true,
-    "useUnknownInCatchVariables": false,
-    "allowImportingTsExtensions": true,
-    "noUnusedLocals": true
-  },
-  "include": ["src", "test"]
+  "files": [],
+  "include": [],
+  "references": [
+    { "path": "./packages/build" },
+    { "path": "./packages/process-explorer" }
+  ]
 }
