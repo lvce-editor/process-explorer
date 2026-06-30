@@ -109,6 +109,9 @@ const version = await getVersion()
 const packageJson = await readJson(
   join(root, 'packages', 'process-explorer', 'package.json'),
 )
+const workerPackageJson = await readJson(
+  join(root, 'packages', 'process-explorer-worker', 'package.json'),
+)
 
 delete packageJson.scripts
 delete packageJson.devDependencies
@@ -117,6 +120,19 @@ delete packageJson.jest
 packageJson.version = version
 packageJson.main = 'dist/index.js'
 
+delete workerPackageJson.scripts
+delete workerPackageJson.devDependencies
+delete workerPackageJson.prettier
+delete workerPackageJson.jest
+workerPackageJson.version = version
+workerPackageJson.main = 'index.js'
+
 await writeJson(join(dist, 'package.json'), packageJson)
+await writeJson(
+  join(processExplorerWorkerDist, 'package.json'),
+  workerPackageJson,
+)
 await cp(join(root, 'README.md'), join(dist, 'README.md'))
 await cp(join(root, 'LICENSE'), join(dist, 'LICENSE'))
+await cp(join(root, 'README.md'), join(processExplorerWorkerDist, 'README.md'))
+await cp(join(root, 'LICENSE'), join(processExplorerWorkerDist, 'LICENSE'))
