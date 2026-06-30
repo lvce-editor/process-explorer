@@ -1,7 +1,7 @@
 import { expect, test } from '@jest/globals'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
-import * as ExplorerStates from '../src/parts/ExplorerStates/ExplorerStates.ts'
+import * as ExplorerStates from '../src/parts/ProcessExplorerStates/ProcessExplorerStates.ts'
 import * as GetVisibleExplorerItems from '../src/parts/GetVisibleExplorerItems/GetVisibleExplorerItems.ts'
 
 test('wrapListItemCommand recomputes visible items when focus changes', async () => {
@@ -36,7 +36,21 @@ test('wrapListItemCommand recomputes visible items when focus changes', async ()
     items,
     maxLineY: 2,
     minLineY: 0,
-    visibleExplorerItems: GetVisibleExplorerItems.getVisibleExplorerItems(items, 0, 2, 0, -1, '', ['', ''], false, [], '', [], [], []),
+    visibleExplorerItems: GetVisibleExplorerItems.getVisibleExplorerItems(
+      items,
+      0,
+      2,
+      0,
+      -1,
+      '',
+      ['', ''],
+      false,
+      [],
+      '',
+      [],
+      [],
+      [],
+    ),
   }
   const wrapped = ExplorerStates.wrapListItemCommand(async () => {
     return {

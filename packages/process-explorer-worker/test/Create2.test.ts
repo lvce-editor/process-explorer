@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
 import { create2 } from '../src/parts/Create2/Create2.ts'
-import * as ExplorerStates from '../src/parts/ExplorerStates/ExplorerStates.ts'
+import * as ExplorerStates from '../src/parts/ProcessExplorerStates/ProcessExplorerStates.ts'
 
 test('create2', () => {
   const uid = 1

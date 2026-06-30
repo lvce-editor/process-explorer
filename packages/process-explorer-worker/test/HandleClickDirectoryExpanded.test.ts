@@ -1,7 +1,7 @@
 import { expect, test } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
 import type { ExplorerItem } from '../src/parts/ExplorerItem/ExplorerItem.ts'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import { handleClickDirectoryExpanded } from '../src/parts/HandleClickDirectoryExpanded/HandleClickDirectoryExpanded.ts'
@@ -18,7 +18,12 @@ test.skip('collapse expanded directory', async () => {
   const index = 0
   const keepFocus = true
 
-  const newState = await handleClickDirectoryExpanded(state, dirent, index, keepFocus)
+  const newState = await handleClickDirectoryExpanded(
+    state,
+    dirent,
+    index,
+    keepFocus,
+  )
 
   expect(newState.items).toHaveLength(1)
   expect(newState.focusedIndex).toBe(0)
@@ -59,7 +64,12 @@ test('collapse expanded directory with children', async () => {
   const index = 0
   const keepFocus = true
 
-  const newState = await handleClickDirectoryExpanded(state, dirent, index, keepFocus)
+  const newState = await handleClickDirectoryExpanded(
+    state,
+    dirent,
+    index,
+    keepFocus,
+  )
 
   expect(newState.items).toHaveLength(1)
   expect(newState.focusedIndex).toBe(0)
@@ -104,7 +114,12 @@ test('collapse expanded directory with many items preserves icons', async () => 
   const index = 0
   const keepFocus = true
 
-  const newState = await handleClickDirectoryExpanded(state, dirent, index, keepFocus)
+  const newState = await handleClickDirectoryExpanded(
+    state,
+    dirent,
+    index,
+    keepFocus,
+  )
 
   expect(newState.items).toHaveLength(1)
   expect(newState.focusedIndex).toBe(0)
@@ -167,7 +182,12 @@ test('collapse expanded directory with scroll position adjustment', async () => 
   const index = 1
   const keepFocus = true
 
-  const newState = await handleClickDirectoryExpanded(state, dirent, index, keepFocus)
+  const newState = await handleClickDirectoryExpanded(
+    state,
+    dirent,
+    index,
+    keepFocus,
+  )
 
   expect(newState.items).toHaveLength(2)
   expect(newState.focusedIndex).toBe(1)

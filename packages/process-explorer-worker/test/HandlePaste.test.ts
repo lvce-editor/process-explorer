@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import { handlePaste } from '../src/parts/HandlePaste/HandlePaste.ts'
 import * as NativeFileTypes from '../src/parts/NativeFileTypes/NativeFileTypes.ts'
@@ -101,7 +101,12 @@ test('should handle paste with multiple files', async () => {
   using mockRpc = RendererWorker.registerMockRpc({
     'ClipBoard.readNativeFiles'() {
       return {
-        files: ['/source/file1.txt', '/source/file2.txt', '/source/folder1', '/source/folder2/file3.txt'],
+        files: [
+          '/source/file1.txt',
+          '/source/file2.txt',
+          '/source/folder1',
+          '/source/folder2/file3.txt',
+        ],
         type: NativeFileTypes.Copy,
       }
     },
@@ -164,7 +169,10 @@ test('should handle paste with empty files array', async () => {
   expect(result).toBeDefined()
   expect(result).toHaveProperty('items')
   expect(result).toHaveProperty('icons')
-  expect(mockRpc.invocations).toEqual([['ClipBoard.readNativeFiles'], ['FileSystem.readDirWithFileTypes', '/']])
+  expect(mockRpc.invocations).toEqual([
+    ['ClipBoard.readNativeFiles'],
+    ['FileSystem.readDirWithFileTypes', '/'],
+  ])
 })
 
 test('should preserve state properties when handling paste', async () => {

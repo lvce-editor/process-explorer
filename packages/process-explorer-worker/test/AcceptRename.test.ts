@@ -1,6 +1,6 @@
 import { test, expect } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { acceptRename } from '../src/parts/AcceptRename/AcceptRename.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
@@ -39,8 +39,26 @@ test('acceptRename - renames file and refreshes parent children', async () => {
     editingType: ExplorerEditingType.Rename,
     editingValue: 'b.txt',
     items: [
-      { depth: 1, icon: '', name: 'a.txt', path: '/test/a.txt', posInSet: 1, selected: false, setSize: 2, type: DirentType.File },
-      { depth: 1, icon: '', name: 'c.txt', path: '/test/c.txt', posInSet: 2, selected: false, setSize: 2, type: DirentType.File },
+      {
+        depth: 1,
+        icon: '',
+        name: 'a.txt',
+        path: '/test/a.txt',
+        posInSet: 1,
+        selected: false,
+        setSize: 2,
+        type: DirentType.File,
+      },
+      {
+        depth: 1,
+        icon: '',
+        name: 'c.txt',
+        path: '/test/c.txt',
+        posInSet: 2,
+        selected: false,
+        setSize: 2,
+        type: DirentType.File,
+      },
     ],
     pathSeparator: PathSeparatorType.Slash,
     root: '/test',
@@ -52,8 +70,26 @@ test('acceptRename - renames file and refreshes parent children', async () => {
   expect(result.editingValue).toBe('')
   expect(result.focusedIndex).toBe(0)
   expect(result.items).toEqual([
-    { depth: 1, icon: '', name: 'b.txt', path: '/test/b.txt', posInSet: 1, selected: false, setSize: 2, type: DirentType.File },
-    { depth: 1, icon: '', name: 'c.txt', path: '/test/c.txt', posInSet: 2, selected: false, setSize: 2, type: DirentType.File },
+    {
+      depth: 1,
+      icon: '',
+      name: 'b.txt',
+      path: '/test/b.txt',
+      posInSet: 1,
+      selected: false,
+      setSize: 2,
+      type: DirentType.File,
+    },
+    {
+      depth: 1,
+      icon: '',
+      name: 'c.txt',
+      path: '/test/c.txt',
+      posInSet: 2,
+      selected: false,
+      setSize: 2,
+      type: DirentType.File,
+    },
   ])
   expect(mockRpc.invocations).toEqual([
     ['FileSystem.rename', '/test/a.txt', '/test/b.txt'],
@@ -80,8 +116,20 @@ test.skip('acceptRename - basic file rename', async () => {
     editingType: ExplorerEditingType.Rename,
     editingValue: 'b.txt',
     items: [
-      { depth: 0, name: 'a.txt', path: '/test/a.txt', selected: false, type: DirentType.File },
-      { depth: 0, name: 'c.txt', path: '/test/c.txt', selected: false, type: DirentType.File },
+      {
+        depth: 0,
+        name: 'a.txt',
+        path: '/test/a.txt',
+        selected: false,
+        type: DirentType.File,
+      },
+      {
+        depth: 0,
+        name: 'c.txt',
+        path: '/test/c.txt',
+        selected: false,
+        type: DirentType.File,
+      },
     ],
     pathSeparator: PathSeparatorType.Slash,
   }
@@ -121,8 +169,20 @@ test.skip('acceptRename - folder rename', async () => {
     editingType: ExplorerEditingType.Rename,
     editingValue: 'folder2',
     items: [
-      { depth: 0, name: 'folder1', path: '/test/folder1', selected: false, type: DirentType.Directory },
-      { depth: 0, name: 'file.txt', path: '/test/file.txt', selected: false, type: DirentType.File },
+      {
+        depth: 0,
+        name: 'folder1',
+        path: '/test/folder1',
+        selected: false,
+        type: DirentType.Directory,
+      },
+      {
+        depth: 0,
+        name: 'file.txt',
+        path: '/test/file.txt',
+        selected: false,
+        type: DirentType.File,
+      },
     ],
     pathSeparator: PathSeparatorType.Slash,
   }
@@ -160,9 +220,27 @@ test.skip('acceptRename - nested file rename', async () => {
     editingType: ExplorerEditingType.Rename,
     editingValue: 'b.txt',
     items: [
-      { depth: 0, name: 'folder', path: '/test/folder', selected: false, type: DirentType.Directory },
-      { depth: 1, name: 'a.txt', path: '/test/folder/a.txt', selected: false, type: DirentType.File },
-      { depth: 1, name: 'c.txt', path: '/test/folder/c.txt', selected: false, type: DirentType.File },
+      {
+        depth: 0,
+        name: 'folder',
+        path: '/test/folder',
+        selected: false,
+        type: DirentType.Directory,
+      },
+      {
+        depth: 1,
+        name: 'a.txt',
+        path: '/test/folder/a.txt',
+        selected: false,
+        type: DirentType.File,
+      },
+      {
+        depth: 1,
+        name: 'c.txt',
+        path: '/test/folder/c.txt',
+        selected: false,
+        type: DirentType.File,
+      },
     ],
     pathSeparator: PathSeparatorType.Slash,
   }
@@ -198,8 +276,20 @@ test.skip('acceptRename - preserves nested items', async () => {
     editingType: ExplorerEditingType.Rename,
     editingValue: 'folder2',
     items: [
-      { depth: 0, name: 'folder1', path: '/test/folder1', selected: false, type: DirentType.Directory },
-      { depth: 1, name: 'nested.txt', path: '/test/folder1/nested.txt', selected: false, type: DirentType.File },
+      {
+        depth: 0,
+        name: 'folder1',
+        path: '/test/folder1',
+        selected: false,
+        type: DirentType.Directory,
+      },
+      {
+        depth: 1,
+        name: 'nested.txt',
+        path: '/test/folder1/nested.txt',
+        selected: false,
+        type: DirentType.File,
+      },
     ],
     pathSeparator: PathSeparatorType.Slash,
   }
@@ -231,13 +321,23 @@ test.skip('acceptRename - handles rename error', async () => {
     editingIndex: 0,
     editingType: ExplorerEditingType.Rename,
     editingValue: 'b.txt',
-    items: [{ depth: 0, name: 'a.txt', path: '/test/a.txt', selected: false, type: DirentType.File }],
+    items: [
+      {
+        depth: 0,
+        name: 'a.txt',
+        path: '/test/a.txt',
+        selected: false,
+        type: DirentType.File,
+      },
+    ],
     pathSeparator: PathSeparatorType.Slash,
   }
 
   const result = await acceptRename(state)
   expect(result).toBe(state)
-  expect(mockRpc.invocations).toEqual([['FileSystem.rename', '/test/a.txt', '/test/b.txt']])
+  expect(mockRpc.invocations).toEqual([
+    ['FileSystem.rename', '/test/a.txt', '/test/b.txt'],
+  ])
 })
 
 test.skip('acceptRename - maintains sorting order', async () => {
@@ -260,9 +360,27 @@ test.skip('acceptRename - maintains sorting order', async () => {
     editingType: ExplorerEditingType.Rename,
     editingValue: 'b.txt',
     items: [
-      { depth: 0, name: 'a.txt', path: '/test/a.txt', selected: false, type: DirentType.File },
-      { depth: 0, name: 'folder', path: '/test/folder', selected: false, type: DirentType.Directory },
-      { depth: 0, name: 'z.txt', path: '/test/z.txt', selected: false, type: DirentType.File },
+      {
+        depth: 0,
+        name: 'a.txt',
+        path: '/test/a.txt',
+        selected: false,
+        type: DirentType.File,
+      },
+      {
+        depth: 0,
+        name: 'folder',
+        path: '/test/folder',
+        selected: false,
+        type: DirentType.Directory,
+      },
+      {
+        depth: 0,
+        name: 'z.txt',
+        path: '/test/z.txt',
+        selected: false,
+        type: DirentType.File,
+      },
     ],
     pathSeparator: PathSeparatorType.Slash,
   }

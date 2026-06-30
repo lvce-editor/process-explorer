@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import { expandAll } from '../src/parts/ExpandAll/ExpandAll.ts'
@@ -54,8 +54,20 @@ test('expandAll - expand directories at same depth', async () => {
     ...createDefaultState(),
     focusedIndex: 0,
     items: [
-      { depth: 0, name: 'dir1', path: '/dir1', selected: false, type: DirentType.Directory },
-      { depth: 0, name: 'dir2', path: '/dir2', selected: false, type: DirentType.Directory },
+      {
+        depth: 0,
+        name: 'dir1',
+        path: '/dir1',
+        selected: false,
+        type: DirentType.Directory,
+      },
+      {
+        depth: 0,
+        name: 'dir2',
+        path: '/dir2',
+        selected: false,
+        type: DirentType.Directory,
+      },
     ],
   }
 

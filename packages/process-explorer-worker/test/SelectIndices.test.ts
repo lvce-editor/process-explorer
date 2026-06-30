@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.js'
 import { setSelectedIndices } from '../src/parts/SelectIndices/SelectIndices.js'
 

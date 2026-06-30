@@ -1,6 +1,6 @@
 import { test, expect } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import * as ExplorerEditingType from '../src/parts/ExplorerEditingType/ExplorerEditingType.ts'
@@ -41,7 +41,15 @@ test('newFile', async () => {
   const state: ExplorerState = {
     ...createDefaultState(),
     focusedIndex: 0,
-    items: [{ depth: 0, name: 'testfolder', path: '/testfolder', selected: false, type: DirentType.Directory }],
+    items: [
+      {
+        depth: 0,
+        name: 'testfolder',
+        path: '/testfolder',
+        selected: false,
+        type: DirentType.Directory,
+      },
+    ],
     maxLineY: 1,
   }
 
@@ -75,5 +83,7 @@ test('newFile', async () => {
     ],
     visibleExplorerItems: expect.anything(),
   })
-  expect(mockRpc.invocations).toEqual([['FileSystem.readDirWithFileTypes', '/testfolder']])
+  expect(mockRpc.invocations).toEqual([
+    ['FileSystem.readDirWithFileTypes', '/testfolder'],
+  ])
 })

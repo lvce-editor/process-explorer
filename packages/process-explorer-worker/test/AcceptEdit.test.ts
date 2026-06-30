@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import * as ViewletExplorerAcceptEdit from '../src/parts/AcceptEdit/AcceptEdit.ts'
 import * as ViewletExplorer from '../src/parts/Create/Create.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'

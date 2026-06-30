@@ -1,5 +1,5 @@
 import { test, expect } from '@jest/globals'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { adjustScrollAfterPaste } from '../src/parts/AdjustScrollAfterPaste/AdjustScrollAfterPaste.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 

@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import { getIndexFromPosition } from '../src/parts/GetIndexFromPosition/GetIndexFromPosition.ts'
 
@@ -21,39 +21,57 @@ test('getIndexFromPosition', () => {
     excluded: [],
     fileIconCache: {
       'test:///virtual-dom/.git': 'test://file-icons/folder_type_git.svg',
-      'test:///virtual-dom/.git/branches': 'test://file-icons/default_folder.svg',
-      'test:///virtual-dom/.git/COMMIT_EDITMSG': 'test://file-icons/default_file.svg',
+      'test:///virtual-dom/.git/branches':
+        'test://file-icons/default_folder.svg',
+      'test:///virtual-dom/.git/COMMIT_EDITMSG':
+        'test://file-icons/default_file.svg',
       'test:///virtual-dom/.git/config': 'test://file-icons/default_file.svg',
-      'test:///virtual-dom/.git/description': 'test://file-icons/default_file.svg',
-      'test:///virtual-dom/.git/FETCH_HEAD': 'test://file-icons/default_file.svg',
+      'test:///virtual-dom/.git/description':
+        'test://file-icons/default_file.svg',
+      'test:///virtual-dom/.git/FETCH_HEAD':
+        'test://file-icons/default_file.svg',
       'test:///virtual-dom/.git/HEAD': 'test://file-icons/default_file.svg',
-      'test:///virtual-dom/.git/hooks': 'test://file-icons/folder_type_hook.svg',
+      'test:///virtual-dom/.git/hooks':
+        'test://file-icons/folder_type_hook.svg',
       'test:///virtual-dom/.git/index': 'test://file-icons/default_file.svg',
       'test:///virtual-dom/.git/info': 'test://file-icons/default_folder.svg',
       'test:///virtual-dom/.git/logs': 'test://file-icons/folder_type_log.svg',
-      'test:///virtual-dom/.git/objects': 'test://file-icons/default_folder.svg',
-      'test:///virtual-dom/.git/ORIG_HEAD': 'test://file-icons/default_file.svg',
-      'test:///virtual-dom/.git/packed-refs': 'test://file-icons/default_file.svg',
+      'test:///virtual-dom/.git/objects':
+        'test://file-icons/default_folder.svg',
+      'test:///virtual-dom/.git/ORIG_HEAD':
+        'test://file-icons/default_file.svg',
+      'test:///virtual-dom/.git/packed-refs':
+        'test://file-icons/default_file.svg',
       'test:///virtual-dom/.git/refs': 'test://file-icons/default_folder.svg',
-      'test:///virtual-dom/.git/rr-cache': 'test://file-icons/default_folder.svg',
+      'test:///virtual-dom/.git/rr-cache':
+        'test://file-icons/default_folder.svg',
       'test:///virtual-dom/.github': 'test://file-icons/folder_type_github.svg',
       'test:///virtual-dom/.gitignore': 'test://file-icons/file_type_git.svg',
-      'test:///virtual-dom/.gitpod.Dockerfile': 'test://file-icons/file_type_docker.svg',
-      'test:///virtual-dom/.gitpod.yml': 'test://file-icons/file_type_gitpod.svg',
+      'test:///virtual-dom/.gitpod.Dockerfile':
+        'test://file-icons/file_type_docker.svg',
+      'test:///virtual-dom/.gitpod.yml':
+        'test://file-icons/file_type_gitpod.svg',
       'test:///virtual-dom/.nvmrc': 'test://file-icons/file_type_node.svg',
       'test:///virtual-dom/.vscode': 'test://file-icons/folder_type_vscode.svg',
       'test:///virtual-dom/dist': 'test://file-icons/folder_type_dist.svg',
-      'test:///virtual-dom/eslint.config.js': 'test://file-icons/file_type_eslint.svg',
+      'test:///virtual-dom/eslint.config.js':
+        'test://file-icons/file_type_eslint.svg',
       'test:///virtual-dom/lerna.json': 'test://file-icons/file_type_lerna.svg',
       'test:///virtual-dom/LICENSE': 'test://file-icons/file_type_license.svg',
-      'test:///virtual-dom/node_modules': 'test://file-icons/folder_type_node.svg',
-      'test:///virtual-dom/package-lock.json': 'test://file-icons/file_type_npm.svg',
+      'test:///virtual-dom/node_modules':
+        'test://file-icons/folder_type_node.svg',
+      'test:///virtual-dom/package-lock.json':
+        'test://file-icons/file_type_npm.svg',
       'test:///virtual-dom/package.json': 'test://file-icons/file_type_npm.svg',
-      'test:///virtual-dom/packages': 'test://file-icons/folder_type_package.svg',
-      'test:///virtual-dom/README.md': 'test://file-icons/file_type_markdown.svg',
+      'test:///virtual-dom/packages':
+        'test://file-icons/folder_type_package.svg',
+      'test:///virtual-dom/README.md':
+        'test://file-icons/file_type_markdown.svg',
       'test:///virtual-dom/scripts': 'test://file-icons/folder_type_script.svg',
-      'test:///virtual-dom/tsconfig.json': 'test://file-icons/file_type_tsconfig.svg',
-      'test:///virtual-dom/virtual-dom-worker': 'test://file-icons/default_folder.svg',
+      'test:///virtual-dom/tsconfig.json':
+        'test://file-icons/file_type_tsconfig.svg',
+      'test:///virtual-dom/virtual-dom-worker':
+        'test://file-icons/default_folder.svg',
     },
     finalDeltaY: 0,
     focus: 0,

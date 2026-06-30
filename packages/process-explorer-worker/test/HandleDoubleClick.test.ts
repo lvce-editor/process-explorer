@@ -1,6 +1,6 @@
 import { test, expect } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import * as ExplorerEditingType from '../src/parts/ExplorerEditingType/ExplorerEditingType.ts'
@@ -42,7 +42,15 @@ test('handleDoubleClick - double click on empty area creates new file', async ()
     ...createDefaultState(),
     focusedIndex: 0,
     itemHeight: 20,
-    items: [{ depth: 0, name: 'testfolder', path: '/testfolder', selected: false, type: DirentType.Directory }],
+    items: [
+      {
+        depth: 0,
+        name: 'testfolder',
+        path: '/testfolder',
+        selected: false,
+        type: DirentType.Directory,
+      },
+    ],
     maxLineY: 1,
     minLineY: 0,
     y: 0,
@@ -79,7 +87,9 @@ test('handleDoubleClick - double click on empty area creates new file', async ()
     ],
     visibleExplorerItems: expect.anything(),
   })
-  expect(mockRpc.invocations).toEqual([['FileSystem.readDirWithFileTypes', '/testfolder']])
+  expect(mockRpc.invocations).toEqual([
+    ['FileSystem.readDirWithFileTypes', '/testfolder'],
+  ])
 })
 
 test('handleDoubleClick - double click on item returns same state', async () => {
@@ -87,7 +97,15 @@ test('handleDoubleClick - double click on item returns same state', async () => 
     ...createDefaultState(),
     focusedIndex: 0,
     itemHeight: 20,
-    items: [{ depth: 0, name: 'testfolder', path: '/testfolder', selected: false, type: DirentType.Directory }],
+    items: [
+      {
+        depth: 0,
+        name: 'testfolder',
+        path: '/testfolder',
+        selected: false,
+        type: DirentType.Directory,
+      },
+    ],
     maxLineY: 1,
     minLineY: 0,
     y: 0,
@@ -104,8 +122,20 @@ test('handleDoubleClick - double click on item with multiple items returns same 
     focusedIndex: 0,
     itemHeight: 20,
     items: [
-      { depth: 0, name: 'folder1', path: '/folder1', selected: false, type: DirentType.Directory },
-      { depth: 0, name: 'folder2', path: '/folder2', selected: false, type: DirentType.Directory },
+      {
+        depth: 0,
+        name: 'folder1',
+        path: '/folder1',
+        selected: false,
+        type: DirentType.Directory,
+      },
+      {
+        depth: 0,
+        name: 'folder2',
+        path: '/folder2',
+        selected: false,
+        type: DirentType.Directory,
+      },
     ],
     maxLineY: 2,
     minLineY: 0,
@@ -157,7 +187,15 @@ test('handleDoubleClick - double click on empty area with scrolled state creates
     ...createDefaultState(),
     focusedIndex: 0,
     itemHeight: 20,
-    items: [{ depth: 0, name: 'testfolder', path: '/testfolder', selected: false, type: DirentType.Directory }],
+    items: [
+      {
+        depth: 0,
+        name: 'testfolder',
+        path: '/testfolder',
+        selected: false,
+        type: DirentType.Directory,
+      },
+    ],
     maxLineY: 1,
     minLineY: 0,
     y: 0,
@@ -194,5 +232,7 @@ test('handleDoubleClick - double click on empty area with scrolled state creates
     ],
     visibleExplorerItems: expect.anything(),
   })
-  expect(mockRpc.invocations).toEqual([['FileSystem.readDirWithFileTypes', '/testfolder']])
+  expect(mockRpc.invocations).toEqual([
+    ['FileSystem.readDirWithFileTypes', '/testfolder'],
+  ])
 })

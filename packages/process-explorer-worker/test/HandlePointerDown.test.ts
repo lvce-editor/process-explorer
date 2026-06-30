@@ -1,5 +1,5 @@
 import { test, expect } from '@jest/globals'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import * as FocusId from '../src/parts/FocusId/FocusId.ts'
@@ -29,7 +29,15 @@ test.skip('right click outside items', () => {
 test('left click on item', () => {
   const state: ExplorerState = {
     ...createDefaultState(),
-    items: [{ depth: 0, name: 'test.txt', path: '/test.txt', selected: false, type: DirentType.File }],
+    items: [
+      {
+        depth: 0,
+        name: 'test.txt',
+        path: '/test.txt',
+        selected: false,
+        type: DirentType.File,
+      },
+    ],
   }
   const result = handlePointerDown(state, MouseEventType.LeftClick, 0, 0)
   expect(result).toEqual(state)

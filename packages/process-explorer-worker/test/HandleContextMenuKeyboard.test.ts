@@ -1,6 +1,6 @@
 import { test, expect } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as HandleContextMenuKeyboard from '../src/parts/HandleContextMenuKeyboard/HandleContextMenuKeyboard.ts'
 
@@ -17,8 +17,11 @@ test('handleContextMenuKeyboard', async () => {
     x: 100,
     y: 200,
   }
-  const result = await HandleContextMenuKeyboard.handleContextMenuKeyboard(state)
-  expect(mockRpc.invocations).toEqual([['ContextMenu.show2', 1, 4, 100, 260, { menuId: 4 }]])
+  const result =
+    await HandleContextMenuKeyboard.handleContextMenuKeyboard(state)
+  expect(mockRpc.invocations).toEqual([
+    ['ContextMenu.show2', 1, 4, 100, 260, { menuId: 4 }],
+  ])
   expect(result).toEqual({
     ...state,
     focused: false,

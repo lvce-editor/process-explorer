@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
 import { IconThemeWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import * as CreateDefaultState from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as UpdateIcons from '../src/parts/UpdateIcons/UpdateIcons.ts'
 
@@ -20,9 +20,27 @@ test('updateIcons - should update icons for visible items', async () => {
   const state: ExplorerState = {
     ...defaultState,
     items: [
-      { depth: 1, name: 'file1.ts', path: '/test/file1.ts', selected: false, type: 1 },
-      { depth: 1, name: 'file2.ts', path: '/test/file2.ts', selected: false, type: 1 },
-      { depth: 1, name: 'file3.ts', path: '/test/file3.ts', selected: false, type: 1 },
+      {
+        depth: 1,
+        name: 'file1.ts',
+        path: '/test/file1.ts',
+        selected: false,
+        type: 1,
+      },
+      {
+        depth: 1,
+        name: 'file2.ts',
+        path: '/test/file2.ts',
+        selected: false,
+        type: 1,
+      },
+      {
+        depth: 1,
+        name: 'file3.ts',
+        path: '/test/file3.ts',
+        selected: false,
+        type: 1,
+      },
     ],
     maxLineY: 2,
     minLineY: 0,

@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import { getNewDirentsForNewDirent } from '../src/parts/GetNewDirentsForNewDirent/GetNewDirentsForNewDirent.ts'
@@ -51,7 +51,12 @@ test('getNewDirentsForNewDirent - folder with existing children', async () => {
   }
   const root = '/root'
 
-  const result = await getNewDirentsForNewDirent(state.items, state.focusedIndex, DirentType.File, root)
+  const result = await getNewDirentsForNewDirent(
+    state.items,
+    state.focusedIndex,
+    DirentType.File,
+    root,
+  )
 
   expect(result).toEqual([
     {
@@ -125,7 +130,12 @@ test('getNewDirentsForNewDirent - folder without children', async () => {
 
   const root = '/root'
 
-  const result = await getNewDirentsForNewDirent(state.items, state.focusedIndex, DirentType.File, root)
+  const result = await getNewDirentsForNewDirent(
+    state.items,
+    state.focusedIndex,
+    DirentType.File,
+    root,
+  )
 
   expect(result).toEqual([
     {
@@ -149,7 +159,9 @@ test('getNewDirentsForNewDirent - folder without children', async () => {
       type: DirentType.File,
     },
   ])
-  expect(mockRpc.invocations).toEqual([['FileSystem.readDirWithFileTypes', '/root/folder']])
+  expect(mockRpc.invocations).toEqual([
+    ['FileSystem.readDirWithFileTypes', '/root/folder'],
+  ])
 })
 
 test('getNewDirentsForNewDirent - no items', async () => {
@@ -167,7 +179,12 @@ test('getNewDirentsForNewDirent - no items', async () => {
   }
   const root = '/root'
 
-  const result = await getNewDirentsForNewDirent(state.items, state.focusedIndex, DirentType.File, root)
+  const result = await getNewDirentsForNewDirent(
+    state.items,
+    state.focusedIndex,
+    DirentType.File,
+    root,
+  )
 
   expect(result).toEqual([
     {
@@ -210,7 +227,12 @@ test('getNewDirentsForNewDirent - focusedIndex -1 with existing items', async ()
   }
   const root = '/root'
 
-  const result = await getNewDirentsForNewDirent(state.items, state.focusedIndex, DirentType.File, root)
+  const result = await getNewDirentsForNewDirent(
+    state.items,
+    state.focusedIndex,
+    DirentType.File,
+    root,
+  )
 
   expect(result).toEqual([
     {

@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import { newDirent } from '../src/parts/NewDirent/NewDirent.ts'
@@ -92,12 +92,22 @@ test('newDirent handles directory click when focused item is a directory', async
   const mockState: ExplorerState = {
     ...createDefaultState(),
     focusedIndex: 0,
-    items: [{ depth: 0, name: 'test', path: '/test', selected: false, type: DirentType.Directory }],
+    items: [
+      {
+        depth: 0,
+        name: 'test',
+        path: '/test',
+        selected: false,
+        type: DirentType.Directory,
+      },
+    ],
   }
   const mockEditingType = 1
 
   const result = await newDirent(mockState, mockEditingType)
-  expect(mockRpc.invocations).toEqual([['FileSystem.readDirWithFileTypes', '/test']])
+  expect(mockRpc.invocations).toEqual([
+    ['FileSystem.readDirWithFileTypes', '/test'],
+  ])
   expect(result).toEqual({
     ...mockState,
     editingIndex: 1,
@@ -106,7 +116,14 @@ test('newDirent handles directory click when focused item is a directory', async
     focus: 2,
     focusedIndex: 1,
     items: [
-      { depth: 0, name: 'test', path: '/test', selected: false, setSize: 1, type: DirentType.DirectoryExpanded },
+      {
+        depth: 0,
+        name: 'test',
+        path: '/test',
+        selected: false,
+        setSize: 1,
+        type: DirentType.DirectoryExpanded,
+      },
       {
         depth: 1,
         icon: '',
@@ -150,7 +167,15 @@ test('newDirent updates state when focused item is not a directory', async () =>
   const mockState: ExplorerState = {
     ...createDefaultState(),
     focusedIndex: 0,
-    items: [{ depth: 0, name: 'test.txt', path: '/test.txt', selected: false, type: DirentType.File }],
+    items: [
+      {
+        depth: 0,
+        name: 'test.txt',
+        path: '/test.txt',
+        selected: false,
+        type: DirentType.File,
+      },
+    ],
   }
   const mockEditingType = 1
 
@@ -211,12 +236,22 @@ test('newDirent expands a closed folder when creating a file inside it', async (
   const mockState: ExplorerState = {
     ...createDefaultState(),
     focusedIndex: 0,
-    items: [{ depth: 0, name: 'folder', path: '/folder', selected: false, type: DirentType.Directory }],
+    items: [
+      {
+        depth: 0,
+        name: 'folder',
+        path: '/folder',
+        selected: false,
+        type: DirentType.Directory,
+      },
+    ],
   }
   const mockEditingType = 1
 
   const result = await newDirent(mockState, mockEditingType)
-  expect(mockRpc.invocations).toEqual([['FileSystem.readDirWithFileTypes', '/folder']])
+  expect(mockRpc.invocations).toEqual([
+    ['FileSystem.readDirWithFileTypes', '/folder'],
+  ])
   // The folder should be expanded (type changed to DirectoryExpanded)
   expect(result.items[0].type).toBe(DirentType.DirectoryExpanded)
   expect(result.editingIndex).toBe(1)

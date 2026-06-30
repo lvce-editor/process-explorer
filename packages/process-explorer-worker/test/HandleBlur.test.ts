@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import * as ExplorerEditingType from '../src/parts/ExplorerEditingType/ExplorerEditingType.ts'
@@ -59,12 +59,33 @@ test.skip('handleBlur - when editing, keeps state unchanged', async () => {
   expect(mockRpc.invocations).toEqual([
     ['FileSystem.getPathSeparator'],
     ['FileSystem.writeFile', '1/created.txt', ''],
-    ['IconTheme.getFileIcon', { depth: 0, name: '1', path: '1', selected: false, type: DirentType.File }],
+    [
+      'IconTheme.getFileIcon',
+      {
+        depth: 0,
+        name: '1',
+        path: '1',
+        selected: false,
+        type: DirentType.File,
+      },
+    ],
     [
       'IconTheme.getIcons',
       [
-        { depth: 0, name: '1', path: '1', selected: false, type: DirentType.File },
-        { depth: 0, name: 'created.txt', path: '1/created.txt', selected: false, type: DirentType.File },
+        {
+          depth: 0,
+          name: '1',
+          path: '1',
+          selected: false,
+          type: DirentType.File,
+        },
+        {
+          depth: 0,
+          name: 'created.txt',
+          path: '1/created.txt',
+          selected: false,
+          type: DirentType.File,
+        },
       ],
     ],
   ])

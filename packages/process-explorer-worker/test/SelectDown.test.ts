@@ -1,5 +1,5 @@
 import { test, expect } from '@jest/globals'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import { selectDown } from '../src/parts/SelectDown/SelectDown.ts'
 
@@ -12,7 +12,9 @@ const createTestState = (): ExplorerState => ({
   ],
 })
 
-const createStateWithSelections = (selectedIndices: number[]): ExplorerState => {
+const createStateWithSelections = (
+  selectedIndices: number[],
+): ExplorerState => {
   const state = createTestState()
   return {
     ...state,

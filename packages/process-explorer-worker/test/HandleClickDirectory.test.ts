@@ -1,7 +1,7 @@
 import { test, expect } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
 import type { ExplorerItem } from '../src/parts/ExplorerItem/ExplorerItem.ts'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import * as FocusId from '../src/parts/FocusId/FocusId.ts'
@@ -11,8 +11,18 @@ test('handleClickDirectory - updates state with focus', async () => {
   using _mockRpc = RendererWorker.registerMockRpc({
     'FileSystem.readDirWithFileTypes'() {
       return [
-        { isDirectory: false, isSymbolicLink: false, name: 'child1', path: '/test/child1' },
-        { isDirectory: false, isSymbolicLink: false, name: 'child2', path: '/test/child2' },
+        {
+          isDirectory: false,
+          isSymbolicLink: false,
+          name: 'child1',
+          path: '/test/child1',
+        },
+        {
+          isDirectory: false,
+          isSymbolicLink: false,
+          name: 'child2',
+          path: '/test/child2',
+        },
       ]
     },
   })
@@ -48,8 +58,18 @@ test('handleClickDirectory - updates state without focus', async () => {
   using _mockRpc = RendererWorker.registerMockRpc({
     'FileSystem.readDirWithFileTypes'() {
       return [
-        { isDirectory: false, isSymbolicLink: false, name: 'child1', path: '/test/child1' },
-        { isDirectory: false, isSymbolicLink: false, name: 'child2', path: '/test/child2' },
+        {
+          isDirectory: false,
+          isSymbolicLink: false,
+          name: 'child1',
+          path: '/test/child1',
+        },
+        {
+          isDirectory: false,
+          isSymbolicLink: false,
+          name: 'child2',
+          path: '/test/child2',
+        },
       ]
     },
   })
@@ -112,16 +132,41 @@ test('handleClickDirectory - with empty child dirents', async () => {
 test('handleClickDirectory - with multiple items in state', async () => {
   using _mockRpc = RendererWorker.registerMockRpc({
     'FileSystem.readDirWithFileTypes'() {
-      return [{ isDirectory: false, isSymbolicLink: false, name: 'child1', path: '/test/child1' }]
+      return [
+        {
+          isDirectory: false,
+          isSymbolicLink: false,
+          name: 'child1',
+          path: '/test/child1',
+        },
+      ]
     },
   })
 
   const state: ExplorerState = {
     ...createDefaultState(),
     items: [
-      { depth: 0, name: 'other', path: '/other', selected: false, type: DirentType.File },
-      { depth: 0, name: 'test', path: '/test', selected: false, type: DirentType.Directory },
-      { depth: 0, name: 'another', path: '/another', selected: false, type: DirentType.File },
+      {
+        depth: 0,
+        name: 'other',
+        path: '/other',
+        selected: false,
+        type: DirentType.File,
+      },
+      {
+        depth: 0,
+        name: 'test',
+        path: '/test',
+        selected: false,
+        type: DirentType.Directory,
+      },
+      {
+        depth: 0,
+        name: 'another',
+        path: '/another',
+        selected: false,
+        type: DirentType.File,
+      },
     ],
   }
   const dirent = state.items[1]
@@ -144,13 +189,28 @@ test('handleClickDirectory - with multiple items in state', async () => {
 test('handleClickDirectory - dirent not found in items', async () => {
   using _mockRpc = RendererWorker.registerMockRpc({
     'FileSystem.readDirWithFileTypes'() {
-      return [{ isDirectory: false, isSymbolicLink: false, name: 'child1', path: '/test/child1' }]
+      return [
+        {
+          isDirectory: false,
+          isSymbolicLink: false,
+          name: 'child1',
+          path: '/test/child1',
+        },
+      ]
     },
   })
 
   const state: ExplorerState = {
     ...createDefaultState(),
-    items: [{ depth: 0, name: 'other', path: '/other', selected: false, type: DirentType.File }],
+    items: [
+      {
+        depth: 0,
+        name: 'other',
+        path: '/other',
+        selected: false,
+        type: DirentType.File,
+      },
+    ],
   }
   const dirent: ExplorerItem = {
     depth: 0,

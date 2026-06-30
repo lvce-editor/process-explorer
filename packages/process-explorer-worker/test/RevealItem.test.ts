@@ -1,6 +1,6 @@
 import { test, expect } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import { revealItem } from '../src/parts/RevealItem/RevealItem.ts'
@@ -79,8 +79,26 @@ test('revealItem - reveals hidden item inside root', async () => {
   const newState = await revealItem(state, '/workspace/src/index.ts')
   expect(newState.focusedIndex).toBe(1)
   expect(newState.items).toEqual([
-    { depth: 1, icon: '', name: 'src', path: '/workspace/src', posInSet: 1, selected: false, setSize: 1, type: DirentType.DirectoryExpanded },
-    { depth: 2, icon: '', name: 'index.ts', path: '/workspace/src/index.ts', posInSet: 1, selected: false, setSize: 1, type: DirentType.File },
+    {
+      depth: 1,
+      icon: '',
+      name: 'src',
+      path: '/workspace/src',
+      posInSet: 1,
+      selected: false,
+      setSize: 1,
+      type: DirentType.DirectoryExpanded,
+    },
+    {
+      depth: 2,
+      icon: '',
+      name: 'index.ts',
+      path: '/workspace/src/index.ts',
+      posInSet: 1,
+      selected: false,
+      setSize: 1,
+      type: DirentType.File,
+    },
   ])
   expect(mockRpc.invocations).toEqual([
     ['FileSystem.readDirWithFileTypes', '/workspace'],

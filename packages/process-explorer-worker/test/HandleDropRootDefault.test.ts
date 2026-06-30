@@ -1,6 +1,6 @@
 import { test, expect } from '@jest/globals'
 import { RendererWorker, SourceControlWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import type { DroppedArgs } from '../src/parts/UploadFileSystemHandles/UploadFileSystemHandles.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import { handleDrop } from '../src/parts/HandleDropRootDefault/HandleDropRootDefault.ts'

@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import { handleCopy } from '../src/parts/HandleCopy/HandleCopy.ts'
@@ -15,13 +15,23 @@ test('pasteShouldMove should be true after cut operation', async () => {
   const state: ExplorerState = {
     ...createDefaultState(),
     focusedIndex: 0,
-    items: [{ depth: 0, name: 'test.txt', path: '/test.txt', selected: false, type: DirentType.File }],
+    items: [
+      {
+        depth: 0,
+        name: 'test.txt',
+        path: '/test.txt',
+        selected: false,
+        type: DirentType.File,
+      },
+    ],
   }
 
   const result = await handleCut(state)
 
   expect(result.pasteShouldMove).toBe(true)
-  expect(mockRpc.invocations).toEqual([['ClipBoard.writeNativeFiles', 'cut', ['/test.txt']]])
+  expect(mockRpc.invocations).toEqual([
+    ['ClipBoard.writeNativeFiles', 'cut', ['/test.txt']],
+  ])
 })
 
 test('pasteShouldMove should be false after copy operation', async () => {
@@ -32,13 +42,23 @@ test('pasteShouldMove should be false after copy operation', async () => {
   const state: ExplorerState = {
     ...createDefaultState(),
     focusedIndex: 0,
-    items: [{ depth: 0, name: 'test.txt', path: '/test.txt', selected: false, type: DirentType.File }],
+    items: [
+      {
+        depth: 0,
+        name: 'test.txt',
+        path: '/test.txt',
+        selected: false,
+        type: DirentType.File,
+      },
+    ],
   }
 
   const result = await handleCopy(state)
 
   expect(result.pasteShouldMove).toBe(false)
-  expect(mockRpc.invocations).toEqual([['ClipBoard.writeNativeFiles', 'copy', ['/test.txt']]])
+  expect(mockRpc.invocations).toEqual([
+    ['ClipBoard.writeNativeFiles', 'copy', ['/test.txt']],
+  ])
 })
 
 test('pasteShouldMove should be reset to false after paste operation', async () => {

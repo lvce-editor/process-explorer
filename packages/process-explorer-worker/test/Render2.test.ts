@@ -2,7 +2,7 @@ import { test, expect } from '@jest/globals'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DiffType from '../src/parts/DiffType/DiffType.ts'
 import * as DomEventListenerFunctions from '../src/parts/DomEventListenerFunctions/DomEventListenerFunctions.ts'
-import * as ExplorerStates from '../src/parts/ExplorerStates/ExplorerStates.ts'
+import * as ExplorerStates from '../src/parts/ProcessExplorerStates/ProcessExplorerStates.ts'
 import * as Render2 from '../src/parts/Render2/Render2.ts'
 
 test('render2 - basic', () => {

@@ -1,9 +1,9 @@
 import { test, expect } from '@jest/globals'
 import type { ExplorerItem } from '../src/parts/ExplorerItem/ExplorerItem.ts'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
-import { set } from '../src/parts/ExplorerStates/ExplorerStates.ts'
+import { set } from '../src/parts/ProcessExplorerStates/ProcessExplorerStates.ts'
 import { getMenuEntries2 } from '../src/parts/GetMenuEntries2/GetMenuEntries2.ts'
 
 test('getMenuEntries2 - root', () => {
@@ -68,8 +68,12 @@ test('getMenuEntries2 - file shows select for compare by default', () => {
   }
   set(uid, state, state)
   const menuEntries = getMenuEntries2(state)
-  expect(menuEntries.some((entry) => entry.id === 'selectForCompare')).toBe(true)
-  expect(menuEntries.some((entry) => entry.id === 'compareWithSelected')).toBe(false)
+  expect(menuEntries.some((entry) => entry.id === 'selectForCompare')).toBe(
+    true,
+  )
+  expect(menuEntries.some((entry) => entry.id === 'compareWithSelected')).toBe(
+    false,
+  )
 })
 
 test('getMenuEntries2 - file shows compare with selected for different file', () => {
@@ -89,6 +93,10 @@ test('getMenuEntries2 - file shows compare with selected for different file', ()
   }
   set(uid, state, state)
   const menuEntries = getMenuEntries2(state)
-  expect(menuEntries.some((entry) => entry.id === 'compareWithSelected')).toBe(true)
-  expect(menuEntries.some((entry) => entry.id === 'selectForCompare')).toBe(false)
+  expect(menuEntries.some((entry) => entry.id === 'compareWithSelected')).toBe(
+    true,
+  )
+  expect(menuEntries.some((entry) => entry.id === 'selectForCompare')).toBe(
+    false,
+  )
 })

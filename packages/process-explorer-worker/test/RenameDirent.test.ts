@@ -1,5 +1,5 @@
 import { expect, test } from '@jest/globals'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import * as ExplorerEditingType from '../src/parts/ExplorerEditingType/ExplorerEditingType.ts'
@@ -12,7 +12,15 @@ test('renameDirent updates state with editing properties', async () => {
     ...createDefaultState(),
     focusedIndex: 0,
     icons: [''],
-    items: [{ depth: 0, name: 'test.txt', path: '/test.txt', selected: false, type: DirentType.File }],
+    items: [
+      {
+        depth: 0,
+        name: 'test.txt',
+        path: '/test.txt',
+        selected: false,
+        type: DirentType.File,
+      },
+    ],
   }
 
   const result = await renameDirent(mockState)
@@ -26,7 +34,15 @@ test('renameDirent updates state with editing properties', async () => {
     editingValue: 'test.txt',
     focus: FocusId.Input,
     inputSource: InputSource.Script,
-    items: [{ depth: 0, name: 'test.txt', path: '/test.txt', selected: false, type: DirentType.EditingFile }],
+    items: [
+      {
+        depth: 0,
+        name: 'test.txt',
+        path: '/test.txt',
+        selected: false,
+        type: DirentType.EditingFile,
+      },
+    ],
   })
 })
 
@@ -35,7 +51,15 @@ test('renameDirent updates state with editing properties for folder', async () =
     ...createDefaultState(),
     focusedIndex: 0,
     icons: [''],
-    items: [{ depth: 0, name: 'test', path: '/test', selected: false, type: DirentType.Directory }],
+    items: [
+      {
+        depth: 0,
+        name: 'test',
+        path: '/test',
+        selected: false,
+        type: DirentType.Directory,
+      },
+    ],
   }
 
   const result = await renameDirent(mockState)
@@ -49,7 +73,15 @@ test('renameDirent updates state with editing properties for folder', async () =
     editingValue: 'test',
     focus: FocusId.Input,
     inputSource: InputSource.Script,
-    items: [{ depth: 0, name: 'test', path: '/test', selected: false, type: DirentType.EditingFolder }],
+    items: [
+      {
+        depth: 0,
+        name: 'test',
+        path: '/test',
+        selected: false,
+        type: DirentType.EditingFolder,
+      },
+    ],
   })
 })
 
@@ -69,7 +101,16 @@ test('renameDirent preserves icon when entering edit mode', async () => {
     ...createDefaultState(),
     focusedIndex: 0,
     icons: ['file-icon'],
-    items: [{ depth: 0, icon: 'file-icon', name: 'test.txt', path: '/test.txt', selected: false, type: DirentType.File }],
+    items: [
+      {
+        depth: 0,
+        icon: 'file-icon',
+        name: 'test.txt',
+        path: '/test.txt',
+        selected: false,
+        type: DirentType.File,
+      },
+    ],
     minLineY: 0,
   }
 
@@ -84,6 +125,15 @@ test('renameDirent preserves icon when entering edit mode', async () => {
     editingValue: 'test.txt',
     focus: FocusId.Input,
     inputSource: InputSource.Script,
-    items: [{ depth: 0, icon: 'file-icon', name: 'test.txt', path: '/test.txt', selected: false, type: DirentType.EditingFile }],
+    items: [
+      {
+        depth: 0,
+        icon: 'file-icon',
+        name: 'test.txt',
+        path: '/test.txt',
+        selected: false,
+        type: DirentType.EditingFile,
+      },
+    ],
   })
 })

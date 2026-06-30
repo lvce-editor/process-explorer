@@ -1,17 +1,20 @@
 import { expect, test } from '@jest/globals'
 import type { ExplorerItem } from '../src/parts/ExplorerItem/ExplorerItem.ts'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import { handleResize } from '../src/parts/HandleResize/HandleResize.ts'
 
 test('handleResize updates dimensions, viewport lines and scrollbarHeight', () => {
-  const items: readonly ExplorerItem[] = Array.from({ length: 10 }, (_, index) => ({
-    depth: 0,
-    name: `file-${index}`,
-    path: `/file-${index}`,
-    selected: false,
-    type: 1,
-  }))
+  const items: readonly ExplorerItem[] = Array.from(
+    { length: 10 },
+    (_, index) => ({
+      depth: 0,
+      name: `file-${index}`,
+      path: `/file-${index}`,
+      selected: false,
+      type: 1,
+    }),
+  )
   const state: ExplorerState = {
     ...createDefaultState(),
     itemHeight: 20,
@@ -31,13 +34,16 @@ test('handleResize updates dimensions, viewport lines and scrollbarHeight', () =
 })
 
 test('handleResize clamps deltaY when viewport gets larger', () => {
-  const items: readonly ExplorerItem[] = Array.from({ length: 10 }, (_, index) => ({
-    depth: 0,
-    name: `file-${index}`,
-    path: `/file-${index}`,
-    selected: false,
-    type: 1,
-  }))
+  const items: readonly ExplorerItem[] = Array.from(
+    { length: 10 },
+    (_, index) => ({
+      depth: 0,
+      name: `file-${index}`,
+      path: `/file-${index}`,
+      selected: false,
+      type: 1,
+    }),
+  )
   const state: ExplorerState = {
     ...createDefaultState(),
     deltaY: 180,

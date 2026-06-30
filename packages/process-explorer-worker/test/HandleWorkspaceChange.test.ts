@@ -1,6 +1,6 @@
 import { test, expect } from '@jest/globals'
 import { RendererWorker, SourceControlWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import { handleWorkspaceChange } from '../src/parts/HandleWorkspaceChange/HandleWorkspaceChange.ts'
 
@@ -110,7 +110,9 @@ test('should preserve state properties when updating workspace', async () => {
       ['FileSystem.readDirWithFileTypes', '/another/workspace'],
     ]),
   )
-  expect(mockSourceControlRpc.invocations).toEqual([['SourceControl.getEnabledProviderIds', '', '/another/workspace', '', 0]])
+  expect(mockSourceControlRpc.invocations).toEqual([
+    ['SourceControl.getEnabledProviderIds', '', '/another/workspace', '', 0],
+  ])
 })
 
 test('should handle workspace path change with existing content', async () => {
@@ -199,7 +201,9 @@ test('should handle workspace path change with chevrons enabled', async () => {
       ['FileSystem.readDirWithFileTypes', '/chevron/workspace'],
     ]),
   )
-  expect(mockSourceControlRpc.invocations).toEqual([['SourceControl.getEnabledProviderIds', '', '/chevron/workspace', '', 0]])
+  expect(mockSourceControlRpc.invocations).toEqual([
+    ['SourceControl.getEnabledProviderIds', '', '/chevron/workspace', '', 0],
+  ])
 })
 
 test('should handle different path separators', async () => {

@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import { DirectoryExpanded, File } from '../src/parts/DirentType/DirentType.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
@@ -26,7 +26,9 @@ test('refresh - empty state', async () => {
   const result = await refresh(state)
   expect(result.items).toHaveLength(0)
   expect(result.icons).toHaveLength(0)
-  expect(mockRpc.invocations).toEqual([['FileSystem.readDirWithFileTypes', '/']])
+  expect(mockRpc.invocations).toEqual([
+    ['FileSystem.readDirWithFileTypes', '/'],
+  ])
 })
 
 test('refresh - with top level items', async () => {
@@ -53,7 +55,9 @@ test('refresh - with top level items', async () => {
   expect(result.items).toHaveLength(2)
   expect(result.items[0].name).toBe('file1')
   expect(result.items[1].name).toBe('file2')
-  expect(mockRpc.invocations).toEqual([['FileSystem.readDirWithFileTypes', '/']])
+  expect(mockRpc.invocations).toEqual([
+    ['FileSystem.readDirWithFileTypes', '/'],
+  ])
 })
 
 test('refresh - preserve expanded folder', async () => {
@@ -84,9 +88,27 @@ test('refresh - preserve expanded folder', async () => {
   const state: ExplorerState = {
     ...createDefaultState(),
     items: [
-      { depth: 0, name: 'folder1', path: '/folder1', selected: false, type: DirectoryExpanded },
-      { depth: 1, name: 'file1.txt', path: '/folder1/file1.txt', selected: false, type: File },
-      { depth: 1, name: 'file2.txt', path: '/folder1/file2.txt', selected: false, type: File },
+      {
+        depth: 0,
+        name: 'folder1',
+        path: '/folder1',
+        selected: false,
+        type: DirectoryExpanded,
+      },
+      {
+        depth: 1,
+        name: 'file1.txt',
+        path: '/folder1/file1.txt',
+        selected: false,
+        type: File,
+      },
+      {
+        depth: 1,
+        name: 'file2.txt',
+        path: '/folder1/file2.txt',
+        selected: false,
+        type: File,
+      },
     ],
   }
 
@@ -121,8 +143,20 @@ test('refresh - remove expanded folder that no longer exists', async () => {
   const state: ExplorerState = {
     ...createDefaultState(),
     items: [
-      { depth: 0, name: 'folder1', path: '/folder1', selected: false, type: DirectoryExpanded },
-      { depth: 1, name: 'file1.txt', path: '/folder1/file1.txt', selected: false, type: File },
+      {
+        depth: 0,
+        name: 'folder1',
+        path: '/folder1',
+        selected: false,
+        type: DirectoryExpanded,
+      },
+      {
+        depth: 1,
+        name: 'file1.txt',
+        path: '/folder1/file1.txt',
+        selected: false,
+        type: File,
+      },
     ],
   }
 
@@ -163,9 +197,27 @@ test('refresh - nested expanded folders', async () => {
   const state: ExplorerState = {
     ...createDefaultState(),
     items: [
-      { depth: 0, name: 'folder1', path: '/folder1', selected: false, type: DirectoryExpanded },
-      { depth: 1, name: 'folder2', path: '/folder1/folder2', selected: false, type: DirectoryExpanded },
-      { depth: 2, name: 'file1.txt', path: '/folder1/folder2/file1.txt', selected: false, type: File },
+      {
+        depth: 0,
+        name: 'folder1',
+        path: '/folder1',
+        selected: false,
+        type: DirectoryExpanded,
+      },
+      {
+        depth: 1,
+        name: 'folder2',
+        path: '/folder1/folder2',
+        selected: false,
+        type: DirectoryExpanded,
+      },
+      {
+        depth: 2,
+        name: 'file1.txt',
+        path: '/folder1/folder2/file1.txt',
+        selected: false,
+        type: File,
+      },
     ],
   }
 
@@ -217,11 +269,41 @@ test('refresh - preserve directory types', async () => {
   const state: ExplorerState = {
     ...createDefaultState(),
     items: [
-      { depth: 0, name: 'folder1', path: '/folder1', selected: false, type: DirectoryExpanded },
-      { depth: 1, name: 'subfolder', path: '/folder1/subfolder', selected: false, type: DirectoryExpanded },
-      { depth: 2, name: 'file3.txt', path: '/folder1/subfolder/file3.txt', selected: false, type: File },
-      { depth: 1, name: 'file2.txt', path: '/folder1/file2.txt', selected: false, type: File },
-      { depth: 0, name: 'file1.txt', path: '/file1.txt', selected: false, type: File },
+      {
+        depth: 0,
+        name: 'folder1',
+        path: '/folder1',
+        selected: false,
+        type: DirectoryExpanded,
+      },
+      {
+        depth: 1,
+        name: 'subfolder',
+        path: '/folder1/subfolder',
+        selected: false,
+        type: DirectoryExpanded,
+      },
+      {
+        depth: 2,
+        name: 'file3.txt',
+        path: '/folder1/subfolder/file3.txt',
+        selected: false,
+        type: File,
+      },
+      {
+        depth: 1,
+        name: 'file2.txt',
+        path: '/folder1/file2.txt',
+        selected: false,
+        type: File,
+      },
+      {
+        depth: 0,
+        name: 'file1.txt',
+        path: '/file1.txt',
+        selected: false,
+        type: File,
+      },
     ],
   }
 
@@ -274,8 +356,20 @@ test('refresh - check filesystem response', async () => {
   const state: ExplorerState = {
     ...createDefaultState(),
     items: [
-      { depth: 0, name: 'folder1', path: '/folder1', selected: false, type: DirectoryExpanded },
-      { depth: 0, name: 'file1.txt', path: '/file1.txt', selected: false, type: File },
+      {
+        depth: 0,
+        name: 'folder1',
+        path: '/folder1',
+        selected: false,
+        type: DirectoryExpanded,
+      },
+      {
+        depth: 0,
+        name: 'file1.txt',
+        path: '/file1.txt',
+        selected: false,
+        type: File,
+      },
     ],
   }
 

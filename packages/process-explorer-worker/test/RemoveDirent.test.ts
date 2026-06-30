@@ -1,9 +1,13 @@
 import { test, expect } from '@jest/globals'
 import { jest } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
-import { Directory, DirectoryExpanded, File } from '../src/parts/DirentType/DirentType.ts'
+import {
+  Directory,
+  DirectoryExpanded,
+  File,
+} from '../src/parts/DirentType/DirentType.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import { removeDirent } from '../src/parts/RemoveDirent/RemoveDirent.ts'
 
@@ -30,7 +34,15 @@ test('removeDirent - removes focused item', async () => {
     ...createDefaultState(),
     confirmDelete: false,
     focusedIndex: 0,
-    items: [{ depth: 0, name: 'file1.txt', path: '/file1.txt', selected: false, type: File }],
+    items: [
+      {
+        depth: 0,
+        name: 'file1.txt',
+        path: '/file1.txt',
+        selected: false,
+        type: File,
+      },
+    ],
   }
 
   const result = await removeDirent(state)
@@ -66,8 +78,20 @@ test('removeDirent - removes multiple selected items', async () => {
     confirmDelete: false,
     focusedIndex: 0,
     items: [
-      { depth: 0, name: 'file1.txt', path: '/file1.txt', selected: true, type: File },
-      { depth: 0, name: 'file2.txt', path: '/file2.txt', selected: true, type: File },
+      {
+        depth: 0,
+        name: 'file1.txt',
+        path: '/file1.txt',
+        selected: true,
+        type: File,
+      },
+      {
+        depth: 0,
+        name: 'file2.txt',
+        path: '/file2.txt',
+        selected: true,
+        type: File,
+      },
     ],
   }
 
@@ -105,9 +129,27 @@ test('removeDirent - removes focused item and selected items', async () => {
     confirmDelete: false,
     focusedIndex: 0,
     items: [
-      { depth: 0, name: 'file1.txt', path: '/file1.txt', selected: false, type: File },
-      { depth: 0, name: 'file2.txt', path: '/file2.txt', selected: true, type: File },
-      { depth: 0, name: 'file3.txt', path: '/file3.txt', selected: true, type: File },
+      {
+        depth: 0,
+        name: 'file1.txt',
+        path: '/file1.txt',
+        selected: false,
+        type: File,
+      },
+      {
+        depth: 0,
+        name: 'file2.txt',
+        path: '/file2.txt',
+        selected: true,
+        type: File,
+      },
+      {
+        depth: 0,
+        name: 'file3.txt',
+        path: '/file3.txt',
+        selected: true,
+        type: File,
+      },
     ],
   }
 
@@ -146,8 +188,20 @@ test('remove file', async () => {
     confirmDelete: false,
     focusedIndex: 1,
     items: [
-      { depth: 0, name: 'folder1', path: '/folder1', selected: false, type: Directory },
-      { depth: 0, name: 'file1.txt', path: '/file1.txt', selected: false, type: File },
+      {
+        depth: 0,
+        name: 'folder1',
+        path: '/folder1',
+        selected: false,
+        type: Directory,
+      },
+      {
+        depth: 0,
+        name: 'file1.txt',
+        path: '/file1.txt',
+        selected: false,
+        type: File,
+      },
     ],
   }
 
@@ -185,8 +239,20 @@ test('remove folder with children', async () => {
     confirmDelete: false,
     focusedIndex: 0,
     items: [
-      { depth: 0, name: 'folder1', path: '/folder1', selected: false, type: DirectoryExpanded },
-      { depth: 1, name: 'file1.txt', path: '/folder1/file1.txt', selected: false, type: File },
+      {
+        depth: 0,
+        name: 'folder1',
+        path: '/folder1',
+        selected: false,
+        type: DirectoryExpanded,
+      },
+      {
+        depth: 1,
+        name: 'file1.txt',
+        path: '/folder1/file1.txt',
+        selected: false,
+        type: File,
+      },
     ],
     root: '/',
   }
@@ -226,8 +292,20 @@ test('remove file from expanded folder', async () => {
     confirmDelete: false,
     focusedIndex: 1,
     items: [
-      { depth: 0, name: 'folder1', path: '/folder1', selected: false, type: DirectoryExpanded },
-      { depth: 1, name: 'file1.txt', path: '/folder1/file1.txt', selected: false, type: File },
+      {
+        depth: 0,
+        name: 'folder1',
+        path: '/folder1',
+        selected: false,
+        type: DirectoryExpanded,
+      },
+      {
+        depth: 1,
+        name: 'file1.txt',
+        path: '/folder1/file1.txt',
+        selected: false,
+        type: File,
+      },
     ],
   }
 
@@ -264,7 +342,15 @@ test.skip('removeDirent - with confirmation enabled and user confirms', async ()
     ...createDefaultState(),
     confirmDelete: false,
     focusedIndex: 0,
-    items: [{ depth: 0, name: 'file1.txt', path: '/file1.txt', selected: false, type: File }],
+    items: [
+      {
+        depth: 0,
+        name: 'file1.txt',
+        path: '/file1.txt',
+        selected: false,
+        type: File,
+      },
+    ],
   }
 
   const result = await removeDirent(state)
@@ -284,8 +370,20 @@ test.skip('removeDirent - with confirmation enabled and user cancels', async () 
     confirmDelete: false,
     focusedIndex: 0,
     items: [
-      { depth: 0, name: 'file1.txt', path: '/file1.txt', selected: true, type: File },
-      { depth: 0, name: 'file2.txt', path: '/file2.txt', selected: true, type: File },
+      {
+        depth: 0,
+        name: 'file1.txt',
+        path: '/file1.txt',
+        selected: true,
+        type: File,
+      },
+      {
+        depth: 0,
+        name: 'file2.txt',
+        path: '/file2.txt',
+        selected: true,
+        type: File,
+      },
     ],
   }
 
@@ -295,7 +393,9 @@ test.skip('removeDirent - with confirmation enabled and user cancels', async () 
 })
 
 test('removeDirent - shows error message when file operation fails', async () => {
-  const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+  const consoleErrorSpy = jest
+    .spyOn(console, 'error')
+    .mockImplementation(() => {})
   const confirmFn = jest.fn()
   confirmFn.mockImplementation(() => true)
   RendererWorker.registerMockRpc({
@@ -323,7 +423,15 @@ test('removeDirent - shows error message when file operation fails', async () =>
     ...createDefaultState(),
     confirmDelete: false,
     focusedIndex: 0,
-    items: [{ depth: 0, name: 'file1.txt', path: '/file1.txt', selected: false, type: File }],
+    items: [
+      {
+        depth: 0,
+        name: 'file1.txt',
+        path: '/file1.txt',
+        selected: false,
+        type: File,
+      },
+    ],
   }
 
   const result = await removeDirent(state)
@@ -332,14 +440,18 @@ test('removeDirent - shows error message when file operation fails', async () =>
   expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
   expect(consoleErrorSpy).toHaveBeenCalledWith(
     expect.objectContaining({
-      message: expect.stringContaining('Failed to apply file operations: Permission denied'),
+      message: expect.stringContaining(
+        'Failed to apply file operations: Permission denied',
+      ),
     }),
   )
   consoleErrorSpy.mockRestore()
 })
 
 test('removeDirent - shows error message for multiple files when operation fails', async () => {
-  const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+  const consoleErrorSpy = jest
+    .spyOn(console, 'error')
+    .mockImplementation(() => {})
   const confirmFn = jest.fn()
   confirmFn.mockImplementation(() => true)
   RendererWorker.registerMockRpc({
@@ -368,8 +480,20 @@ test('removeDirent - shows error message for multiple files when operation fails
     confirmDelete: false,
     focusedIndex: 0,
     items: [
-      { depth: 0, name: 'file1.txt', path: '/file1.txt', selected: true, type: File },
-      { depth: 0, name: 'file2.txt', path: '/file2.txt', selected: true, type: File },
+      {
+        depth: 0,
+        name: 'file1.txt',
+        path: '/file1.txt',
+        selected: true,
+        type: File,
+      },
+      {
+        depth: 0,
+        name: 'file2.txt',
+        path: '/file2.txt',
+        selected: true,
+        type: File,
+      },
     ],
   }
 
@@ -379,7 +503,9 @@ test('removeDirent - shows error message for multiple files when operation fails
   expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
   expect(consoleErrorSpy).toHaveBeenCalledWith(
     expect.objectContaining({
-      message: expect.stringContaining('Failed to apply file operations: Access denied'),
+      message: expect.stringContaining(
+        'Failed to apply file operations: Access denied',
+      ),
     }),
   )
   consoleErrorSpy.mockRestore()
@@ -408,7 +534,15 @@ test('removeDirent - continues normally when no error occurs', async () => {
     ...createDefaultState(),
     confirmDelete: false,
     focusedIndex: 0,
-    items: [{ depth: 0, name: 'file1.txt', path: '/file1.txt', selected: false, type: File }],
+    items: [
+      {
+        depth: 0,
+        name: 'file1.txt',
+        path: '/file1.txt',
+        selected: false,
+        type: File,
+      },
+    ],
   }
 
   const result = await removeDirent(state)

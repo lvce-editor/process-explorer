@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import { Directory, File } from '../src/parts/DirentType/DirentType.ts'
 import { loadContent } from '../src/parts/LoadContent/LoadContent.ts'
@@ -111,14 +111,78 @@ test('loadContent clamps restored deltaY to maxDeltaY when content is still scro
   }).toEqual({
     deltaY: 60,
     items: [
-      { depth: 1, icon: '', name: 'file1', path: '/workspace/file1', posInSet: 1, setSize: 8, type: File },
-      { depth: 1, icon: '', name: 'file2', path: '/workspace/file2', posInSet: 2, setSize: 8, type: File },
-      { depth: 1, icon: '', name: 'file3', path: '/workspace/file3', posInSet: 3, setSize: 8, type: File },
-      { depth: 1, icon: '', name: 'file4', path: '/workspace/file4', posInSet: 4, setSize: 8, type: File },
-      { depth: 1, icon: '', name: 'file5', path: '/workspace/file5', posInSet: 5, setSize: 8, type: File },
-      { depth: 1, icon: '', name: 'file6', path: '/workspace/file6', posInSet: 6, setSize: 8, type: File },
-      { depth: 1, icon: '', name: 'file7', path: '/workspace/file7', posInSet: 7, setSize: 8, type: File },
-      { depth: 1, icon: '', name: 'file8', path: '/workspace/file8', posInSet: 8, setSize: 8, type: File },
+      {
+        depth: 1,
+        icon: '',
+        name: 'file1',
+        path: '/workspace/file1',
+        posInSet: 1,
+        setSize: 8,
+        type: File,
+      },
+      {
+        depth: 1,
+        icon: '',
+        name: 'file2',
+        path: '/workspace/file2',
+        posInSet: 2,
+        setSize: 8,
+        type: File,
+      },
+      {
+        depth: 1,
+        icon: '',
+        name: 'file3',
+        path: '/workspace/file3',
+        posInSet: 3,
+        setSize: 8,
+        type: File,
+      },
+      {
+        depth: 1,
+        icon: '',
+        name: 'file4',
+        path: '/workspace/file4',
+        posInSet: 4,
+        setSize: 8,
+        type: File,
+      },
+      {
+        depth: 1,
+        icon: '',
+        name: 'file5',
+        path: '/workspace/file5',
+        posInSet: 5,
+        setSize: 8,
+        type: File,
+      },
+      {
+        depth: 1,
+        icon: '',
+        name: 'file6',
+        path: '/workspace/file6',
+        posInSet: 6,
+        setSize: 8,
+        type: File,
+      },
+      {
+        depth: 1,
+        icon: '',
+        name: 'file7',
+        path: '/workspace/file7',
+        posInSet: 7,
+        setSize: 8,
+        type: File,
+      },
+      {
+        depth: 1,
+        icon: '',
+        name: 'file8',
+        path: '/workspace/file8',
+        posInSet: 8,
+        setSize: 8,
+        type: File,
+      },
     ],
     minLineY: 3,
   })

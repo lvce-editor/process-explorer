@@ -1,8 +1,12 @@
 import { test, expect } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
-import { Directory, DirectoryExpanded, File } from '../src/parts/DirentType/DirentType.ts'
+import {
+  Directory,
+  DirectoryExpanded,
+  File,
+} from '../src/parts/DirentType/DirentType.ts'
 import { expandRecursively } from '../src/parts/ExpandRecursively/ExpandRecursively.ts'
 
 test('expandRecursively - expands root when no item is focused', async () => {
@@ -27,9 +31,36 @@ test('expandRecursively - expands root when no item is focused', async () => {
   }
   const newState = await expandRecursively(state)
   expect(newState.items).toEqual([
-    { depth: 1, icon: '', name: 'src', path: '/workspace/src', posInSet: 1, selected: false, setSize: 2, type: DirectoryExpanded },
-    { depth: 2, icon: '', name: 'index.ts', path: '/workspace/src/index.ts', posInSet: 1, selected: false, setSize: 1, type: File },
-    { depth: 1, icon: '', name: 'README.md', path: '/workspace/README.md', posInSet: 2, selected: false, setSize: 2, type: File },
+    {
+      depth: 1,
+      icon: '',
+      name: 'src',
+      path: '/workspace/src',
+      posInSet: 1,
+      selected: false,
+      setSize: 2,
+      type: DirectoryExpanded,
+    },
+    {
+      depth: 2,
+      icon: '',
+      name: 'index.ts',
+      path: '/workspace/src/index.ts',
+      posInSet: 1,
+      selected: false,
+      setSize: 1,
+      type: File,
+    },
+    {
+      depth: 1,
+      icon: '',
+      name: 'README.md',
+      path: '/workspace/README.md',
+      posInSet: 2,
+      selected: false,
+      setSize: 2,
+      type: File,
+    },
   ])
   expect(mockRpc.invocations).toEqual([
     ['FileSystem.readDirWithFileTypes', '/workspace'],
@@ -50,17 +81,71 @@ test('expandRecursively - replaces focused directory children', async () => {
     ...createDefaultState(),
     focusedIndex: 0,
     items: [
-      { depth: 1, icon: '', name: 'src', path: '/workspace/src', posInSet: 1, selected: false, setSize: 2, type: Directory },
-      { depth: 2, icon: '', name: 'old.ts', path: '/workspace/src/old.ts', posInSet: 1, selected: false, setSize: 1, type: File },
-      { depth: 1, icon: '', name: 'README.md', path: '/workspace/README.md', posInSet: 2, selected: false, setSize: 2, type: File },
+      {
+        depth: 1,
+        icon: '',
+        name: 'src',
+        path: '/workspace/src',
+        posInSet: 1,
+        selected: false,
+        setSize: 2,
+        type: Directory,
+      },
+      {
+        depth: 2,
+        icon: '',
+        name: 'old.ts',
+        path: '/workspace/src/old.ts',
+        posInSet: 1,
+        selected: false,
+        setSize: 1,
+        type: File,
+      },
+      {
+        depth: 1,
+        icon: '',
+        name: 'README.md',
+        path: '/workspace/README.md',
+        posInSet: 2,
+        selected: false,
+        setSize: 2,
+        type: File,
+      },
     ],
     root: '/workspace',
   }
   const newState = await expandRecursively(state)
   expect(newState.items).toEqual([
-    { depth: 1, icon: '', name: 'src', path: '/workspace/src', posInSet: 1, selected: false, setSize: 2, type: DirectoryExpanded },
-    { depth: 2, icon: '', name: 'index.ts', path: '/workspace/src/index.ts', posInSet: 1, selected: false, setSize: 1, type: File },
-    { depth: 1, icon: '', name: 'README.md', path: '/workspace/README.md', posInSet: 2, selected: false, setSize: 2, type: File },
+    {
+      depth: 1,
+      icon: '',
+      name: 'src',
+      path: '/workspace/src',
+      posInSet: 1,
+      selected: false,
+      setSize: 2,
+      type: DirectoryExpanded,
+    },
+    {
+      depth: 2,
+      icon: '',
+      name: 'index.ts',
+      path: '/workspace/src/index.ts',
+      posInSet: 1,
+      selected: false,
+      setSize: 1,
+      type: File,
+    },
+    {
+      depth: 1,
+      icon: '',
+      name: 'README.md',
+      path: '/workspace/README.md',
+      posInSet: 2,
+      selected: false,
+      setSize: 2,
+      type: File,
+    },
   ])
 })
 
@@ -86,8 +171,20 @@ test.skip('expand root directory', async () => {
     ...createDefaultState(),
     focusedIndex: 0,
     items: [
-      { depth: 0, name: 'file1.txt', path: '/test/file1.txt', selected: false, type: File },
-      { depth: 0, name: 'dir1', path: '/test/dir1', selected: false, type: Directory },
+      {
+        depth: 0,
+        name: 'file1.txt',
+        path: '/test/file1.txt',
+        selected: false,
+        type: File,
+      },
+      {
+        depth: 0,
+        name: 'dir1',
+        path: '/test/dir1',
+        selected: false,
+        type: Directory,
+      },
     ],
     root: '/test',
   }
@@ -120,8 +217,20 @@ test.skip('expand focused directory', async () => {
     ...createDefaultState(),
     focusedIndex: 0,
     items: [
-      { depth: 0, name: 'dir1', path: '/test/dir1', selected: false, type: Directory },
-      { depth: 0, name: 'file1.txt', path: '/test/file1.txt', selected: false, type: File },
+      {
+        depth: 0,
+        name: 'dir1',
+        path: '/test/dir1',
+        selected: false,
+        type: Directory,
+      },
+      {
+        depth: 0,
+        name: 'file1.txt',
+        path: '/test/file1.txt',
+        selected: false,
+        type: File,
+      },
     ],
   }
   const newState = await expandRecursively(state)

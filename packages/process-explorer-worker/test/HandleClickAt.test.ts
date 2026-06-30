@@ -1,5 +1,5 @@
 import { test, expect } from '@jest/globals'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import { handleClickAt } from '../src/parts/HandleClickAt/HandleClickAt.ts'
 import { LeftClick } from '../src/parts/MouseEventType/MouseEventType.ts'
@@ -12,7 +12,15 @@ test.skip('handleClickAt - left click without shift', async () => {
       { depth: 1, name: 'b', path: '/b', selected: false, type: 0 },
     ],
   }
-  const result = await handleClickAt(state, false, LeftClick, false, false, 0, 0)
+  const result = await handleClickAt(
+    state,
+    false,
+    LeftClick,
+    false,
+    false,
+    0,
+    0,
+  )
   expect(result).toBeDefined()
 })
 
@@ -53,7 +61,15 @@ test('handleClickAt - left click', async () => {
   const state: ExplorerState = createDefaultState()
   const shiftKey = false
   const ctrlKey = false
-  const result = await handleClickAt(state, false, LeftClick, ctrlKey, shiftKey, 0, 0)
+  const result = await handleClickAt(
+    state,
+    false,
+    LeftClick,
+    ctrlKey,
+    shiftKey,
+    0,
+    0,
+  )
   expect(result).toBeDefined()
 })
 

@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import * as ExplorerEditingType from '../src/parts/ExplorerEditingType/ExplorerEditingType.ts'
@@ -58,7 +58,9 @@ test('updateEditingValue - updates file icon', async () => {
   const result = await updateEditingValue(state, newValue)
   expect(result.editingValue).toBe(newValue)
   expect(result.editingIcon).toBe('file-test.txt')
-  expect(mockRpc.invocations).toEqual([['IconTheme.getFileIcon', { name: 'test.txt' }]])
+  expect(mockRpc.invocations).toEqual([
+    ['IconTheme.getFileIcon', { name: 'test.txt' }],
+  ])
 })
 
 test('updateEditingValue - updates folder icon', async () => {
@@ -78,7 +80,9 @@ test('updateEditingValue - updates folder icon', async () => {
   const result = await updateEditingValue(state, newValue)
   expect(result.editingValue).toBe(newValue)
   expect(result.editingIcon).toBe('folder-test')
-  expect(mockRpc.invocations).toEqual([['IconTheme.getFolderIcon', { name: 'test' }]])
+  expect(mockRpc.invocations).toEqual([
+    ['IconTheme.getFolderIcon', { name: 'test' }],
+  ])
 })
 
 test('updateEditingValue - updates file icon when renaming file', async () => {
@@ -94,13 +98,23 @@ test('updateEditingValue - updates file icon when renaming file', async () => {
     ...createDefaultState(),
     editingIndex: 0,
     editingType: ExplorerEditingType.Rename,
-    items: [{ depth: 0, name: 'test.txt', path: '/test.txt', selected: false, type: DirentType.File }],
+    items: [
+      {
+        depth: 0,
+        name: 'test.txt',
+        path: '/test.txt',
+        selected: false,
+        type: DirentType.File,
+      },
+    ],
   }
   const newValue = 'new.txt'
   const result = await updateEditingValue(state, newValue)
   expect(result.editingValue).toBe(newValue)
   expect(result.editingIcon).toBe('file-new.txt')
-  expect(mockRpc.invocations).toEqual([['IconTheme.getFileIcon', { name: 'new.txt' }]])
+  expect(mockRpc.invocations).toEqual([
+    ['IconTheme.getFileIcon', { name: 'new.txt' }],
+  ])
 })
 
 test('updateEditingValue - updates folder icon when renaming folder', async () => {
@@ -116,13 +130,23 @@ test('updateEditingValue - updates folder icon when renaming folder', async () =
     ...createDefaultState(),
     editingIndex: 0,
     editingType: ExplorerEditingType.Rename,
-    items: [{ depth: 0, name: 'test', path: '/test', selected: false, type: DirentType.Directory }],
+    items: [
+      {
+        depth: 0,
+        name: 'test',
+        path: '/test',
+        selected: false,
+        type: DirentType.Directory,
+      },
+    ],
   }
   const newValue = 'new'
   const result = await updateEditingValue(state, newValue)
   expect(result.editingValue).toBe(newValue)
   expect(result.editingIcon).toBe('folder-new')
-  expect(mockRpc.invocations).toEqual([['IconTheme.getFolderIcon', { name: 'new' }]])
+  expect(mockRpc.invocations).toEqual([
+    ['IconTheme.getFolderIcon', { name: 'new' }],
+  ])
 })
 
 test('updateEditingValue - preserves other state properties', async () => {
@@ -172,7 +196,9 @@ test('updateEditingValue - real-time validation during file creation', async () 
 
   // Test typing a name that already exists
   const result = await updateEditingValue(state, 'existing-file.txt')
-  expect(result.editingErrorMessage).toBe('A file or folder **existing-file.txt** already exists at this location. Please choose a different name.')
+  expect(result.editingErrorMessage).toBe(
+    'A file or folder **existing-file.txt** already exists at this location. Please choose a different name.',
+  )
 
   // Test typing a name that doesn't exist
   const result2 = await updateEditingValue(state, 'new-file.txt')
@@ -209,7 +235,9 @@ test('updateEditingValue - real-time validation during folder creation', async (
 
   // Test typing a name that already exists
   const result = await updateEditingValue(state, 'existing-folder')
-  expect(result.editingErrorMessage).toBe('A file or folder **existing-folder** already exists at this location. Please choose a different name.')
+  expect(result.editingErrorMessage).toBe(
+    'A file or folder **existing-folder** already exists at this location. Please choose a different name.',
+  )
 
   // Test typing a name that doesn't exist
   const result2 = await updateEditingValue(state, 'new-folder')

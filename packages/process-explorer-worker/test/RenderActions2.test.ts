@@ -1,6 +1,6 @@
 import { test, expect } from '@jest/globals'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
-import * as ExplorerStates from '../src/parts/ExplorerStates/ExplorerStates.ts'
+import * as ExplorerStates from '../src/parts/ProcessExplorerStates/ProcessExplorerStates.ts'
 import { renderActions } from '../src/parts/RenderActions2/RenderActions2.ts'
 
 test('should render actions for valid uid', () => {

@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
 import type { ExplorerItem } from '../src/parts/ExplorerItem/ExplorerItem.ts'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import { handleRangeSelection } from '../src/parts/HandleRangeSelection/HandleRangeSelection.ts'
 
@@ -36,7 +36,9 @@ test('handleRangeSelection - backward range', () => {
       { depth: 1, name: 'c', path: '/c', selected: false, type: 0 },
     ],
   }
-  expect(() => handleRangeSelection(state, 2, 0)).toThrow(new Error('startIndex must be less than or equal to endIndex'))
+  expect(() => handleRangeSelection(state, 2, 0)).toThrow(
+    new Error('startIndex must be less than or equal to endIndex'),
+  )
 })
 
 test('handleRangeSelection - preserve existing selections', () => {
@@ -57,12 +59,22 @@ test('handleRangeSelection - preserve existing selections', () => {
 test('selects items in range', () => {
   const state: ExplorerState = {
     ...createDefaultState(),
-    items: [createItem('a', false), createItem('b', false), createItem('c', false), createItem('d', false)],
+    items: [
+      createItem('a', false),
+      createItem('b', false),
+      createItem('c', false),
+      createItem('d', false),
+    ],
   }
 
   const newState = handleRangeSelection(state, 1, 2)
 
-  expect(newState.items).toEqual([createItem('a', false), createItem('b', true), createItem('c', true), createItem('d', false)])
+  expect(newState.items).toEqual([
+    createItem('a', false),
+    createItem('b', true),
+    createItem('c', true),
+    createItem('d', false),
+  ])
 })
 
 test('throws error when startIndex > endIndex', () => {
@@ -71,5 +83,7 @@ test('throws error when startIndex > endIndex', () => {
     items: [createItem('a', false), createItem('b', false)],
   }
 
-  expect(() => handleRangeSelection(state, 1, 0)).toThrow('startIndex must be less than or equal to endIndex')
+  expect(() => handleRangeSelection(state, 1, 0)).toThrow(
+    'startIndex must be less than or equal to endIndex',
+  )
 })

@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
 import { RendererWorker, SourceControlWorker } from '@lvce-editor/rpc-registry'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import type { DroppedArgs } from '../src/parts/UploadFileSystemHandles/UploadFileSystemHandles.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import { handleDrop } from '../src/parts/HandleDropRootElectron/HandleDropRootElectron.ts'
@@ -38,7 +38,12 @@ test('handleDropRootElectron opens dropped folder as workspace when workspace is
   } as FileSystemDirectoryHandle
   const fileHandles: DroppedArgs = [fileHandle]
 
-  const result = await handleDrop(state, fileHandles, [], ['/home/simon/dotfiles'])
+  const result = await handleDrop(
+    state,
+    fileHandles,
+    [],
+    ['/home/simon/dotfiles'],
+  )
 
   expect(result.root).toBe('/home/simon/dotfiles')
   expect(result.dropTargets).toEqual([])
@@ -73,7 +78,12 @@ test('handleDropRootElectron ignores dropped file when workspace is empty', asyn
     },
   ]
 
-  const result = await handleDrop(state, fileHandles, [], ['/home/simon/dropped-file.txt'])
+  const result = await handleDrop(
+    state,
+    fileHandles,
+    [],
+    ['/home/simon/dropped-file.txt'],
+  )
 
   expect(result.root).toBe('')
   expect(result.dropTargets).toEqual([])

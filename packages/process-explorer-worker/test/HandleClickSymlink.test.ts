@@ -1,7 +1,7 @@
 import { expect, test } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
 import type { ExplorerItem } from '../src/parts/ExplorerItem/ExplorerItem.ts'
-import type { ExplorerState } from '../src/parts/ExplorerState/ExplorerState.ts'
+import type { ExplorerState } from '../src/parts/ProcessExplorerState/ExplorerState.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DirentType from '../src/parts/DirentType/DirentType.ts'
 import { handleClickSymLink } from '../src/parts/HandleClickSymlink/HandleClickSymlink.ts'
@@ -59,7 +59,9 @@ test('handleClickSymLink - unsupported type', async () => {
     },
   })
 
-  await expect(handleClickSymLink(state, dirent, index)).rejects.toThrow('unsupported file type')
+  await expect(handleClickSymLink(state, dirent, index)).rejects.toThrow(
+    'unsupported file type',
+  )
   expect(mockRpc.invocations).toEqual([
     ['FileSystem.getRealPath', '/test/symlink'],
     ['FileSystem.stat', '/test/real-file'],
