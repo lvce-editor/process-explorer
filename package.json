@@ -1,16 +1,16 @@
 {
-  "name": "@lvce-editor/process-explorer",
+  "name": "@lvce-editor/process-explorer-monorepo",
   "version": "0.0.0-dev",
+  "private": true,
   "description": "Process Explorer",
-  "main": "src/processExplorerMain.ts",
-  "bin": "bin/processExplorer.js",
   "type": "module",
   "scripts": {
-    "build": "node scripts/build.js",
-    "lint": "eslint . && prettier --check . && knip --exclude dependencies,unlisted,binaries,unresolved,catalog",
-    "test": "node --unhandled-rejections=warn --experimental-vm-modules ./node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
-    "test:watch": "node --unhandled-rejections=warn --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch",
-    "type-check": "tsc"
+    "build": "node packages/build/src/build.ts",
+    "postinstall": "lerna bootstrap --ci",
+    "lint": "eslint . && prettier --check . && knip --no-config-hints",
+    "test": "lerna run test",
+    "test:watch": "cd packages/process-explorer && npm run test:watch",
+    "type-check": "tsc -b"
   },
   "keywords": [
     "Lvce Editor"
@@ -24,48 +24,16 @@
   "engines": {
     "node": ">=18"
   },
-  "dependencies": {
-    "@lvce-editor/assert": "^1.5.1",
-    "@lvce-editor/ipc": "^16.0.0",
-    "@lvce-editor/json-rpc": "^8.0.0",
-    "@lvce-editor/verror": "^1.7.0"
-  },
-  "optionalDependencies": {
-    "@vscode/windows-process-tree": "^0.7.0"
-  },
-  "jest": {
-    "injectGlobals": false,
-    "extensionsToTreatAsEsm": [
-      ".ts"
-    ],
-    "moduleNameMapper": {
-      "^(\\.{1,2}/.*)\\.js$": "$1"
-    },
-    "transform": {
-      "^.+\\.tsx?$": [
-        "ts-jest",
-        {
-          "useESM": true
-        }
-      ]
-    }
-  },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.29.7",
-    "@jest/globals": "^30.4.1",
     "@lerna/legacy-package-management": "^8.2.4",
     "@lvce-editor/eslint-config": "^14.0.1",
-    "@rollup/plugin-babel": "^7.1.0",
-    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@lvce-editor/eslint-plugin-github-actions": "^14.0.1",
+    "@lvce-editor/eslint-plugin-tsconfig": "^14.0.1",
     "@types/node": "^20.12.8",
     "eslint": "^10.6.0",
-    "execa": "^9.6.1",
-    "jest": "^30.4.2",
     "knip": "^6.23.0",
     "lerna": "^8.2.3",
     "prettier": "^3.9.3",
-    "rollup": "^4.17.2",
-    "ts-jest": "^29.4.11",
     "typescript": "^6.0.3"
   },
   "prettier": {

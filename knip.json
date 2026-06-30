@@ -1,5 +1,17 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "entry": ["scripts/*.js", "src/parts/**/*.ipc.ts", "test/**/*.test.ts"],
-  "project": ["*.js", "bin/*.js", "scripts/*.js", "src/**/*.ts", "test/**/*.ts"]
+  "workspaces": {
+    ".": {
+      "project": ["*.js"],
+      "ignoreDependencies": ["@lerna/legacy-package-management"]
+    },
+    "packages/build": {
+      "entry": ["src/build.ts", "src/computeNodeModulesCacheKey.ts"],
+      "project": ["src/**/*.ts"]
+    },
+    "packages/process-explorer": {
+      "entry": ["src/parts/**/*.ipc.ts", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    }
+  }
 }

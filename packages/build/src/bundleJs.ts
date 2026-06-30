@@ -1,37 +1,79 @@
 import { join } from 'node:path'
+import { VError } from '@lvce-editor/verror'
 import pluginTypeScript from '@babel/preset-typescript'
 import { babel } from '@rollup/plugin-babel'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
-import { rollup, type RollupOptions } from 'rollup'
-import { root } from './root.ts'
+import {
+  rollup,
+  type ModuleFormat,
+  type OutputOptions,
+  type RollupOptions,
+} from 'rollup'
 
-const options: RollupOptions = {
-  input: join(root, 'packages/explorer-view/src/explorerViewWorkerMain.ts'),
-  preserveEntrySignatures: 'strict',
-  treeshake: {
-    propertyReadSideEffects: false,
-  },
-  output: {
-    file: join(root, '.tmp/dist/dist/explorerViewWorkerMain.js'),
-    format: 'es',
-    freeze: false,
-    generatedCode: {
-      constBindings: true,
-      objectShorthand: true,
-    },
-  },
-  external: ['ws', 'electron'],
-  plugins: [
-    babel({
-      babelHelpers: 'bundled',
-      extensions: ['.js', '.jsx', '.ts', '.tsx'],
-      presets: [pluginTypeScript],
-    }),
-    nodeResolve(),
-  ],
+interface BundleJsOptions {
+  readonly cwd: string
+  readonly from: string
+  readonly outFile: string
+  readonly codeSplitting?: boolean
+  readonly external?: readonly string[]
+  readonly typescript?: boolean
 }
 
-export const bundleJs = async (): Promise<void> => {
-  const input = await rollup(options)
-  await input.write(options.output as any)
+export const bundleJs = async ({
+  cwd,
+  from,
+  outFile,
+  codeSplitting = false,
+  external = [],
+  typescript = from.endsWith('.ts'),
+}: BundleJsOptions): Promise<void> => {
+  try {
+    const plugins: RollupOptions['plugins'] = [
+      nodeResolve({
+        preferBuiltins: true,
+      }),
+    ]
+    if (typescript) {
+      plugins.push(
+        babel({
+          babelHelpers: 'bundled',
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+          presets: [pluginTypeScript],
+        }),
+      )
+    }
+    const inputOptions: RollupOptions = {
+      cache: false,
+      input: join(cwd, from),
+      preserveEntrySignatures: 'strict',
+      treeshake: {
+        propertyReadSideEffects: false,
+      },
+      perf: true,
+      external: [...external],
+      plugins,
+    }
+    const result = await rollup(inputOptions)
+    const outputFormat: ModuleFormat = 'es'
+    const outputOptions: OutputOptions = {
+      paths: {},
+      sourcemap: false,
+      format: outputFormat,
+      extend: false,
+      file: join(cwd, outFile),
+      entryFileNames: 'renderer-process.modern.js',
+      exports: 'auto',
+      freeze: false,
+      inlineDynamicImports: !codeSplitting,
+      minifyInternalExports: false,
+      generatedCode: {
+        constBindings: true,
+        objectShorthand: true,
+      },
+      hoistTransitiveImports: false,
+    }
+    await result.write(outputOptions)
+  } catch (error) {
+    throw new VError(error, 'Failed to bundle js')
+  }
 }

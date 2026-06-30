@@ -1,203 +1,107 @@
-import fs, { readFileSync, writeFileSync } from 'node:fs'
-import { readdir, readFile, rm, writeFile } from 'node:fs/promises'
-import path, { join } from 'node:path'
-import { bundleJs, packageExtension } from '@lvce-editor/package-extension'
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
+import { execa } from 'execa'
+import { bundleJs } from './bundleJs.ts'
 import { root } from './root.ts'
 
-const extension = path.join(root, 'packages', 'extension')
-const gitWorker = path.join(root, 'packages', 'git-worker')
-const gitRequests = path.join(root, 'packages', 'git-requests')
-const gitWeb = path.join(root, 'packages', 'git-web')
-const node = path.join(root, 'packages', 'node')
+const dist = join(root, 'dist')
 
-fs.rmSync(join(root, 'dist'), { recursive: true, force: true })
+const readJson = async (path: string): Promise<any> => {
+  const content = await readFile(path, 'utf8')
+  return JSON.parse(content)
+}
 
-fs.mkdirSync(path.join(root, 'dist'))
+const writeJson = async (path: string, json: any): Promise<void> => {
+  await writeFile(path, JSON.stringify(json, null, 2) + '\n')
+}
 
-const packageJson = JSON.parse(
-  readFileSync(join(extension, 'package.json')).toString(),
-)
-delete packageJson.jest
-delete packageJson.devDependencies
-delete packageJson.scripts
+const getGitTagFromGit = async (): Promise<string> => {
+  const { stdout, stderr, exitCode } = await execa(
+    'git',
+    ['describe', '--exact-match', '--tags'],
+    {
+      reject: false,
+    },
+  )
+  if (exitCode) {
+    if (
+      exitCode === 128 &&
+      stderr.startsWith('fatal: no tag exactly matches')
+    ) {
+      return '0.0.0-dev'
+    }
+    return '0.0.0-dev'
+  }
+  if (stdout.startsWith('v')) {
+    return stdout.slice(1)
+  }
+  return stdout
+}
 
-fs.writeFileSync(
-  join(root, 'dist', 'package.json'),
-  JSON.stringify(packageJson, null, 2) + '\n',
-)
-fs.copyFileSync(join(root, 'README.md'), join(root, 'dist', 'README.md'))
-fs.copyFileSync(join(extension, 'icon.png'), join(root, 'dist', 'icon.png'))
-fs.copyFileSync(
-  join(extension, 'extension.json'),
-  join(root, 'dist', 'extension.json'),
-)
-fs.cpSync(join(extension, 'icons'), join(root, 'dist', 'icons'), {
-  recursive: true,
-})
-fs.cpSync(join(extension, 'src'), join(root, 'dist', 'src'), {
-  recursive: true,
-})
-
-fs.cpSync(join(gitWorker, 'src'), join(root, 'dist', 'git-worker', 'src'), {
-  recursive: true,
-})
-
-fs.cpSync(join(gitRequests, 'src'), join(root, 'dist', 'git-requests', 'src'), {
-  recursive: true,
-})
-
-fs.cpSync(join(gitWeb, 'src'), join(root, 'dist', 'git-web', 'src'), {
-  recursive: true,
-})
-
-fs.cpSync(node, join(root, 'dist', 'node'), {
-  recursive: true,
-  verbatimSymlinks: true,
-})
+const getVersion = async (): Promise<string> => {
+  const { env } = process
+  const { RG_VERSION, GIT_TAG } = env
+  if (RG_VERSION) {
+    return RG_VERSION.startsWith('v') ? RG_VERSION.slice(1) : RG_VERSION
+  }
+  if (GIT_TAG) {
+    return GIT_TAG.startsWith('v') ? GIT_TAG.slice(1) : GIT_TAG
+  }
+  return getGitTagFromGit()
+}
 
 const replace = async ({
   path,
   occurrence,
   replacement,
 }: {
-  path: string
-  occurrence: string
-  replacement: string
+  readonly path: string
+  readonly occurrence: string
+  readonly replacement: string
 }): Promise<void> => {
-  const oldContent = readFileSync(path, 'utf-8')
-  const newContent = oldContent.replace(occurrence, replacement)
-  writeFileSync(path, newContent)
+  const content = await readFile(path, 'utf8')
+  const newContent = content.replace(occurrence, replacement)
+  await writeFile(path, newContent)
 }
 
-const updateRelativeJsImportsToTs = async (dir: string): Promise<void> => {
-  const dirents = await readdir(dir, { recursive: true, withFileTypes: true })
-  for (const dirent of dirents) {
-    if (!dirent.isFile() || !dirent.name.endsWith('.ts')) {
-      continue
-    }
-    const absolutePath = join(dirent.parentPath, dirent.name)
-    const oldContent = await readFile(absolutePath, 'utf8')
-    const newContent = oldContent.replace(
-      /((?:import|export)\s+(?:[^'"]*?\s+from\s+)?['"])(\.\.?\/[^'"]+)\.js(['"])/g,
-      '$1$2.ts$3',
-    )
-    if (newContent !== oldContent) {
-      await writeFile(absolutePath, newContent)
-    }
-  }
-}
+await rm(dist, { recursive: true, force: true })
+await mkdir(dist, { recursive: true })
 
-await replace({
-  path: join(
-    root,
-    'dist',
-    'src',
-    'parts',
-    'GetGitClientPath',
-    'GetGitClientPath.ts',
-  ),
-  occurrence: '../node/',
-  replacement: 'node/',
+await bundleJs({
+  cwd: root,
+  from: 'packages/process-explorer/src/processExplorerMain.ts',
+  outFile: 'dist/dist/index.js',
+  external: [
+    '@lvce-editor/assert',
+    '@lvce-editor/ipc',
+    '@lvce-editor/json-rpc',
+    '@lvce-editor/verror',
+    '@vscode/windows-process-tree',
+  ],
 })
 
-await replace({
-  path: join(root, 'dist', 'src', 'gitMain.ts'),
-  occurrence: './parts/Main/Main.js',
-  replacement: './parts/Main/Main.ts',
-})
-
-await updateRelativeJsImportsToTs(join(root, 'dist', 'src'))
-await updateRelativeJsImportsToTs(join(root, 'dist', 'git-worker', 'src'))
-await updateRelativeJsImportsToTs(join(root, 'dist', 'git-web', 'src'))
-
-await replace({
-  path: join(root, 'dist', 'src', 'parts', 'GitWorkerUrl', 'GitWorkerUrl.ts'),
-  occurrence: '../git-worker/',
-  replacement: 'git-worker/',
-})
-
-await replace({
-  path: join(root, 'dist', 'src', 'parts', 'GitWorkerUrl', 'GitWorkerUrl.ts'),
-  occurrence: 'src/gitWorkerMain.ts',
-  replacement: 'dist/gitWorkerMain.js',
-})
-
-await replace({
-  path: join(
-    root,
-    'dist',
-    'git-requests',
-    'src',
-    'parts',
-    'IconRoot',
-    'IconRoot.ts',
-  ),
-  occurrence: '/extension',
-  replacement: '',
-})
-
-await replace({
-  path: join(
-    root,
-    'dist',
-    'git-requests',
-    'src',
-    'parts',
-    'IconRoot',
-    'IconRoot.ts',
-  ),
-  occurrence: 'parts.slice(0, -5)',
-  replacement: 'parts.slice(0, -3)',
-})
-
-await rm(join(root, 'dist', 'node', 'node_modules', '.bin'), {
-  recursive: true,
-  force: true,
-})
-await rm(join(root, 'dist', 'node', 'node_modules', 'which', 'bin'), {
-  recursive: true,
-  force: true,
-})
-
-const shouldRemoveNodeModule = (dirent: string): boolean => {
-  return (
-    dirent.endsWith('test') ||
-    dirent.endsWith('.d.ts') ||
-    dirent.endsWith('.npmignore') ||
-    dirent.endsWith('CHANGELOG.md')
-  )
-}
-
-const dirents = await readdir(join(root, 'dist', 'node', 'node_modules'), {
+await cp(join(root, 'packages', 'process-explorer', 'bin'), join(dist, 'bin'), {
   recursive: true,
 })
-for (const dirent of dirents) {
-  if (shouldRemoveNodeModule(dirent)) {
-    const absolutePath = join(root, 'dist', 'node', 'node_modules', dirent)
-    await rm(absolutePath, { recursive: true, force: true })
-  }
-}
 
-await bundleJs(
-  join(root, 'dist', 'git-worker', 'src', 'gitWorkerMain.ts'),
-  join(root, 'dist', 'git-worker', 'dist', 'gitWorkerMain.js'),
-  false,
-)
-
-await bundleJs(
-  join(root, 'dist', 'git-web', 'src', 'gitWebMain.ts'),
-  join(root, 'dist', 'git-web', 'dist', 'gitWebMain.js'),
-  false,
-)
-
-await bundleJs(
-  join(root, 'dist', 'src', 'gitMain.ts'),
-  join(root, 'dist', 'dist', 'gitMain.js'),
-  false,
-)
-
-await packageExtension({
-  highestCompression: true,
-  inDir: join(root, 'dist'),
-  outFile: join(root, 'extension.tar.br'),
+await replace({
+  path: join(dist, 'bin', 'processExplorer.js'),
+  occurrence: 'src/processExplorerMain.js',
+  replacement: 'dist/index.js',
 })
+
+const version = await getVersion()
+const packageJson = await readJson(
+  join(root, 'packages', 'process-explorer', 'package.json'),
+)
+
+delete packageJson.scripts
+delete packageJson.devDependencies
+delete packageJson.prettier
+delete packageJson.jest
+packageJson.version = version
+packageJson.main = 'dist/index.js'
+
+await writeJson(join(dist, 'package.json'), packageJson)
+await cp(join(root, 'README.md'), join(dist, 'README.md'))
+await cp(join(root, 'LICENSE'), join(dist, 'LICENSE'))

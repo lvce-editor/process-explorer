@@ -18,9 +18,9 @@ export default [
   },
   {
     files: [
-      'test/ListProcessesWithMemoryUsageUnix.test.ts',
-      'test/ListProcessesWithMemoryUsageWindows.test.ts',
-      'test/WindowsProcessTree.test.ts',
+      'packages/process-explorer/test/ListProcessesWithMemoryUsageUnix.test.ts',
+      'packages/process-explorer/test/ListProcessesWithMemoryUsageWindows.test.ts',
+      'packages/process-explorer/test/WindowsProcessTree.test.ts',
     ],
     rules: {
       'jest/no-restricted-jest-methods': 'off',
