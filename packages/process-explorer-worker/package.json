@@ -33,6 +33,14 @@
     "testMatch": [
       "**/test/**"
     ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/test/fixtures/"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/test/fixtures/"
+    ],
     "collectCoverage": true,
     "coverageThreshold": {
       "global": {

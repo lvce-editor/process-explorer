@@ -1,44 +1,30 @@
 import { expect, test } from '@jest/globals'
-import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as FocusPrevious from '../src/parts/FocusPrevious/FocusPrevious.ts'
-import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibleProcesses.ts'
-
-const processes = [
-  {
-    cmd: 'main',
-    memory: 1,
-    name: 'main',
-    pid: 1,
-    ppid: 0,
-  },
-  {
-    cmd: 'node child.js',
-    memory: 1500,
-    name: 'child',
-    pid: 2,
-    ppid: 1,
-  },
-  {
-    cmd: 'leaf',
-    memory: 2_500_000,
-    name: 'leaf',
-    pid: 3,
-    ppid: 2,
-  },
-  {
-    cmd: 'orphan',
-    memory: 1,
-    name: 'orphan',
-    pid: 4,
-    ppid: 999,
-  },
-]
+import { createProcessState } from './fixtures/ProcessExplorerFixtures.ts'
 
 test('focusPrevious', () => {
-  const state = {
-    ...createDefaultState(),
+  const state = createProcessState({
     focusedIndex: 1,
-    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
-  }
+  })
   expect(FocusPrevious.focusPrevious(state).focusedIndex).toBe(0)
+})
+
+test('focusPrevious focuses last item from -1', () => {
+  const state = createProcessState({
+    focusedIndex: -1,
+  })
+  expect(FocusPrevious.focusPrevious(state).focusedIndex).toBe(2)
+})
+
+test('focusPrevious returns state at beginning or empty list', () => {
+  const state = createProcessState({
+    focusedIndex: 0,
+  })
+  expect(FocusPrevious.focusPrevious(state)).toBe(state)
+
+  const emptyState = createProcessState({
+    focusedIndex: -1,
+    visibleProcesses: [],
+  })
+  expect(FocusPrevious.focusPrevious(emptyState)).toBe(emptyState)
 })

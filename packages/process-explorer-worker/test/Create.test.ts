@@ -17,3 +17,10 @@ test('create', () => {
   })
   expect(ProcessExplorerStates.get(7).newState).toBe(state)
 })
+
+test('create uses default asset dir', () => {
+  ProcessExplorerStates.clear()
+  const state = create(8, '', 1, 2, 300, 400, [], 5)
+  expect(state.assetDir).toBe('')
+  expect(state.uid).toBe(8)
+})

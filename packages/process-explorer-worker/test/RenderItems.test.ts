@@ -1,47 +1,17 @@
 import { expect, test } from '@jest/globals'
 import { ViewletCommand } from '@lvce-editor/constants'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
-import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as RenderItems from '../src/parts/RenderItems/RenderItems.ts'
-
-const processes = [
-  {
-    cmd: 'main',
-    memory: 1,
-    name: 'main',
-    pid: 1,
-    ppid: 0,
-  },
-  {
-    cmd: 'node child.js',
-    memory: 1500,
-    name: 'child',
-    pid: 2,
-    ppid: 1,
-  },
-  {
-    cmd: 'leaf',
-    memory: 2_500_000,
-    name: 'leaf',
-    pid: 3,
-    ppid: 2,
-  },
-  {
-    cmd: 'orphan',
-    memory: 1,
-    name: 'orphan',
-    pid: 4,
-    ppid: 999,
-  },
-]
+import {
+  createProcessState,
+  createVisibleProcesses,
+} from './fixtures/ProcessExplorerFixtures.ts'
 
 test('renderItems - populated table', () => {
-  const state = {
-    ...createDefaultState(),
+  const state = createProcessState({
     focusedIndex: 1,
     initial: false,
-    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
-  }
+  })
   const result = RenderItems.renderItems(createDefaultState(), state)
   expect(result[0]).toBe(ViewletCommand.SetDom2)
   expect(result[2]).toContainEqual(
@@ -60,6 +30,18 @@ test('renderItems - populated table', () => {
       title: 'node child.js',
     }),
   )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      ariaLevel: 3,
+      title: 'leaf',
+    }),
+  )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      className: 'ProcessExplorerCell ProcessExplorerNameCell',
+      paddingLeft: 'calc(3ch + 17px)',
+    }),
+  )
 })
 
 test('renderItems - initial is empty', () => {
@@ -72,4 +54,46 @@ test('renderItems - initial is empty', () => {
     1,
     [],
   ])
+})
+
+test('renderItems - error message', () => {
+  const state = createProcessState({
+    errorMessage: 'boom',
+    initial: false,
+    visibleProcesses: [],
+  })
+  const result = RenderItems.renderItems(createDefaultState(), state)
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      childCount: 1,
+      className: 'ProcessExplorerError',
+    }),
+  )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      text: 'boom',
+    }),
+  )
+})
+
+test('renderItems - collapsed row', () => {
+  const state = createProcessState({
+    collapsedPids: [2],
+    initial: false,
+    visibleProcesses: createVisibleProcesses([2]),
+  })
+  const result = RenderItems.renderItems(createDefaultState(), state)
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      ariaExpanded: false,
+      ariaLevel: 2,
+      title: 'node child.js',
+    }),
+  )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      className: 'ProcessExplorerCell ProcessExplorerNameCell',
+      paddingLeft: '1.5ch',
+    }),
+  )
 })
