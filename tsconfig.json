@@ -1,8 +1,0 @@
-{
-  "files": [],
-  "include": [],
-  "references": [
-    { "path": "./packages/build" },
-    { "path": "./packages/process-explorer" }
-  ]
-}
