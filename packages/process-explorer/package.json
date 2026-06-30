@@ -1,5 +1,5 @@
 {
-  "name": "@lvce-editor/process-explorer-monorepo",
+  "name": "@lvce-editor/process-explorer",
   "version": "0.0.0-dev",
   "description": "Process Explorer",
   "main": "src/processExplorerMain.ts",
@@ -24,6 +24,15 @@
   "engines": {
     "node": ">=18"
   },
+  "dependencies": {
+    "@lvce-editor/assert": "^1.5.1",
+    "@lvce-editor/ipc": "^16.0.0",
+    "@lvce-editor/json-rpc": "^8.0.0",
+    "@lvce-editor/verror": "^1.7.0"
+  },
+  "optionalDependencies": {
+    "@vscode/windows-process-tree": "^0.7.0"
+  },
   "jest": {
     "injectGlobals": false,
     "extensionsToTreatAsEsm": [
@@ -42,13 +51,20 @@
     }
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.29.7",
+    "@jest/globals": "^30.4.1",
     "@lerna/legacy-package-management": "^8.2.4",
     "@lvce-editor/eslint-config": "^14.0.1",
+    "@rollup/plugin-babel": "^7.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
     "@types/node": "^20.12.8",
     "eslint": "^10.6.0",
+    "execa": "^9.6.1",
+    "jest": "^30.4.2",
     "knip": "^6.23.0",
     "lerna": "^8.2.3",
     "prettier": "^3.9.3",
+    "rollup": "^4.17.2",
     "ts-jest": "^29.4.11",
     "typescript": "^6.0.3"
   },
