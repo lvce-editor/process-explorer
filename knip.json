@@ -12,6 +12,10 @@
     "packages/process-explorer": {
       "entry": ["src/parts/**/*.ipc.ts", "test/**/*.test.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "packages/process-explorer-worker": {
+      "entry": ["src/processExplorerWorkerMain.ts", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
     }
   }
 }

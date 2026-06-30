@@ -3,12 +3,10 @@ import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplor
 
 export const {
   clear,
-  diff,
   get,
   getCommandIds,
   registerCommands,
   set,
   wrapCommand,
-  wrapGetter,
   wrapLoadContent,
 } = ViewletRegistry.create<ProcessExplorerState>()
