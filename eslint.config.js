@@ -12,6 +12,18 @@ export default [
       '@cspell/spellchecker': 'off',
       'github-actions/ci-versions': 'off',
       'devcontainer/post-create-command': 'off',
+      'tsconfig/no-implicit-any': 'off',
+      'tsconfig/dont-skip-lib-check': 'off',
+    },
+  },
+  {
+    files: [
+      'test/ListProcessesWithMemoryUsageUnix.test.ts',
+      'test/ListProcessesWithMemoryUsageWindows.test.ts',
+      'test/WindowsProcessTree.test.ts',
+    ],
+    rules: {
+      'jest/no-restricted-jest-methods': 'off',
     },
   },
 ]
