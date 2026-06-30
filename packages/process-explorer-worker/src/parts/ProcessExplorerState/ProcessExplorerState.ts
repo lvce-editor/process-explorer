@@ -4,7 +4,9 @@ import type { VisibleProcess } from '../VisibleProcess/VisibleProcess.ts'
 export interface ProcessExplorerState {
   readonly assetDir: string
   readonly collapsedPids: readonly number[]
+  readonly errorCodeFrame: string
   readonly errorMessage: string
+  readonly errorStack: string
   readonly focus: number
   readonly focused: boolean
   readonly focusedIndex: number

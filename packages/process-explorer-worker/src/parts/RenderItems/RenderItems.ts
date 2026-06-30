@@ -132,28 +132,60 @@ const getBodyDom = (state: ProcessExplorerState): readonly VirtualDomNode[] => {
   ]
 }
 
-const getErrorDom = (errorMessage: string): readonly VirtualDomNode[] => {
-  if (!errorMessage) {
+const getErrorSectionDom = (
+  value: string,
+  type: number,
+): readonly VirtualDomNode[] => {
+  if (!value) {
     return []
   }
   return [
     {
       childCount: 1,
-      className: ClassNames.Error,
-      type: VirtualDomElements.Div,
+      type,
     },
-    text(errorMessage),
+    text(value),
   ]
 }
 
-const getDom = (state: ProcessExplorerState): readonly VirtualDomNode[] => {
-  if (state.initial) {
-    return []
-  }
-  const errorDom = getErrorDom(state.errorMessage)
+const hasError = (state: ProcessExplorerState): boolean => {
+  return Boolean(state.errorMessage || state.errorCodeFrame || state.errorStack)
+}
+
+const getErrorDom = (state: ProcessExplorerState): readonly VirtualDomNode[] => {
+  const messageDom = getErrorSectionDom(
+    state.errorMessage,
+    VirtualDomElements.Div,
+  )
+  const codeFrameDom = getErrorSectionDom(
+    state.errorCodeFrame,
+    VirtualDomElements.Pre,
+  )
+  const stackDom = getErrorSectionDom(state.errorStack, VirtualDomElements.Pre)
+  const childCount =
+    messageDom.length / 2 + codeFrameDom.length / 2 + stackDom.length / 2
   return [
     {
-      childCount: 1 + (errorDom.length > 0 ? 1 : 0),
+      childCount: 1,
+      className: `${ClassNames.Viewlet} ${ClassNames.ProcessExplorer}`,
+      role: AriaRoles.None,
+      type: VirtualDomElements.Div,
+    },
+    {
+      childCount,
+      className: ClassNames.Error,
+      type: VirtualDomElements.Div,
+    },
+    ...messageDom,
+    ...codeFrameDom,
+    ...stackDom,
+  ]
+}
+
+const getTableDom = (state: ProcessExplorerState): readonly VirtualDomNode[] => {
+  return [
+    {
+      childCount: 1,
       className: `${ClassNames.Viewlet} ${ClassNames.ProcessExplorer}`,
       role: AriaRoles.None,
       type: VirtualDomElements.Div,
@@ -175,8 +207,17 @@ const getDom = (state: ProcessExplorerState): readonly VirtualDomNode[] => {
     },
     ...getHeaderDom(),
     ...getBodyDom(state),
-    ...errorDom,
   ]
+}
+
+const getDom = (state: ProcessExplorerState): readonly VirtualDomNode[] => {
+  if (state.initial) {
+    return []
+  }
+  if (hasError(state)) {
+    return getErrorDom(state)
+  }
+  return getTableDom(state)
 }
 
 export const renderItems = (

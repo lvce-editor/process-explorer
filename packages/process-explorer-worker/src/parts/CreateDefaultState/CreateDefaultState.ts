@@ -3,7 +3,9 @@ import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplor
 export const createDefaultState = (): ProcessExplorerState => ({
   assetDir: '',
   collapsedPids: [],
+  errorCodeFrame: '',
   errorMessage: '',
+  errorStack: '',
   focus: 0,
   focused: true,
   focusedIndex: -1,

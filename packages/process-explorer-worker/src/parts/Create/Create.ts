@@ -16,7 +16,9 @@ export const create = (
   const state: ProcessExplorerState = {
     assetDir,
     collapsedPids: [],
+    errorCodeFrame: '',
     errorMessage: '',
+    errorStack: '',
     focus: 0,
     focused: false,
     focusedIndex: -1,
