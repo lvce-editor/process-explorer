@@ -6,7 +6,9 @@ export const isEqual = (
 ): boolean => {
   return (
     oldState.initial === newState.initial &&
+    oldState.errorCodeFrame === newState.errorCodeFrame &&
     oldState.errorMessage === newState.errorMessage &&
+    oldState.errorStack === newState.errorStack &&
     oldState.visibleProcesses === newState.visibleProcesses
   )
 }

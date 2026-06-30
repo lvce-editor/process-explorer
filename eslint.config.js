@@ -11,6 +11,7 @@ export default [
       '@cspell/spellchecker': 'off',
       'github-actions/ci-versions': 'off',
       'devcontainer/post-create-command': 'off',
+      '@typescript-eslint/prefer-readonly-parameter-types': 'off',
     },
   },
   {
