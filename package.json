@@ -24,23 +24,6 @@
   "engines": {
     "node": ">=18"
   },
-  "jest": {
-    "injectGlobals": false,
-    "extensionsToTreatAsEsm": [
-      ".ts"
-    ],
-    "moduleNameMapper": {
-      "^(\\.{1,2}/.*)\\.js$": "$1"
-    },
-    "transform": {
-      "^.+\\.tsx?$": [
-        "ts-jest",
-        {
-          "useESM": true
-        }
-      ]
-    }
-  },
   "devDependencies": {
     "@lerna/legacy-package-management": "^8.2.4",
     "@lvce-editor/eslint-config": "^14.0.1",

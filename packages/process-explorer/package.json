@@ -5,13 +5,7 @@
   "main": "src/processExplorerMain.ts",
   "bin": "bin/processExplorer.js",
   "type": "module",
-  "scripts": {
-    "build": "node scripts/build.js",
-    "lint": "eslint . && prettier --check .",
-    "test": "node --unhandled-rejections=warn --experimental-vm-modules ./node_modules/jest/bin/jest.js --detectOpenHandles --forceExit",
-    "test:watch": "node --unhandled-rejections=warn --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch",
-    "type-check": "tsc"
-  },
+  "scripts": {},
   "keywords": [
     "Lvce Editor"
   ],
@@ -51,25 +45,10 @@
     }
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.29.7",
     "@jest/globals": "^30.4.1",
-    "@lerna/legacy-package-management": "^8.2.4",
-    "@lvce-editor/eslint-config": "^14.0.1",
-    "@rollup/plugin-babel": "^7.1.0",
-    "@rollup/plugin-node-resolve": "^16.0.3",
     "@types/node": "^20.12.8",
-    "eslint": "^10.6.0",
     "execa": "^9.6.1",
     "jest": "^30.4.2",
-    "knip": "^6.23.0",
-    "lerna": "^8.2.3",
-    "prettier": "^3.9.3",
-    "rollup": "^4.17.2",
-    "ts-jest": "^29.4.11",
-    "typescript": "^6.0.3"
-  },
-  "prettier": {
-    "semi": false,
-    "singleQuote": true
+    "ts-jest": "^29.4.11"
   }
 }
