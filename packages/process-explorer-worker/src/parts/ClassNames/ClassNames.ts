@@ -1,5 +1,4 @@
 export const Cell = 'ProcessExplorerCell'
-export const Empty = ''
 export const Error = 'ProcessExplorerError'
 export const HeaderCell = 'ProcessExplorerHeaderCell'
 export const NameCell = 'ProcessExplorerNameCell'
