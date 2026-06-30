@@ -14,6 +14,7 @@ interface BundleJsOptions {
   readonly cwd: string
   readonly from: string
   readonly outFile: string
+  readonly browser?: boolean
   readonly codeSplitting?: boolean
   readonly external?: readonly string[]
   readonly typescript?: boolean
@@ -23,6 +24,7 @@ export const bundleJs = async ({
   cwd,
   from,
   outFile,
+  browser = false,
   codeSplitting = false,
   external = [],
   typescript = from.endsWith('.ts'),
@@ -30,6 +32,7 @@ export const bundleJs = async ({
   try {
     const plugins: RollupOptions['plugins'] = [
       nodeResolve({
+        browser,
         preferBuiltins: true,
       }),
     ]

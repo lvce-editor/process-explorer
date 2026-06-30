@@ -5,6 +5,11 @@ import { bundleJs } from './bundleJs.ts'
 import { root } from './root.ts'
 
 const dist = join(root, 'dist')
+const processExplorerWorkerDist = join(
+  root,
+  '.tmp',
+  'dist-process-explorer-worker',
+)
 
 const readJson = async (path: string): Promise<any> => {
   const content = await readFile(path, 'utf8')
@@ -65,7 +70,9 @@ const replace = async ({
 }
 
 await rm(dist, { recursive: true, force: true })
+await rm(processExplorerWorkerDist, { recursive: true, force: true })
 await mkdir(dist, { recursive: true })
+await mkdir(processExplorerWorkerDist, { recursive: true })
 
 await bundleJs({
   cwd: root,
@@ -78,6 +85,14 @@ await bundleJs({
     '@lvce-editor/verror',
     '@vscode/windows-process-tree',
   ],
+})
+
+await bundleJs({
+  cwd: root,
+  from: 'packages/process-explorer-worker/src/processExplorerWorkerMain.ts',
+  outFile: '.tmp/dist-process-explorer-worker/index.js',
+  browser: true,
+  external: ['electron'],
 })
 
 await cp(join(root, 'packages', 'process-explorer', 'bin'), join(dist, 'bin'), {
