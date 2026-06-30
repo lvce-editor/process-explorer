@@ -1,0 +1,5 @@
+export const Grid = 'grid'
+export const GridCell = 'gridcell'
+export const None = 'none'
+export const Row = 'row'
+export const RowGroup = 'rowgroup'
