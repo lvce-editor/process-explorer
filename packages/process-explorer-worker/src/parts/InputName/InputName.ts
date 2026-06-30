@@ -1,0 +1,6 @@
+export const CollapseAll = 'CollapseAll'
+export const ExplorerInput = 'ExplorerInput'
+export const NewFile = 'NewFile'
+export const NewFolder = 'NewFolder'
+export const OpenFolder = 'OpenFolder'
+export const Refresh = 'Refresh'
