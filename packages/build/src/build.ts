@@ -80,8 +80,8 @@ await bundleJs({
   outFile: 'dist/dist/index.js',
   external: [
     '@lvce-editor/assert',
-    '@lvce-editor/ipc',
-    '@lvce-editor/json-rpc',
+    '@lvce-editor/rpc',
+    '@lvce-editor/rpc-registry',
     '@lvce-editor/verror',
     '@vscode/windows-process-tree',
   ],
