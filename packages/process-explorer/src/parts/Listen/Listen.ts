@@ -1,8 +1,12 @@
-import * as HandleIpc from '../HandleIpc/HandleIpc.ts'
+import * as CommandMap from '../CommandMap/CommandMap.ts'
+import * as CommandMapRef from '../CommandMapRef/CommandMapRef.ts'
 import * as IpcChild from '../IpcChild/IpcChild.ts'
 import * as IpcChildType from '../IpcChildType/IpcChildType.ts'
 
 export const listen = async (): Promise<void> => {
-  const ipc = await IpcChild.listen({ method: IpcChildType.Auto() })
-  HandleIpc.handleIpc(ipc)
+  CommandMapRef.set(CommandMap.commandMap)
+  await IpcChild.listen({
+    commandMap: CommandMap.commandMap,
+    method: IpcChildType.Auto(),
+  })
 }

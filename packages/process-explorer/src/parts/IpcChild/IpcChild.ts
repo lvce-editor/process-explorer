@@ -1,3 +1,4 @@
+import type { Rpc } from '@lvce-editor/rpc'
 import * as IpcChildModule from '../IpcChildModule/IpcChildModule.ts'
 
 interface ListenOptions {
@@ -8,16 +9,8 @@ interface ListenOptions {
 export const listen = async ({
   method,
   ...params
-}: ListenOptions): Promise<any> => {
-  const module = IpcChildModule.getModule(method)
-  // @ts-ignore
-  const rawIpc = module.listen(params)
-  // @ts-ignore
-  if (module.signal) {
-    // @ts-ignore
-    module.signal(rawIpc)
-  }
-  // @ts-ignore
-  const ipc = module.wrap(rawIpc)
-  return ipc
+}: ListenOptions): Promise<Rpc> => {
+  const create = IpcChildModule.getModule(method)
+  const rpc = await create(params)
+  return rpc
 }

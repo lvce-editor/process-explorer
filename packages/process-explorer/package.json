@@ -23,8 +23,8 @@
   },
   "dependencies": {
     "@lvce-editor/assert": "^1.5.1",
-    "@lvce-editor/ipc": "^16.0.0",
-    "@lvce-editor/json-rpc": "^8.0.0",
+    "@lvce-editor/rpc": "^6.4.0",
+    "@lvce-editor/rpc-registry": "^9.27.0",
     "@lvce-editor/verror": "^1.7.0"
   },
   "optionalDependencies": {

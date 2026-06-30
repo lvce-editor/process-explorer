@@ -1,7 +1,7 @@
-import * as ParentIpc from '../ParentIpc/ParentIpc.ts'
+import { MainProcess } from '@lvce-editor/rpc-registry'
 
 export const createPidMap = async (): Promise<
   Readonly<Record<number, string>>
 > => {
-  return ParentIpc.invoke('CreatePidMap.createPidMap')
+  return MainProcess.invoke('CreatePidMap.createPidMap')
 }
