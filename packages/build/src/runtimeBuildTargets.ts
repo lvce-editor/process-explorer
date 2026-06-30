@@ -14,4 +14,8 @@ export const runtimeBuildTargets = [
     outfile: 'packages/git-web/dist/gitWebMain.js',
     external: ['electron', 'node*'],
   },
-] satisfies ReadonlyArray<Pick<BuildOptions, 'entryPoints' | 'outfile' | 'external'> & { entryPoint: string }>
+] satisfies ReadonlyArray<
+  Pick<BuildOptions, 'entryPoints' | 'outfile' | 'external'> & {
+    entryPoint: string
+  }
+>

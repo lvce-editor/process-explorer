@@ -14,16 +14,26 @@ fs.rmSync(join(root, 'dist'), { recursive: true, force: true })
 
 fs.mkdirSync(path.join(root, 'dist'))
 
-const packageJson = JSON.parse(readFileSync(join(extension, 'package.json')).toString())
+const packageJson = JSON.parse(
+  readFileSync(join(extension, 'package.json')).toString(),
+)
 delete packageJson.jest
 delete packageJson.devDependencies
 delete packageJson.scripts
 
-fs.writeFileSync(join(root, 'dist', 'package.json'), JSON.stringify(packageJson, null, 2) + '\n')
+fs.writeFileSync(
+  join(root, 'dist', 'package.json'),
+  JSON.stringify(packageJson, null, 2) + '\n',
+)
 fs.copyFileSync(join(root, 'README.md'), join(root, 'dist', 'README.md'))
 fs.copyFileSync(join(extension, 'icon.png'), join(root, 'dist', 'icon.png'))
-fs.copyFileSync(join(extension, 'extension.json'), join(root, 'dist', 'extension.json'))
-fs.cpSync(join(extension, 'icons'), join(root, 'dist', 'icons'), { recursive: true })
+fs.copyFileSync(
+  join(extension, 'extension.json'),
+  join(root, 'dist', 'extension.json'),
+)
+fs.cpSync(join(extension, 'icons'), join(root, 'dist', 'icons'), {
+  recursive: true,
+})
 fs.cpSync(join(extension, 'src'), join(root, 'dist', 'src'), {
   recursive: true,
 })
@@ -45,7 +55,15 @@ fs.cpSync(node, join(root, 'dist', 'node'), {
   verbatimSymlinks: true,
 })
 
-const replace = async ({ path, occurrence, replacement }: { path: string; occurrence: string; replacement: string }): Promise<void> => {
+const replace = async ({
+  path,
+  occurrence,
+  replacement,
+}: {
+  path: string
+  occurrence: string
+  replacement: string
+}): Promise<void> => {
   const oldContent = readFileSync(path, 'utf-8')
   const newContent = oldContent.replace(occurrence, replacement)
   writeFileSync(path, newContent)
@@ -59,7 +77,10 @@ const updateRelativeJsImportsToTs = async (dir: string): Promise<void> => {
     }
     const absolutePath = join(dirent.parentPath, dirent.name)
     const oldContent = await readFile(absolutePath, 'utf8')
-    const newContent = oldContent.replace(/((?:import|export)\s+(?:[^'"]*?\s+from\s+)?['"])(\.\.?\/[^'"]+)\.js(['"])/g, '$1$2.ts$3')
+    const newContent = oldContent.replace(
+      /((?:import|export)\s+(?:[^'"]*?\s+from\s+)?['"])(\.\.?\/[^'"]+)\.js(['"])/g,
+      '$1$2.ts$3',
+    )
     if (newContent !== oldContent) {
       await writeFile(absolutePath, newContent)
     }
@@ -67,7 +88,14 @@ const updateRelativeJsImportsToTs = async (dir: string): Promise<void> => {
 }
 
 await replace({
-  path: join(root, 'dist', 'src', 'parts', 'GetGitClientPath', 'GetGitClientPath.ts'),
+  path: join(
+    root,
+    'dist',
+    'src',
+    'parts',
+    'GetGitClientPath',
+    'GetGitClientPath.ts',
+  ),
   occurrence: '../node/',
   replacement: 'node/',
 })
@@ -95,25 +123,54 @@ await replace({
 })
 
 await replace({
-  path: join(root, 'dist', 'git-requests', 'src', 'parts', 'IconRoot', 'IconRoot.ts'),
+  path: join(
+    root,
+    'dist',
+    'git-requests',
+    'src',
+    'parts',
+    'IconRoot',
+    'IconRoot.ts',
+  ),
   occurrence: '/extension',
   replacement: '',
 })
 
 await replace({
-  path: join(root, 'dist', 'git-requests', 'src', 'parts', 'IconRoot', 'IconRoot.ts'),
+  path: join(
+    root,
+    'dist',
+    'git-requests',
+    'src',
+    'parts',
+    'IconRoot',
+    'IconRoot.ts',
+  ),
   occurrence: 'parts.slice(0, -5)',
   replacement: 'parts.slice(0, -3)',
 })
 
-await rm(join(root, 'dist', 'node', 'node_modules', '.bin'), { recursive: true, force: true })
-await rm(join(root, 'dist', 'node', 'node_modules', 'which', 'bin'), { recursive: true, force: true })
+await rm(join(root, 'dist', 'node', 'node_modules', '.bin'), {
+  recursive: true,
+  force: true,
+})
+await rm(join(root, 'dist', 'node', 'node_modules', 'which', 'bin'), {
+  recursive: true,
+  force: true,
+})
 
 const shouldRemoveNodeModule = (dirent: string): boolean => {
-  return dirent.endsWith('test') || dirent.endsWith('.d.ts') || dirent.endsWith('.npmignore') || dirent.endsWith('CHANGELOG.md')
+  return (
+    dirent.endsWith('test') ||
+    dirent.endsWith('.d.ts') ||
+    dirent.endsWith('.npmignore') ||
+    dirent.endsWith('CHANGELOG.md')
+  )
 }
 
-const dirents = await readdir(join(root, 'dist', 'node', 'node_modules'), { recursive: true })
+const dirents = await readdir(join(root, 'dist', 'node', 'node_modules'), {
+  recursive: true,
+})
 for (const dirent of dirents) {
   if (shouldRemoveNodeModule(dirent)) {
     const absolutePath = join(root, 'dist', 'node', 'node_modules', dirent)
@@ -121,11 +178,23 @@ for (const dirent of dirents) {
   }
 }
 
-await bundleJs(join(root, 'dist', 'git-worker', 'src', 'gitWorkerMain.ts'), join(root, 'dist', 'git-worker', 'dist', 'gitWorkerMain.js'), false)
+await bundleJs(
+  join(root, 'dist', 'git-worker', 'src', 'gitWorkerMain.ts'),
+  join(root, 'dist', 'git-worker', 'dist', 'gitWorkerMain.js'),
+  false,
+)
 
-await bundleJs(join(root, 'dist', 'git-web', 'src', 'gitWebMain.ts'), join(root, 'dist', 'git-web', 'dist', 'gitWebMain.js'), false)
+await bundleJs(
+  join(root, 'dist', 'git-web', 'src', 'gitWebMain.ts'),
+  join(root, 'dist', 'git-web', 'dist', 'gitWebMain.js'),
+  false,
+)
 
-await bundleJs(join(root, 'dist', 'src', 'gitMain.ts'), join(root, 'dist', 'dist', 'gitMain.js'), false)
+await bundleJs(
+  join(root, 'dist', 'src', 'gitMain.ts'),
+  join(root, 'dist', 'dist', 'gitMain.js'),
+  false,
+)
 
 await packageExtension({
   highestCompression: true,

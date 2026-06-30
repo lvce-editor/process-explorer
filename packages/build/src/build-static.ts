@@ -10,7 +10,15 @@ await cp(path.join(root, 'dist'), path.join(root, 'dist2'), {
   force: true,
 })
 
-const sharedProcessPath = join(root, 'packages', 'server', 'node_modules', '@lvce-editor', 'shared-process', 'index.js')
+const sharedProcessPath = join(
+  root,
+  'packages',
+  'server',
+  'node_modules',
+  '@lvce-editor',
+  'shared-process',
+  'index.js',
+)
 
 const sharedProcessUrl = pathToFileURL(sharedProcessPath).toString()
 
@@ -30,4 +38,8 @@ const isCommitHash = (dirent: string): boolean => {
 const dirents = await readdir(path.join(root, 'dist'))
 const commitHash = dirents.find(isCommitHash) || ''
 
-await cp(path.join(root, 'dist2'), path.join(root, 'dist', commitHash, 'extensions', 'builtin.git'), { recursive: true, force: true })
+await cp(
+  path.join(root, 'dist2'),
+  path.join(root, 'dist', commitHash, 'extensions', 'builtin.git'),
+  { recursive: true, force: true },
+)
