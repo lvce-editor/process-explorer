@@ -128,3 +128,36 @@ test('parsePsOutput - macos', () => {
     },
   ])
 })
+
+test('parsePsOutput - empty output', () => {
+  expect(ParsePsOutput.parsePsOutput('', 1, {})).toEqual([])
+})
+
+test('parsePsOutput - skips process without known parent depth', () => {
+  const output = `10 1 0.0 0.1 root
+20 999 0.0 0.1 orphan
+30 10 0.0 0.1 child`
+
+  expect(ParsePsOutput.parsePsOutput(output, 10, {})).toEqual([
+    {
+      cmd: 'root',
+      depth: 1,
+      name: 'main',
+      pid: 10,
+      ppid: 1,
+    },
+    {
+      cmd: 'child',
+      depth: 2,
+      name: 'child',
+      pid: 30,
+      ppid: 10,
+    },
+  ])
+})
+
+test('parsePsOutput - line could not be parsed', () => {
+  expect(() => ParsePsOutput.parsePsOutput('10 1 0.0', 10, {})).toThrow(
+    'line could not be parsed',
+  )
+})

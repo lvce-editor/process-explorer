@@ -26,3 +26,7 @@ test('getModule', () => {
     NodeWebSocketRpcClient.create,
   )
 })
+
+test('getModule - unexpected ipc type', () => {
+  expect(() => IpcChildModule.getModule(0)).toThrow('unexpected ipc type')
+})
