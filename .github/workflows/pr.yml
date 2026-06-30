@@ -30,6 +30,7 @@ jobs:
       - name: npm ci
         run: npm ci
         if: steps.npm-cache.outputs.cache-hit != 'true'
+      - run: npm run lint
       - run: npm test
       - run: npm run type-check
       - name: Build
