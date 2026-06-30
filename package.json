@@ -3,8 +3,6 @@
   "version": "0.0.0-dev",
   "private": true,
   "description": "Process Explorer",
-  "main": "src/processExplorerMain.ts",
-  "bin": "bin/processExplorer.js",
   "type": "module",
   "scripts": {
     "build": "node packages/build/src/build.ts",
