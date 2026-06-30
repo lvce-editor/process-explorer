@@ -50,7 +50,6 @@
   "devDependencies": {
     "@jest/globals": "^30.4.1",
     "@types/node": "^20.12.8",
-    "execa": "^9.6.1",
     "jest": "^30.4.2",
     "ts-jest": "^29.4.11"
   }

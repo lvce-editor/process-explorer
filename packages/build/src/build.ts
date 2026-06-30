@@ -84,7 +84,7 @@ await cp(join(root, 'bin'), join(dist, 'bin'), { recursive: true })
 
 await replace({
   path: join(dist, 'bin', 'processExplorer.js'),
-  occurrence: 'src/processExplorerMain.js',
+  occurrence: 'packages/process-explorer/src/processExplorerMain.js',
   replacement: 'dist/index.js',
 })
 

@@ -1,3 +1,3 @@
 #!/usr/bin/env node
 
-import '../src/processExplorerMain.js'
+import '../packages/process-explorer/src/processExplorerMain.js'
