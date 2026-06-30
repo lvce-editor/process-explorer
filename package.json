@@ -33,7 +33,7 @@
     "eslint": "^10.6.0",
     "knip": "^6.23.0",
     "lerna": "^8.2.3",
-    "prettier": "^3.9.3",
+    "prettier": "^3.9.4",
     "typescript": "^6.0.3"
   },
   "prettier": {
