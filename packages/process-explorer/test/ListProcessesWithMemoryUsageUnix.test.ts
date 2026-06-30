@@ -16,7 +16,7 @@ jest.unstable_mockModule('../src/parts/IsMacos/IsMacos.ts', () => ({
 }))
 
 jest.unstable_mockModule('node:path', () => ({
-  join: (...parts: readonly any[]) => {
+  join: (...parts: readonly any[]): string => {
     return parts.join('/')
   },
 }))
@@ -28,7 +28,7 @@ jest.unstable_mockModule('node:fs/promises', () => ({
 }))
 
 jest.unstable_mockModule('../src/parts/CreatePidMap/CreatePidMap.js', () => ({
-  createPidMap() {
+  createPidMap(): Record<string, never> {
     return {}
   },
 }))

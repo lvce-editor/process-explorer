@@ -6,7 +6,10 @@ import * as IpcId from '../IpcId/IpcId.ts'
 import * as ParentIpc from '../ParentIpc/ParentIpc.ts'
 import * as ProcessExplorerFrontendIpc from '../ProcessExplorerFrontendIpc/ProcessExplorerFrontendIpc.ts'
 
-export const handleElectronMessagePort = async (messagePort, ipcId) => {
+export const handleElectronMessagePort = async (
+  messagePort: unknown,
+  ipcId: number,
+): Promise<void> => {
   Assert.object(messagePort)
   // Assert.number(ipcId)
   const ipc = await IpcChild.listen({

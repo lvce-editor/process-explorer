@@ -5,7 +5,10 @@ interface ListenOptions {
   readonly [key: string]: unknown
 }
 
-export const listen = async ({ method, ...params }: ListenOptions) => {
+export const listen = async ({
+  method,
+  ...params
+}: ListenOptions): Promise<any> => {
   const module = IpcChildModule.getModule(method)
   // @ts-ignore
   const rawIpc = module.listen(params)

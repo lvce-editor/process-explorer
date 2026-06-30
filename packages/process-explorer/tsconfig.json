@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["esnext"],
+    "lib": ["esnext", "dom"],
     "target": "esnext",
     "checkJs": true,
     "module": "NodeNext",
@@ -10,8 +10,8 @@
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
     "noUncheckedSideEffectImports": true,
-    "noImplicitAny": false,
-    "skipLibCheck": true,
+    "noImplicitAny": true,
+    "skipLibCheck": false,
     "rootDir": ".",
     "noEmit": true,
     "allowSyntheticDefaultImports": true,

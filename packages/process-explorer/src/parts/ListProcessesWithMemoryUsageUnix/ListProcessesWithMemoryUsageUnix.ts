@@ -1,10 +1,13 @@
+import type { ProcessItemWithDepth } from '../ProcessItem/ProcessItem.ts'
 import * as AddAccurateMemoryUsage from '../AddAccurateMemoryUsage/AddAccurateMemoryUsage.ts'
 import * as CreatePidMap from '../CreatePidMap/CreatePidMap.ts'
 import * as GetPsOutput from '../GetPsOutput/GetPsOutput.ts'
 import * as HasPositiveMemoryUsage from '../HasPositiveMemoryUsage/HasPositiveMemoryUsage.ts'
 import * as ParsePsOutput from '../ParsePsOutput/ParsePsOutput.ts'
 
-export const listProcessesWithMemoryUsage = async (rootPid) => {
+export const listProcessesWithMemoryUsage = async (
+  rootPid: number,
+): Promise<readonly ProcessItemWithDepth[]> => {
   // console.time('getPsOutput')
   const stdout = await GetPsOutput.getPsOutput()
   const pidMap = await CreatePidMap.createPidMap()

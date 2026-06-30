@@ -1,7 +1,10 @@
+import type * as WindowsProcessTreeModule from '@vscode/windows-process-tree'
 import * as IsDlOpenError from '../IsDlOpenError/IsDlOpenError.ts'
 import { VError } from '../VError/VError.ts'
 
-export const loadWindowProcessTree = async () => {
+export const loadWindowProcessTree = async (): Promise<
+  typeof WindowsProcessTreeModule
+> => {
   try {
     return await import('@vscode/windows-process-tree')
   } catch (error) {

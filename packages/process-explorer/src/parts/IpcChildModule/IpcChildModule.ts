@@ -7,7 +7,7 @@ import {
 } from '@lvce-editor/ipc'
 import * as IpcChildType from '../IpcChildType/IpcChildType.ts'
 
-export const getModule = (method) => {
+export const getModule = (method: number): any => {
   switch (method) {
     case IpcChildType.ElectronMessagePort:
       return IpcChildWithElectronMessagePort

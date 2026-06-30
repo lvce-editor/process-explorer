@@ -5,7 +5,7 @@ import { VError } from '../VError/VError.ts'
 
 const execFile = promisify(_execFile)
 
-export const getPsOutput = async () => {
+export const getPsOutput = async (): Promise<string> => {
   try {
     const { stdout } = await execFile('ps', [
       '-ax',

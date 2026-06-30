@@ -1,4 +1,4 @@
-export const isEnoentErrorWindows = (error) => {
+export const isEnoentErrorWindows = (error: any): boolean => {
   return (
     error &&
     error.message &&

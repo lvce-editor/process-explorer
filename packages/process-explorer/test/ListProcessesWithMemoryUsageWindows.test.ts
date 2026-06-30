@@ -6,7 +6,7 @@ beforeEach(() => {
 })
 
 jest.unstable_mockModule('../src/parts/CreatePidMap/CreatePidMap.ts', () => ({
-  createPidMap() {
+  createPidMap(): Record<string, never> {
     return {}
   },
 }))
