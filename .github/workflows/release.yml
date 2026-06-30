@@ -13,7 +13,7 @@ permissions:
 jobs:
   create-release:
     name: create-release
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       upload_url: ${{ steps.release.outputs.upload_url }}
       rg_version: ${{ env.RG_VERSION }}
@@ -32,15 +32,15 @@ jobs:
         with:
           tag_name: ${{ env.RG_VERSION }}
           name: ${{ env.RG_VERSION }}
+          draft: true
 
   build-release:
     name: build-release
     needs: ['create-release']
     strategy:
       fail-fast: true
-      max-parallel: 1
       matrix:
-        os: [windows-2022, macos-14, ubuntu-22.04]
+        os: [windows-2025, macos-15, ubuntu-24.04]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
@@ -64,8 +64,49 @@ jobs:
       - run: npm test
       - run: npm run type-check
       - run: npm run build
+      - uses: actions/upload-artifact@v6
+        if: matrix.os == 'ubuntu-24.04'
+        with:
+          name: dist
+          path: ./dist
+      - uses: actions/upload-artifact@v6
+        if: matrix.os == 'ubuntu-24.04'
+        with:
+          name: dist-process-explorer-worker
+          path: ./.tmp/dist-process-explorer-worker
+
+  publish-release:
+    name: publish-release
+    needs: ['create-release', 'build-release']
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v7
+        with:
+          name: dist
+          path: ./dist
+      - uses: actions/download-artifact@v7
+        with:
+          name: dist-process-explorer-worker
+          path: ./.tmp/dist-process-explorer-worker
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
+
       - run: npm publish --access public
-        if: matrix.os == 'ubuntu-22.04'
         working-directory: ./dist
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - run: npm publish --access public
+        working-directory: ./.tmp/dist-process-explorer-worker
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${{ needs.create-release.outputs.rg_version }}"
+          gh release edit $VERSION --draft=false
