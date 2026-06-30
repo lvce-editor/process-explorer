@@ -1,6 +1,5 @@
 import { FileSystemWorker, RendererWorker } from '@lvce-editor/rpc-registry'
 
-// TODO use direct connection
 export const invoke = async (
   method: string,
   ...params: readonly unknown[]
