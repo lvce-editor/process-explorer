@@ -19,9 +19,7 @@ const requiresSocket = (): boolean => {
   return false
 }
 
-export const handleMessage = (
-  event: JsonRpcMessageEvent,
-): Promise<void> => {
+export const handleMessage = (event: JsonRpcMessageEvent): Promise<void> => {
   return JsonRpc.handleJsonRpcMessage(
     event.target,
     event.data,

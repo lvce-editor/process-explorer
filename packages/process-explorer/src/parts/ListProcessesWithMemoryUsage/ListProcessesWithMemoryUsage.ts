@@ -1,4 +1,7 @@
-import type { ProcessItem, ProcessItemWithDepth } from '../ProcessItem/ProcessItem.ts'
+import type {
+  ProcessItem,
+  ProcessItemWithDepth,
+} from '../ProcessItem/ProcessItem.ts'
 import * as IsWindows from '../IsWindows/IsWindows.ts'
 
 interface ListProcessesWithMemoryUsageModule {
