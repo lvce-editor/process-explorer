@@ -3,6 +3,7 @@
   "include": [],
   "references": [
     { "path": "./packages/build" },
-    { "path": "./packages/process-explorer" }
+    { "path": "./packages/process-explorer" },
+    { "path": "./packages/process-explorer-worker" }
   ]
 }
