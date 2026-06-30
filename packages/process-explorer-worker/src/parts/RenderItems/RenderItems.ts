@@ -152,7 +152,9 @@ const hasError = (state: ProcessExplorerState): boolean => {
   return Boolean(state.errorMessage || state.errorCodeFrame || state.errorStack)
 }
 
-const getErrorDom = (state: ProcessExplorerState): readonly VirtualDomNode[] => {
+const getErrorDom = (
+  state: ProcessExplorerState,
+): readonly VirtualDomNode[] => {
   const messageDom = getErrorSectionDom(
     state.errorMessage,
     VirtualDomElements.Div,
@@ -182,7 +184,9 @@ const getErrorDom = (state: ProcessExplorerState): readonly VirtualDomNode[] => 
   ]
 }
 
-const getTableDom = (state: ProcessExplorerState): readonly VirtualDomNode[] => {
+const getTableDom = (
+  state: ProcessExplorerState,
+): readonly VirtualDomNode[] => {
   return [
     {
       childCount: 1,
