@@ -9,6 +9,7 @@ export const test: Test = async ({ Command, expect, Locator }) => {
   // assert
   const processExplorer = Locator('.ProcessExplorer')
   const processExplorerGrid = Locator('[aria-label="Process Explorer"]')
+  const processExplorerError = processExplorer.locator('.ProcessExplorerError')
   const nameHeader = processExplorer
     .locator('.ProcessExplorerHeaderCell')
     .nth(0)
@@ -17,6 +18,7 @@ export const test: Test = async ({ Command, expect, Locator }) => {
     .locator('.ProcessExplorerHeaderCell')
     .nth(2)
   await expect(processExplorer).toBeVisible()
+  await expect(processExplorerError).not.toBeVisible()
   await expect(processExplorerGrid).toBeVisible()
   await expect(nameHeader).toHaveText('Name')
   await expect(pidHeader).toHaveText('PID')
