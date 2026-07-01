@@ -1,13 +1,22 @@
 import { expect, jest, test } from '@jest/globals'
 
-const sendMessagePortToProcessExplorer = jest.fn(async () => undefined)
+const sendMessagePortToProcessExplorer = jest.fn(
+  async (_port: MessagePort) => undefined,
+)
 const mockRpc = {
   invoke: jest.fn(),
 }
-const create = jest.fn(async ({ send }: { send: (port: MessagePort) => Promise<void> }) => {
-  await send({} as MessagePort)
-  return mockRpc
-})
+const create = jest.fn(
+  async ({
+    send,
+  }: {
+    readonly commandMap: Readonly<Record<string, any>>
+    readonly send: (port: MessagePort) => Promise<void>
+  }) => {
+    await send({} as MessagePort)
+    return mockRpc
+  },
+)
 
 jest.unstable_mockModule('@lvce-editor/rpc', () => ({
   LazyTransferMessagePortRpcParent: {

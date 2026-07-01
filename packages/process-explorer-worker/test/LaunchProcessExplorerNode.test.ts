@@ -3,7 +3,12 @@ import { expect, jest, test } from '@jest/globals'
 const mockRpc = {
   invoke: jest.fn(),
 }
-const create = jest.fn(async () => mockRpc)
+const create = jest.fn(
+  async (_options: {
+    readonly commandMap: Readonly<Record<string, any>>
+    readonly type: string
+  }) => mockRpc,
+)
 
 jest.unstable_mockModule('@lvce-editor/rpc', () => ({
   LazyWebSocketRpcParent2: {
