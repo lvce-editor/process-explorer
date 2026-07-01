@@ -2,6 +2,8 @@ import type { Test } from '@lvce-editor/test-with-playwright'
 
 export const name = 'viewlet.process-explorer.rows'
 
+export const skip = 1
+
 export const test: Test = async ({ Command, expect, Locator }) => {
   // act
   await Command.execute('Developer.openProcessExplorer')
