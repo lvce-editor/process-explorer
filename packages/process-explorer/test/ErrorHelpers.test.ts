@@ -43,5 +43,5 @@ test('isEnoentErrorWindows', () => {
 test('isEsrchError', () => {
   expect(IsEsrchError.isEsrchError({ code: ErrorCodes.ESRCH })).toBe(true)
   expect(IsEsrchError.isEsrchError({ code: ErrorCodes.ENOENT })).toBe(false)
-  expect(IsEsrchError.isEsrchError(null)).toBe(null)
+  expect(IsEsrchError.isEsrchError(null)).toBeNull()
 })

@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
-import * as ListProcessesWithMemoryUsage from '../src/parts/ListProcessesWithMemoryUsage/ListProcessesWithMemoryUsage.ts'
 import * as ListProcessesWithMemoryUsageIpc from '../src/parts/ListProcessesWithMemoryUsage/ListProcessesWithMemoryUsage.ipc.ts'
+import * as ListProcessesWithMemoryUsage from '../src/parts/ListProcessesWithMemoryUsage/ListProcessesWithMemoryUsage.ts'
 
 test('name', () => {
   expect(ListProcessesWithMemoryUsageIpc.name).toBe(
