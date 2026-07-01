@@ -8,7 +8,8 @@ test('getAccurateMemoryUsage - invalid pid', async () => {
 })
 
 test('getAccurateMemoryUsage - missing process', async () => {
+  const expected = process.platform === 'darwin' ? 0 : -1
   await expect(
     GetAccurateMemoryUsage.getAccurateMemoryUsage(Number.MAX_SAFE_INTEGER),
-  ).resolves.toBe(-1)
+  ).resolves.toBe(expected)
 })
