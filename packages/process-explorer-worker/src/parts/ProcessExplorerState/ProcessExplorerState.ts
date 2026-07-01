@@ -13,6 +13,7 @@ export interface ProcessExplorerState {
   readonly height: number
   readonly initial: boolean
   readonly parentUid: number
+  readonly platform: number
   readonly processes: readonly ProcessInfo[]
   readonly rootPid: number
   readonly uid: number

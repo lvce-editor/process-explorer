@@ -10,7 +10,7 @@ export const create = (
   height: number,
   _args: unknown,
   parentUid: number,
-  _platform: number = 0,
+  platform: number = 0,
   assetDir: string = '',
 ): ProcessExplorerState => {
   const state: ProcessExplorerState = {
@@ -25,6 +25,7 @@ export const create = (
     height,
     initial: true,
     parentUid,
+    platform,
     processes: [],
     rootPid: 0,
     uid: id,

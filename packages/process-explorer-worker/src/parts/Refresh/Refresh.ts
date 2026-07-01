@@ -1,8 +1,9 @@
 import { ErrorWorker } from '@lvce-editor/rpc-registry'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
 import type { ProcessInfo } from '../ProcessInfo/ProcessInfo.ts'
-import * as FileSystemWorker from '../FileSystemWorker/FileSystemWorker.ts'
 import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses.ts'
+import * as InitializeProcessExplorer from '../InitializeProcessExplorer/InitializeProcessExplorer.ts'
+import * as ProcessExplorerModule from '../ProcessExplorer/ProcessExplorer.ts'
 
 interface PreparedError {
   readonly codeFrame: string | undefined
@@ -46,13 +47,15 @@ export const refresh = async (
   state: ProcessExplorerState,
 ): Promise<ProcessExplorerState> => {
   try {
+    await InitializeProcessExplorer.initializeProcessExplorer(state.platform)
     const rootPid =
       state.rootPid ||
-      (await FileSystemWorker.invoke('ProcessId.getMainProcessId'))
-    const processes: readonly ProcessInfo[] = await FileSystemWorker.invoke(
-      'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
-      rootPid,
-    )
+      (await ProcessExplorerModule.invoke('ProcessId.getMainProcessId'))
+    const processes: readonly ProcessInfo[] =
+      await ProcessExplorerModule.invoke(
+        'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
+        rootPid,
+      )
     const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
       processes,
       state.collapsedPids,

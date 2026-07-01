@@ -1,7 +1,9 @@
 import { expect, jest, test } from '@jest/globals'
 import { createMockRpc } from '@lvce-editor/rpc'
-import { ErrorWorker, RendererWorker } from '@lvce-editor/rpc-registry'
+import { ErrorWorker } from '@lvce-editor/rpc-registry'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
+import * as InitializeProcessExplorer from '../src/parts/InitializeProcessExplorer/InitializeProcessExplorer.ts'
+import * as ProcessExplorerModule from '../src/parts/ProcessExplorer/ProcessExplorer.ts'
 import * as Refresh from '../src/parts/Refresh/Refresh.ts'
 
 interface DisposableMockRpc {
@@ -15,6 +17,19 @@ const registerErrorWorkerMock = (
   return {
     [Symbol.dispose](): void {
       ErrorWorker.set(createMockRpc({ commandMap: {} }))
+    },
+  }
+}
+
+const registerProcessExplorerMock = (
+  commandMap: Record<string, unknown>,
+): DisposableMockRpc => {
+  InitializeProcessExplorer.clear()
+  ProcessExplorerModule.set(createMockRpc({ commandMap }))
+  return {
+    [Symbol.dispose](): void {
+      InitializeProcessExplorer.clear()
+      ProcessExplorerModule.clear()
     },
   }
 }
@@ -51,7 +66,7 @@ const processes = [
 ]
 
 test('refresh - success', async () => {
-  using _mockRpc = RendererWorker.registerMockRpc({
+  using _mockRpc = registerProcessExplorerMock({
     'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage': jest.fn(
       () => processes,
     ),
@@ -77,7 +92,7 @@ test('refresh - error', async () => {
     message: 'Pretty no pid',
     stack: 'Pretty stack',
   }))
-  using _mockRpc = RendererWorker.registerMockRpc({
+  using _mockRpc = registerProcessExplorerMock({
     'ProcessId.getMainProcessId': jest.fn(() => {
       throw new Error('no pid')
     }),
@@ -95,7 +110,7 @@ test('refresh - error', async () => {
 })
 
 test('refresh - error prepare fails', async () => {
-  using _mockRpc = RendererWorker.registerMockRpc({
+  using _mockRpc = registerProcessExplorerMock({
     'ProcessId.getMainProcessId': jest.fn(() => {
       throw new Error('no pid')
     }),
