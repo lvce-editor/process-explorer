@@ -3,6 +3,7 @@ import * as CollapseAll from '../CollapseAll/CollapseAll.ts'
 import * as Create from '../Create/Create.ts'
 import * as DebugProcess from '../DebugProcess/DebugProcess.ts'
 import * as Diff2 from '../Diff2/Diff2.ts'
+import * as Dispose from '../Dispose/Dispose.ts'
 import * as ExpandAll from '../ExpandAll/ExpandAll.ts'
 import * as FocusFirst from '../FocusFirst/FocusFirst.ts'
 import * as FocusLast from '../FocusLast/FocusLast.ts'
@@ -34,6 +35,7 @@ export const commandMap = {
     DebugProcess.debugProcess,
   ),
   'ProcessExplorer.diff2': Diff2.diff2,
+  'ProcessExplorer.dispose': Dispose.dispose,
   'ProcessExplorer.expandAll': ProcessExplorerStates.wrapCommand(
     ExpandAll.expandAll,
   ),
@@ -87,4 +89,5 @@ export const commandMap = {
   'ProcessExplorer.renderEventListeners':
     RenderEventListeners.renderEventListeners,
   'ProcessExplorer.terminate': terminate,
+  'ProcessExplorer.update': ProcessExplorerStates.wrapCommand(Refresh.refresh),
 }
