@@ -47,8 +47,8 @@ test('render2', () => {
     visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
   }
   ProcessExplorerStates.set(uid, oldState, newState)
-  expect(Diff2.diff2(uid)).toEqual([DiffType.RenderItems])
-  const commands = Render2.render2(uid, [DiffType.RenderItems])
-  expect(commands[0][0]).toBe(ViewletCommand.SetDom2)
+  expect(Diff2.diff2(uid)).toEqual([DiffType.RenderIncremental])
+  const commands = Render2.render2(uid, [DiffType.RenderIncremental])
+  expect(commands[0][0]).toBe(ViewletCommand.SetPatches)
   expect(ProcessExplorerStates.get(uid).oldState).toBe(newState)
 })
