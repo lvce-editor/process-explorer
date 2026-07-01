@@ -43,10 +43,15 @@ const getRemoteRootProcessId = async (
   }
 }
 
-export const getMainProcessId = (
+interface GetMainProcessIdOptions {
+  readonly includeElectronData?: boolean
+  readonly childProcessId?: number
+}
+
+export const getMainProcessId = ({
   includeElectronData = true,
   childProcessId = process.ppid,
-): Promise<number> => {
+}: GetMainProcessIdOptions = {}): Promise<number> => {
   if (includeElectronData) {
     return Promise.resolve(process.ppid)
   }

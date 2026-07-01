@@ -54,7 +54,7 @@ export const refresh = async (
       state.rootPid ||
       (await ProcessExplorerModule.invoke(
         'ProcessId.getMainProcessId',
-        includeElectronData,
+        { includeElectronData },
       ))
     const processes: readonly ProcessInfo[] =
       await ProcessExplorerModule.invoke(
