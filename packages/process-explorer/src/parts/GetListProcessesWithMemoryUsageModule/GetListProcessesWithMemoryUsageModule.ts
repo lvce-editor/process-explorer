@@ -7,6 +7,7 @@ import * as IsWindows from '../IsWindows/IsWindows.ts'
 export interface ListProcessesWithMemoryUsageModule {
   readonly listProcessesWithMemoryUsage: (
     rootPid: number,
+    includeElectronData?: boolean,
   ) => Promise<readonly ProcessItem[] | readonly ProcessItemWithDepth[]>
 }
 

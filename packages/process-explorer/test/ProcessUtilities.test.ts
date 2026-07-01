@@ -24,8 +24,8 @@ test('splitLines', () => {
   expect(SplitLines.splitLines('a\nb\n')).toEqual(['a', 'b', ''])
 })
 
-test('getMainProcessId', () => {
-  expect(ProcessId.getMainProcessId()).toBe(process.ppid)
+test('getMainProcessId', async () => {
+  expect(await ProcessId.getMainProcessId()).toBe(process.ppid)
 })
 
 test('requiresSocket', () => {

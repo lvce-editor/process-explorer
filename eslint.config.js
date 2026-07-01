@@ -22,6 +22,7 @@ export default [
       'packages/process-explorer-worker/test/InitializeProcessExplorer.test.ts',
       'packages/process-explorer-worker/test/LaunchProcessExplorerElectron.test.ts',
       'packages/process-explorer-worker/test/LaunchProcessExplorerNode.test.ts',
+      'packages/process-explorer-worker/test/Refresh.test.ts',
     ],
     rules: {
       'jest/no-restricted-jest-methods': 'off',

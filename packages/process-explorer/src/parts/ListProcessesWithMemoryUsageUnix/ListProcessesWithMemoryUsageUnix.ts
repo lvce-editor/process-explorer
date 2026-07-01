@@ -7,10 +7,11 @@ import * as ParsePsOutput from '../ParsePsOutput/ParsePsOutput.ts'
 
 export const listProcessesWithMemoryUsage = async (
   rootPid: number,
+  includeElectronData = true,
 ): Promise<readonly ProcessItemWithDepth[]> => {
   // console.time('getPsOutput')
   const stdout = await GetPsOutput.getPsOutput()
-  const pidMap = await CreatePidMap.createPidMap()
+  const pidMap = includeElectronData ? await CreatePidMap.createPidMap() : {}
   // console.log({ stdout })
   // console.timeEnd('getPsOutput')
   // console.time('parsePsOutput')
