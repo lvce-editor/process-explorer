@@ -31,6 +31,9 @@ export const handleWebSocket = async (
   request: unknown,
   rpcId?: number,
 ): Promise<void> => {
+  if (!handle || !request) {
+    return
+  }
   Assert.object(handle)
   Assert.object(request)
   const rpc = await createWebSocketRpc(

@@ -10,9 +10,9 @@ const mockRpc: Rpc = {
   invokeAndTransfer: jest.fn(async () => {}),
   send: jest.fn(),
 }
-const create = jest.fn(async (_options: unknown) => mockRpc)
 
 test('createWebSocketRpc', async () => {
+  const create = jest.fn(async (_options: unknown) => mockRpc)
   const commandMap = {
     test: jest.fn(),
   }
@@ -28,4 +28,13 @@ test('createWebSocketRpc', async () => {
     request,
     requiresSocket: RequiresSocket.requiresSocket,
   })
+})
+
+test('handleWebSocket - socket closed during transfer', async () => {
+  await expect(HandleWebSocket.handleWebSocket(undefined, {})).resolves.toBe(
+    undefined,
+  )
+  await expect(HandleWebSocket.handleWebSocket({}, undefined)).resolves.toBe(
+    undefined,
+  )
 })
