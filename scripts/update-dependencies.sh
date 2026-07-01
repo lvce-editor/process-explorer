@@ -30,6 +30,7 @@ function updateDependencies {
 cd packages/build                                   && updateDependencies && cd ../.. &&
 cd packages/process-explorer-worker                                     && updateDependencies && cd ../.. &&
 cd packages/process-explorer                                  && updateDependencies && cd ../.. &&
+cd packages/server                                  && updateDependencies && cd ../.. &&
 
 echo "Great Success!"
 

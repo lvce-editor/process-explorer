@@ -4,6 +4,7 @@
   "references": [
     { "path": "./packages/build" },
     { "path": "./packages/process-explorer" },
+    { "path": "./packages/server" },
     { "path": "./packages/process-explorer-worker" }
   ]
 }
