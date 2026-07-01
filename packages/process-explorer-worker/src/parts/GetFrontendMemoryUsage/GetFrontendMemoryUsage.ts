@@ -26,9 +26,7 @@ const isValidMemoryValue = (value: unknown): value is number => {
   return typeof value === 'number' && Number.isFinite(value) && value >= 0
 }
 
-const getMeasureMemory = ():
-  | (() => Promise<MemoryMeasurement>)
-  | undefined => {
+const getMeasureMemory = (): (() => Promise<MemoryMeasurement>) | undefined => {
   const { measureUserAgentSpecificMemory } =
     performance as PerformanceWithMemory
   if (typeof measureUserAgentSpecificMemory !== 'function') {
