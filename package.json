@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "node packages/build/src/build.ts",
+    "build:watch": "./packages/build/node_modules/.bin/esbuild --format=esm --bundle --external:node:buffer --external:electron --external:node:worker_threads --watch packages/process-explorer-worker/src/processExplorerWorkerMain.ts --outfile=.tmp/dist-process-explorer-worker/index.js",
     "postinstall": "lerna bootstrap --ci",
     "lint": "eslint . && prettier --check . && knip --no-config-hints",
     "test": "lerna run test",
