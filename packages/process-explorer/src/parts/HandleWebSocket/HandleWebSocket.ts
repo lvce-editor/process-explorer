@@ -33,6 +33,10 @@ export const handleWebSocket = async (
 ): Promise<void> => {
   Assert.object(handle)
   Assert.object(request)
-  const rpc = await createWebSocketRpc(NodeWebSocketRpcClient.create, handle, request)
+  const rpc = await createWebSocketRpc(
+    NodeWebSocketRpcClient.create,
+    handle,
+    request,
+  )
   RpcRegistry.setRpc(rpc, rpcId)
 }

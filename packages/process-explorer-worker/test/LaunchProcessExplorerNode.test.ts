@@ -16,9 +16,8 @@ jest.unstable_mockModule('@lvce-editor/rpc', () => ({
   },
 }))
 
-const LaunchProcessExplorerNode = await import(
-  '../src/parts/LaunchProcessExplorerNode/LaunchProcessExplorerNode.ts'
-)
+const LaunchProcessExplorerNode =
+  await import('../src/parts/LaunchProcessExplorerNode/LaunchProcessExplorerNode.ts')
 
 test('launchProcessExplorerNode - creates websocket rpc', async () => {
   const rpc = await LaunchProcessExplorerNode.launchProcessExplorerNode()

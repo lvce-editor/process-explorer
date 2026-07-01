@@ -30,9 +30,8 @@ jest.unstable_mockModule('@lvce-editor/rpc-registry', () => ({
   },
 }))
 
-const LaunchProcessExplorerElectron = await import(
-  '../src/parts/LaunchProcessExplorerElectron/LaunchProcessExplorerElectron.ts'
-)
+const LaunchProcessExplorerElectron =
+  await import('../src/parts/LaunchProcessExplorerElectron/LaunchProcessExplorerElectron.ts')
 
 test('launchProcessExplorerElectron - creates rpc and sends message port', async () => {
   const rpc =

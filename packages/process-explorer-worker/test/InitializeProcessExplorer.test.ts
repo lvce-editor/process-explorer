@@ -32,9 +32,8 @@ jest.unstable_mockModule(
   }),
 )
 
-const InitializeProcessExplorer = await import(
-  '../src/parts/InitializeProcessExplorer/InitializeProcessExplorer.ts'
-)
+const InitializeProcessExplorer =
+  await import('../src/parts/InitializeProcessExplorer/InitializeProcessExplorer.ts')
 
 beforeEach(() => {
   InitializeProcessExplorer.clear()

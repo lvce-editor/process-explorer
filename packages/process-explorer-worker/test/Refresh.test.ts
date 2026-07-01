@@ -1,5 +1,4 @@
 import { expect, jest, test } from '@jest/globals'
-import type { Rpc } from '@lvce-editor/rpc'
 import { createMockRpc } from '@lvce-editor/rpc'
 import { ErrorWorker } from '@lvce-editor/rpc-registry'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
@@ -26,7 +25,7 @@ const registerProcessExplorerMock = (
   commandMap: Record<string, unknown>,
 ): DisposableMockRpc => {
   InitializeProcessExplorer.clear()
-  ProcessExplorerModule.set(createMockRpc({ commandMap }) as unknown as Rpc)
+  ProcessExplorerModule.set(createMockRpc({ commandMap }))
   return {
     [Symbol.dispose](): void {
       InitializeProcessExplorer.clear()

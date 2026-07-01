@@ -3,27 +3,34 @@ import * as LaunchProcessExplorerElectron from '../LaunchProcessExplorerElectron
 import * as LaunchProcessExplorerNode from '../LaunchProcessExplorerNode/LaunchProcessExplorerNode.ts'
 import * as ProcessExplorerModule from '../ProcessExplorer/ProcessExplorer.ts'
 
-let initializedPlatform = 0
+interface State {
+  initializedPlatform: number
+}
+
+const state: State = {
+  initializedPlatform: 0,
+}
 
 export const initializeProcessExplorer = async (
   platform: number,
 ): Promise<void> => {
-  if (initializedPlatform === platform) {
+  if (state.initializedPlatform === platform) {
     return
   }
   if (platform === PlatformType.Electron) {
-    const rpc = await LaunchProcessExplorerElectron.launchProcessExplorerElectron()
+    const rpc =
+      await LaunchProcessExplorerElectron.launchProcessExplorerElectron()
     ProcessExplorerModule.set(rpc)
-    initializedPlatform = platform
+    state.initializedPlatform = platform
     return
   }
   if (platform === PlatformType.Remote) {
     const rpc = await LaunchProcessExplorerNode.launchProcessExplorerNode()
     ProcessExplorerModule.set(rpc)
-    initializedPlatform = platform
+    state.initializedPlatform = platform
   }
 }
 
 export const clear = (): void => {
-  initializedPlatform = 0
+  state.initializedPlatform = 0
 }

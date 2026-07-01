@@ -51,10 +51,11 @@ export const refresh = async (
     const rootPid =
       state.rootPid ||
       (await ProcessExplorerModule.invoke('ProcessId.getMainProcessId'))
-    const processes: readonly ProcessInfo[] = await ProcessExplorerModule.invoke(
-      'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
-      rootPid,
-    )
+    const processes: readonly ProcessInfo[] =
+      await ProcessExplorerModule.invoke(
+        'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
+        rootPid,
+      )
     const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
       processes,
       state.collapsedPids,
