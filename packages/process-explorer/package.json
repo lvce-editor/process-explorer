@@ -28,7 +28,7 @@
     "@lvce-editor/verror": "^1.7.0"
   },
   "optionalDependencies": {
-    "@vscode/windows-process-tree": "^0.7.0"
+    "@vscode/windows-process-tree": "^0.8.0"
   },
   "jest": {
     "injectGlobals": false,
