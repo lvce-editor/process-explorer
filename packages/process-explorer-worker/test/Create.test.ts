@@ -10,6 +10,7 @@ test('create', () => {
     height: 400,
     initial: true,
     parentUid: 5,
+    platform: 0,
     uid: 7,
     width: 300,
     x: 1,
