@@ -4,4 +4,5 @@ export interface ProcessInfo {
   readonly name: string
   readonly pid: number
   readonly ppid: number
+  readonly synthetic?: true
 }

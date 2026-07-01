@@ -11,6 +11,7 @@ export interface ProcessExplorerState {
   readonly focused: boolean
   readonly focusedIndex: number
   readonly height: number
+  readonly includeFrontendMemoryUsage: boolean
   readonly initial: boolean
   readonly parentUid: number
   readonly platform: number
