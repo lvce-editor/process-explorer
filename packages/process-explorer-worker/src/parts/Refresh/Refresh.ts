@@ -1,13 +1,33 @@
+import { ErrorWorker } from '@lvce-editor/rpc-registry'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
 import type { ProcessInfo } from '../ProcessInfo/ProcessInfo.ts'
-import * as FileSystemWorker from '../FileSystemWorker/FileSystemWorker.ts'
 import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses.ts'
+import * as InitializeProcessExplorer from '../InitializeProcessExplorer/InitializeProcessExplorer.ts'
+import * as ProcessExplorerModule from '../ProcessExplorer/ProcessExplorer.ts'
+
+interface PreparedError {
+  readonly codeFrame: string | undefined
+  readonly message: string | undefined
+  readonly stack: string | undefined
+}
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof Error) {
     return error.message
   }
   return String(error)
+}
+
+const prepareError = async (error: unknown): Promise<PreparedError> => {
+  try {
+    return await ErrorWorker.prepare(error)
+  } catch {
+    return {
+      codeFrame: undefined,
+      message: getErrorMessage(error),
+      stack: undefined,
+    }
+  }
 }
 
 const getFocusedIndex = (
@@ -27,13 +47,15 @@ export const refresh = async (
   state: ProcessExplorerState,
 ): Promise<ProcessExplorerState> => {
   try {
+    await InitializeProcessExplorer.initializeProcessExplorer(state.platform)
     const rootPid =
       state.rootPid ||
-      (await FileSystemWorker.invoke('ProcessId.getMainProcessId'))
-    const processes: readonly ProcessInfo[] = await FileSystemWorker.invoke(
-      'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
-      rootPid,
-    )
+      (await ProcessExplorerModule.invoke('ProcessId.getMainProcessId'))
+    const processes: readonly ProcessInfo[] =
+      await ProcessExplorerModule.invoke(
+        'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
+        rootPid,
+      )
     const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
       processes,
       state.collapsedPids,
@@ -41,7 +63,9 @@ export const refresh = async (
     )
     return {
       ...state,
+      errorCodeFrame: '',
       errorMessage: '',
+      errorStack: '',
       focusedIndex: getFocusedIndex(state.focusedIndex, visibleProcesses),
       initial: false,
       processes,
@@ -49,9 +73,12 @@ export const refresh = async (
       visibleProcesses,
     }
   } catch (error) {
+    const prettyError = await prepareError(error)
     return {
       ...state,
-      errorMessage: getErrorMessage(error),
+      errorCodeFrame: prettyError.codeFrame || '',
+      errorMessage: prettyError.message || getErrorMessage(error),
+      errorStack: prettyError.stack || '',
       initial: false,
     }
   }

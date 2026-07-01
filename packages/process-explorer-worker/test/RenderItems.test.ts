@@ -1,5 +1,6 @@
 import { expect, test } from '@jest/globals'
 import { ViewletCommand } from '@lvce-editor/constants'
+import { VirtualDomElements } from '@lvce-editor/virtual-dom-worker'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as RenderItems from '../src/parts/RenderItems/RenderItems.ts'
@@ -72,4 +73,52 @@ test('renderItems - initial is empty', () => {
     1,
     [],
   ])
+})
+
+test('renderItems - error only', () => {
+  const state = {
+    ...createDefaultState(),
+    errorCodeFrame: '1 | throw new Error()',
+    errorMessage: 'Pretty no pid',
+    errorStack: 'Pretty stack',
+    initial: false,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
+  }
+  const result = RenderItems.renderItems(createDefaultState(), state)
+  expect(result[0]).toBe(ViewletCommand.SetDom2)
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      className: 'ProcessExplorerError',
+      type: VirtualDomElements.Div,
+    }),
+  )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      text: 'Pretty no pid',
+      type: VirtualDomElements.Text,
+    }),
+  )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      text: '1 | throw new Error()',
+      type: VirtualDomElements.Text,
+    }),
+  )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      text: 'Pretty stack',
+      type: VirtualDomElements.Text,
+    }),
+  )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      childCount: 1,
+      type: VirtualDomElements.Pre,
+    }),
+  )
+  expect(result[2]).not.toContainEqual(
+    expect.objectContaining({
+      className: 'ProcessExplorerTable',
+    }),
+  )
 })

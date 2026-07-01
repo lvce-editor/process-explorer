@@ -1,7 +1,38 @@
 import { expect, jest, test } from '@jest/globals'
-import { RendererWorker } from '@lvce-editor/rpc-registry'
+import { createMockRpc } from '@lvce-editor/rpc'
+import { ErrorWorker } from '@lvce-editor/rpc-registry'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
+import * as InitializeProcessExplorer from '../src/parts/InitializeProcessExplorer/InitializeProcessExplorer.ts'
+import * as ProcessExplorerModule from '../src/parts/ProcessExplorer/ProcessExplorer.ts'
 import * as Refresh from '../src/parts/Refresh/Refresh.ts'
+
+interface DisposableMockRpc {
+  [Symbol.dispose](): void
+}
+
+const registerErrorWorkerMock = (
+  commandMap: Record<string, unknown>,
+): DisposableMockRpc => {
+  ErrorWorker.set(createMockRpc({ commandMap }))
+  return {
+    [Symbol.dispose](): void {
+      ErrorWorker.set(createMockRpc({ commandMap: {} }))
+    },
+  }
+}
+
+const registerProcessExplorerMock = (
+  commandMap: Record<string, unknown>,
+): DisposableMockRpc => {
+  InitializeProcessExplorer.clear()
+  ProcessExplorerModule.set(createMockRpc({ commandMap }))
+  return {
+    [Symbol.dispose](): void {
+      InitializeProcessExplorer.clear()
+      ProcessExplorerModule.clear()
+    },
+  }
+}
 
 const processes = [
   {
@@ -35,7 +66,7 @@ const processes = [
 ]
 
 test('refresh - success', async () => {
-  using _mockRpc = RendererWorker.registerMockRpc({
+  using _mockRpc = registerProcessExplorerMock({
     'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage': jest.fn(
       () => processes,
     ),
@@ -43,7 +74,9 @@ test('refresh - success', async () => {
   })
   const result = await Refresh.refresh(createDefaultState())
   expect(result).toMatchObject({
+    errorCodeFrame: '',
     errorMessage: '',
+    errorStack: '',
     focusedIndex: 0,
     initial: false,
     rootPid: 1,
@@ -54,12 +87,42 @@ test('refresh - success', async () => {
 })
 
 test('refresh - error', async () => {
-  using _mockRpc = RendererWorker.registerMockRpc({
+  const prepare = jest.fn((_error: unknown) => ({
+    codeFrame: '1 | throw new Error()',
+    message: 'Pretty no pid',
+    stack: 'Pretty stack',
+  }))
+  using _mockRpc = registerProcessExplorerMock({
     'ProcessId.getMainProcessId': jest.fn(() => {
       throw new Error('no pid')
     }),
   })
+  using _mockErrorRpc = registerErrorWorkerMock({
+    'Errors.prepare': prepare,
+  })
   const result = await Refresh.refresh(createDefaultState())
+  expect(prepare).toHaveBeenCalledTimes(1)
+  expect(prepare.mock.calls[0][0]).toBeInstanceOf(Error)
+  expect(result.errorCodeFrame).toBe('1 | throw new Error()')
+  expect(result.errorMessage).toBe('Pretty no pid')
+  expect(result.errorStack).toBe('Pretty stack')
+  expect(result.initial).toBe(false)
+})
+
+test('refresh - error prepare fails', async () => {
+  using _mockRpc = registerProcessExplorerMock({
+    'ProcessId.getMainProcessId': jest.fn(() => {
+      throw new Error('no pid')
+    }),
+  })
+  using _mockErrorRpc = registerErrorWorkerMock({
+    'Errors.prepare': jest.fn(() => {
+      throw new Error('prepare failed')
+    }),
+  })
+  const result = await Refresh.refresh(createDefaultState())
+  expect(result.errorCodeFrame).toBe('')
   expect(result.errorMessage).toBe('no pid')
+  expect(result.errorStack).toBe('')
   expect(result.initial).toBe(false)
 })
