@@ -10,6 +10,7 @@ export const createDefaultState = (): ProcessExplorerState => ({
   focused: true,
   focusedIndex: -1,
   height: 100,
+  includeFrontendMemoryUsage: false,
   initial: false,
   parentUid: 0,
   platform: 0,
