@@ -11,6 +11,7 @@ import * as WindowsProcessTreeDataFlag from '../WindowsProcessTreeDataFlag/Windo
 
 export const listProcessesWithMemoryUsage = async (
   rootPid: number,
+  includeElectronData = true,
 ): Promise<readonly ProcessItem[]> => {
   try {
     const processList = await GetWindowsProcessList.getProcessList(
@@ -21,7 +22,7 @@ export const listProcessesWithMemoryUsage = async (
     if (!processList) {
       throw new VError(`Root process ${rootPid} not found`)
     }
-    const pidMap = await CreatePidMap.createPidMap()
+    const pidMap = includeElectronData ? await CreatePidMap.createPidMap() : {}
     const completeProcessList =
       await AddWindowsProcessCpuUsage.addCpuUsage(processList)
     const result = ToResult.toResult(

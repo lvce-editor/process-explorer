@@ -1,3 +1,4 @@
+import { PlatformType } from '@lvce-editor/constants'
 import { ErrorWorker } from '@lvce-editor/rpc-registry'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
 import type { ProcessInfo } from '../ProcessInfo/ProcessInfo.ts'
@@ -48,13 +49,18 @@ export const refresh = async (
 ): Promise<ProcessExplorerState> => {
   try {
     await InitializeProcessExplorer.initializeProcessExplorer(state.platform)
+    const includeElectronData = state.platform === PlatformType.Electron
     const rootPid =
       state.rootPid ||
-      (await ProcessExplorerModule.invoke('ProcessId.getMainProcessId'))
+      (await ProcessExplorerModule.invoke(
+        'ProcessId.getMainProcessId',
+        includeElectronData,
+      ))
     const processes: readonly ProcessInfo[] =
       await ProcessExplorerModule.invoke(
         'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
         rootPid,
+        includeElectronData,
       )
     const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
       processes,

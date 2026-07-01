@@ -6,7 +6,8 @@ import * as GetListProcessesWithMemoryUsageModule from '../GetListProcessesWithM
 
 export const listProcessesWithMemoryUsage = async (
   rootPid: number,
+  includeElectronData = true,
 ): Promise<readonly ProcessItem[] | readonly ProcessItemWithDepth[]> => {
   const module = await GetListProcessesWithMemoryUsageModule.getModule()
-  return module.listProcessesWithMemoryUsage(rootPid)
+  return module.listProcessesWithMemoryUsage(rootPid, includeElectronData)
 }

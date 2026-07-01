@@ -1,10 +1,25 @@
-import { expect, jest, test } from '@jest/globals'
+import { beforeEach, expect, jest, test } from '@jest/globals'
+import { PlatformType } from '@lvce-editor/constants'
 import { createMockRpc } from '@lvce-editor/rpc'
 import { ErrorWorker } from '@lvce-editor/rpc-registry'
-import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
-import * as InitializeProcessExplorer from '../src/parts/InitializeProcessExplorer/InitializeProcessExplorer.ts'
-import * as ProcessExplorerModule from '../src/parts/ProcessExplorer/ProcessExplorer.ts'
-import * as Refresh from '../src/parts/Refresh/Refresh.ts'
+
+const initializeProcessExplorer = jest.fn(
+  async (..._args: readonly unknown[]) => {},
+)
+
+jest.unstable_mockModule(
+  '../src/parts/InitializeProcessExplorer/InitializeProcessExplorer.ts',
+  () => ({
+    clear: jest.fn(),
+    initializeProcessExplorer,
+  }),
+)
+
+const { createDefaultState } =
+  await import('../src/parts/CreateDefaultState/CreateDefaultState.ts')
+const ProcessExplorerModule =
+  await import('../src/parts/ProcessExplorer/ProcessExplorer.ts')
+const Refresh = await import('../src/parts/Refresh/Refresh.ts')
 
 interface DisposableMockRpc {
   [Symbol.dispose](): void
@@ -24,11 +39,9 @@ const registerErrorWorkerMock = (
 const registerProcessExplorerMock = (
   commandMap: Record<string, unknown>,
 ): DisposableMockRpc => {
-  InitializeProcessExplorer.clear()
   ProcessExplorerModule.set(createMockRpc({ commandMap }))
   return {
     [Symbol.dispose](): void {
-      InitializeProcessExplorer.clear()
       ProcessExplorerModule.clear()
     },
   }
@@ -65,14 +78,24 @@ const processes = [
   },
 ]
 
-test('refresh - success', async () => {
+beforeEach(() => {
+  initializeProcessExplorer.mockClear()
+})
+
+test('refresh - success - remote', async () => {
+  const listProcessesWithMemoryUsage = jest.fn(
+    (..._args: readonly unknown[]) => processes,
+  )
+  const getMainProcessId = jest.fn((..._args: readonly unknown[]) => 1)
   using _mockRpc = registerProcessExplorerMock({
-    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage': jest.fn(
-      () => processes,
-    ),
-    'ProcessId.getMainProcessId': jest.fn(() => 1),
+    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage':
+      listProcessesWithMemoryUsage,
+    'ProcessId.getMainProcessId': getMainProcessId,
   })
-  const result = await Refresh.refresh(createDefaultState())
+  const result = await Refresh.refresh({
+    ...createDefaultState(),
+    platform: PlatformType.Remote,
+  })
   expect(result).toMatchObject({
     errorCodeFrame: '',
     errorMessage: '',
@@ -84,6 +107,30 @@ test('refresh - success', async () => {
   expect(result.visibleProcesses.map((process) => process.pid)).toEqual([
     1, 2, 3,
   ])
+  expect(initializeProcessExplorer).toHaveBeenCalledWith(PlatformType.Remote)
+  expect(getMainProcessId).toHaveBeenCalledWith(false)
+  expect(listProcessesWithMemoryUsage).toHaveBeenCalledWith(1, false)
+})
+
+test('refresh - success - electron', async () => {
+  const listProcessesWithMemoryUsage = jest.fn(
+    (..._args: readonly unknown[]) => processes,
+  )
+  const getMainProcessId = jest.fn((..._args: readonly unknown[]) => 1)
+  using _mockRpc = registerProcessExplorerMock({
+    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage':
+      listProcessesWithMemoryUsage,
+    'ProcessId.getMainProcessId': getMainProcessId,
+  })
+  const result = await Refresh.refresh({
+    ...createDefaultState(),
+    platform: PlatformType.Electron,
+  })
+
+  expect(result.rootPid).toBe(1)
+  expect(initializeProcessExplorer).toHaveBeenCalledWith(PlatformType.Electron)
+  expect(getMainProcessId).toHaveBeenCalledWith(true)
+  expect(listProcessesWithMemoryUsage).toHaveBeenCalledWith(1, true)
 })
 
 test('refresh - error', async () => {
