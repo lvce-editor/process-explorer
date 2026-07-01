@@ -52,10 +52,9 @@ export const refresh = async (
     const includeElectronData = state.platform === PlatformType.Electron
     const rootPid =
       state.rootPid ||
-      (await ProcessExplorerModule.invoke(
-        'ProcessId.getMainProcessId',
+      (await ProcessExplorerModule.invoke('ProcessId.getMainProcessId', {
         includeElectronData,
-      ))
+      }))
     const processes: readonly ProcessInfo[] =
       await ProcessExplorerModule.invoke(
         'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',

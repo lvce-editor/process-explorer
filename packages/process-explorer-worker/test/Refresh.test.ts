@@ -108,7 +108,7 @@ test('refresh - success - remote', async () => {
     1, 2, 3,
   ])
   expect(initializeProcessExplorer).toHaveBeenCalledWith(PlatformType.Remote)
-  expect(getMainProcessId).toHaveBeenCalledWith(false)
+  expect(getMainProcessId).toHaveBeenCalledWith({ includeElectronData: false })
   expect(listProcessesWithMemoryUsage).toHaveBeenCalledWith(1, false)
 })
 
@@ -129,7 +129,7 @@ test('refresh - success - electron', async () => {
 
   expect(result.rootPid).toBe(1)
   expect(initializeProcessExplorer).toHaveBeenCalledWith(PlatformType.Electron)
-  expect(getMainProcessId).toHaveBeenCalledWith(true)
+  expect(getMainProcessId).toHaveBeenCalledWith({ includeElectronData: true })
   expect(listProcessesWithMemoryUsage).toHaveBeenCalledWith(1, true)
 })
 
