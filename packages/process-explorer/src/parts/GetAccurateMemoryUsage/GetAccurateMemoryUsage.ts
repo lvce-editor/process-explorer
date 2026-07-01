@@ -1,28 +1,8 @@
-import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
 import * as Assert from '../Assert/Assert.ts'
-import * as EncodingType from '../EncodingType/EncodingType.ts'
-import * as IsEnoentError from '../IsEnoentError/IsEnoentError.ts'
-import * as IsEsrchError from '../IsEsrchError/IsEsrchError.ts'
+import * as GetProcStatmContent from '../GetProcStatmContent/GetProcStatmContent.ts'
 import * as IsMacos from '../IsMacos/IsMacos.ts'
 import * as ParseMemory from '../ParseMemory/ParseMemory.ts'
 import { VError } from '../VError/VError.ts'
-
-const getContent = async (pid: number): Promise<string> => {
-  try {
-    const filePath = join('/proc', String(pid), 'statm')
-    const content = await readFile(filePath, EncodingType.Utf8)
-    return content
-  } catch (error) {
-    if (
-      IsEnoentError.isEnoentError(error) ||
-      IsEsrchError.isEsrchError(error)
-    ) {
-      return ''
-    }
-    throw error
-  }
-}
 
 export const getAccurateMemoryUsage = async (pid: number): Promise<number> => {
   try {
@@ -30,7 +10,7 @@ export const getAccurateMemoryUsage = async (pid: number): Promise<number> => {
     if (IsMacos.isMacOs) {
       return 0
     }
-    const content = await getContent(pid)
+    const content = await GetProcStatmContent.getContent(pid)
     if (!content) {
       return -1
     }

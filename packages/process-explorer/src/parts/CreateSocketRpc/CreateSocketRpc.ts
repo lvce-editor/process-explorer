@@ -1,4 +1,4 @@
-import { type Rpc } from '@lvce-editor/rpc'
+import type { Rpc } from '@lvce-editor/rpc'
 import * as CommandMap from '../GetCommandMap/GetCommandMap.ts'
 
 interface CreateSocketRpc {

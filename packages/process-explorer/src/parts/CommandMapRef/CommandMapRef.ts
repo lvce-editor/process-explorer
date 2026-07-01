@@ -1,15 +1,5 @@
-interface State {
-  commandMap: Readonly<Record<string, any>>
-}
-
-const state: State = {
-  commandMap: {},
-}
+import * as SetCommandMap from '../SetCommandMap/SetCommandMap.ts'
 
 export const set = (commandMap: Readonly<Record<string, any>>): void => {
-  state.commandMap = commandMap
-}
-
-export const get = (): Readonly<Record<string, any>> => {
-  return state.commandMap
+  SetCommandMap.set(commandMap)
 }
