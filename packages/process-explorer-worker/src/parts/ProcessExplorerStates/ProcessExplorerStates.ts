@@ -8,5 +8,6 @@ export const {
   registerCommands,
   set,
   wrapCommand,
+  wrapGetter,
   wrapLoadContent,
 } = ViewletRegistry.create<ProcessExplorerState>()

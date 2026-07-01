@@ -1,29 +1,7 @@
-import { RendererWorker } from '@lvce-editor/rpc-registry'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
-import type { VisibleProcess } from '../VisibleProcess/VisibleProcess.ts'
-import * as GetMenuItems from '../GetMenuItems/GetMenuItems.ts'
-import * as Signal from '../Signal/Signal.ts'
-
-interface ContextMenuEvent {
-  readonly data?: string
-  readonly type: string
-}
-
-const handleContextMenuSelect = async (
-  label: string,
-  process: VisibleProcess,
-): Promise<void> => {
-  switch (label) {
-    case GetMenuItems.DebugProcess:
-      await RendererWorker.invoke('AttachDebugger.attachDebugger', process.pid)
-      return
-    case GetMenuItems.KillProcess:
-      await RendererWorker.invoke('Process.kill', process.pid, Signal.SigTerm)
-      return
-    default:
-      return
-  }
-}
+import * as ContextMenu from '../ContextMenu/ContextMenu.ts'
+import * as MenuEntryId from '../MenuEntryId/MenuEntryId.ts'
+import * as ProcessExplorerStates from '../ProcessExplorerStates/ProcessExplorerStates.ts'
 
 export const handleContextMenu = async (
   state: ProcessExplorerState,
@@ -35,17 +13,15 @@ export const handleContextMenu = async (
   if (!process) {
     return state
   }
-  const menuItems = GetMenuItems.getMenuItems(process)
-  const event: ContextMenuEvent = await RendererWorker.invoke(
-    'ElectronContextMenu.openContextMenu',
-    menuItems,
-    x,
-    y,
-    process,
-  )
-  if (event.type === 'close' || !event.data) {
-    return state
+  const newState: ProcessExplorerState = {
+    ...state,
+    focused: false,
+    focusedIndex: index,
   }
-  await handleContextMenuSelect(event.data, process)
-  return state
+  ProcessExplorerStates.set(state.uid, state, newState)
+  await ContextMenu.show2(state.uid, MenuEntryId.ProcessExplorer, x, y, {
+    index,
+    menuId: MenuEntryId.ProcessExplorer,
+  })
+  return newState
 }

@@ -1,6 +1,7 @@
 import { terminate } from '@lvce-editor/viewlet-registry'
 import * as CollapseAll from '../CollapseAll/CollapseAll.ts'
 import * as Create from '../Create/Create.ts'
+import * as DebugProcess from '../DebugProcess/DebugProcess.ts'
 import * as Diff2 from '../Diff2/Diff2.ts'
 import * as ExpandAll from '../ExpandAll/ExpandAll.ts'
 import * as FocusFirst from '../FocusFirst/FocusFirst.ts'
@@ -8,6 +9,8 @@ import * as FocusLast from '../FocusLast/FocusLast.ts'
 import * as FocusNext from '../FocusNext/FocusNext.ts'
 import * as FocusPrevious from '../FocusPrevious/FocusPrevious.ts'
 import * as GetKeyBindings from '../GetKeyBindings/GetKeyBindings.ts'
+import * as GetMenuEntries from '../GetMenuEntries/GetMenuEntries.ts'
+import * as GetMenuEntryIds from '../GetMenuEntryIds/GetMenuEntryIds.ts'
 import * as HandleArrowLeft from '../HandleArrowLeft/HandleArrowLeft.ts'
 import * as HandleArrowRight from '../HandleArrowRight/HandleArrowRight.ts'
 import * as HandleBlur from '../HandleBlur/HandleBlur.ts'
@@ -15,6 +18,7 @@ import * as HandleClickAt from '../HandleClickAt/HandleClickAt.ts'
 import * as HandleContextMenu from '../HandleContextMenu/HandleContextMenu.ts'
 import * as HandleDoubleClick from '../HandleDoubleClick/HandleDoubleClick.ts'
 import * as HandleFocus from '../HandleFocus/HandleFocus.ts'
+import * as KillProcess from '../KillProcess/KillProcess.ts'
 import * as LoadContent from '../LoadContent/LoadContent.ts'
 import * as ProcessExplorerStates from '../ProcessExplorerStates/ProcessExplorerStates.ts'
 import * as Refresh from '../Refresh/Refresh.ts'
@@ -26,6 +30,9 @@ export const commandMap = {
     CollapseAll.collapseAll,
   ),
   'ProcessExplorer.create': Create.create,
+  'ProcessExplorer.debugProcess': ProcessExplorerStates.wrapCommand(
+    DebugProcess.debugProcess,
+  ),
   'ProcessExplorer.diff2': Diff2.diff2,
   'ProcessExplorer.expandAll': ProcessExplorerStates.wrapCommand(
     ExpandAll.expandAll,
@@ -44,6 +51,10 @@ export const commandMap = {
   ),
   'ProcessExplorer.getCommandIds': ProcessExplorerStates.getCommandIds,
   'ProcessExplorer.getKeyBindings': GetKeyBindings.getKeyBindings,
+  'ProcessExplorer.getMenuEntries': ProcessExplorerStates.wrapGetter(
+    GetMenuEntries.getMenuEntries,
+  ),
+  'ProcessExplorer.getMenuEntryIds': GetMenuEntryIds.getMenuEntryIds,
   'ProcessExplorer.handleArrowLeft': ProcessExplorerStates.wrapCommand(
     HandleArrowLeft.handleArrowLeft,
   ),
@@ -64,6 +75,9 @@ export const commandMap = {
   ),
   'ProcessExplorer.handleFocus': ProcessExplorerStates.wrapCommand(
     HandleFocus.handleFocus,
+  ),
+  'ProcessExplorer.killProcess': ProcessExplorerStates.wrapCommand(
+    KillProcess.killProcess,
   ),
   'ProcessExplorer.loadContent': ProcessExplorerStates.wrapLoadContent(
     LoadContent.loadContent,

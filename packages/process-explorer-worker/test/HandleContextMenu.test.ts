@@ -1,8 +1,9 @@
-import { expect, jest, test } from '@jest/globals'
+import { expect, test } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as HandleContextMenu from '../src/parts/HandleContextMenu/HandleContextMenu.ts'
+import * as MenuEntryId from '../src/parts/MenuEntryId/MenuEntryId.ts'
 
 const processes = [
   {
@@ -35,49 +36,45 @@ const processes = [
   },
 ]
 
-test('handleContextMenu - close', async () => {
-  using _mockRpc = RendererWorker.registerMockRpc({
-    'ElectronContextMenu.openContextMenu': jest.fn(() => ({ type: 'close' })),
+test('handleContextMenu', async () => {
+  using mockRpc = RendererWorker.registerMockRpc({
+    'ContextMenu.show2': () => undefined,
+  })
+  const state = {
+    ...createDefaultState(),
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
+  }
+  const result = await HandleContextMenu.handleContextMenu(state, 0, 10, 20)
+  expect(result).toEqual({
+    ...state,
+    focused: false,
+    focusedIndex: 0,
+  })
+  expect(mockRpc.invocations).toEqual([
+    [
+      'ContextMenu.show2',
+      state.uid,
+      MenuEntryId.ProcessExplorer,
+      10,
+      20,
+      {
+        index: 0,
+        menuId: MenuEntryId.ProcessExplorer,
+      },
+    ],
+  ])
+})
+
+test('handleContextMenu - invalid index', async () => {
+  using mockRpc = RendererWorker.registerMockRpc({
+    'ContextMenu.show2': () => undefined,
   })
   const state = {
     ...createDefaultState(),
     visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
   }
   await expect(
-    HandleContextMenu.handleContextMenu(state, 0, 10, 20),
+    HandleContextMenu.handleContextMenu(state, 99, 10, 20),
   ).resolves.toBe(state)
-})
-
-test('handleContextMenu - kill', async () => {
-  const kill = jest.fn()
-  using _mockRpc = RendererWorker.registerMockRpc({
-    'ElectronContextMenu.openContextMenu': jest.fn(() => ({
-      data: 'Kill Process',
-      type: 'select',
-    })),
-    'Process.kill': kill,
-  })
-  const state = {
-    ...createDefaultState(),
-    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
-  }
-  await HandleContextMenu.handleContextMenu(state, 0, 10, 20)
-  expect(kill).toHaveBeenCalledWith(1, 'SIGTERM')
-})
-
-test('handleContextMenu - debug', async () => {
-  const attachDebugger = jest.fn()
-  using _mockRpc = RendererWorker.registerMockRpc({
-    'AttachDebugger.attachDebugger': attachDebugger,
-    'ElectronContextMenu.openContextMenu': jest.fn(() => ({
-      data: 'Debug Process',
-      type: 'select',
-    })),
-  })
-  const state = {
-    ...createDefaultState(),
-    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
-  }
-  await HandleContextMenu.handleContextMenu(state, 1, 10, 20)
-  expect(attachDebugger).toHaveBeenCalledWith(2)
+  expect(mockRpc.invocations).toEqual([])
 })
