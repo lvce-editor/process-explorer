@@ -78,3 +78,34 @@ test('handleContextMenu - invalid index', async () => {
   ).resolves.toBe(state)
   expect(mockRpc.invocations).toEqual([])
 })
+
+test('handleContextMenu - defaults', async () => {
+  using mockRpc = RendererWorker.registerMockRpc({
+    'ContextMenu.show2': () => undefined,
+  })
+  const state = {
+    ...createDefaultState(),
+    focusedIndex: 1,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
+  }
+  const result = await HandleContextMenu.handleContextMenu(state)
+
+  expect(result).toEqual({
+    ...state,
+    focused: false,
+    focusedIndex: 1,
+  })
+  expect(mockRpc.invocations).toEqual([
+    [
+      'ContextMenu.show2',
+      state.uid,
+      MenuEntryId.ProcessExplorer,
+      0,
+      0,
+      {
+        index: 1,
+        menuId: MenuEntryId.ProcessExplorer,
+      },
+    ],
+  ])
+})

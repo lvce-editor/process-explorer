@@ -50,3 +50,13 @@ test('getVisibleProcesses', () => {
     pid: 2,
   })
 })
+
+test('getVisibleProcesses - uses first process when root pid is missing', () => {
+  const visible = GetVisibleProcesses.getVisibleProcesses(processes, [], 0)
+
+  expect(visible.map((process) => process.pid)).toEqual([1, 2, 3])
+})
+
+test('getVisibleProcesses - missing root process', () => {
+  expect(GetVisibleProcesses.getVisibleProcesses(processes, [], 99)).toEqual([])
+})

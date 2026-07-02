@@ -1,4 +1,5 @@
 import { expect, test } from '@jest/globals'
+import * as CollapseAll from '../src/parts/CollapseAll/CollapseAll.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as ExpandAll from '../src/parts/ExpandAll/ExpandAll.ts'
 
@@ -41,4 +42,30 @@ test('expandAll clears collapsed pids', () => {
     rootPid: 1,
   }
   expect(ExpandAll.expandAll(state).collapsedPids).toEqual([])
+})
+
+test('collapseAll collapses parent processes', () => {
+  const state = {
+    ...createDefaultState(),
+    processes,
+    rootPid: 1,
+  }
+  const result = CollapseAll.collapseAll(state)
+
+  expect(result.collapsedPids).toEqual([1, 2])
+  expect(result.focusedIndex).toBe(0)
+  expect(result.visibleProcesses.map((process) => process.pid)).toEqual([1])
+})
+
+test('collapseAll - no visible processes', () => {
+  const state = {
+    ...createDefaultState(),
+    processes: [],
+    rootPid: 1,
+  }
+  const result = CollapseAll.collapseAll(state)
+
+  expect(result.collapsedPids).toEqual([])
+  expect(result.focusedIndex).toBe(-1)
+  expect(result.visibleProcesses).toEqual([])
 })

@@ -64,3 +64,27 @@ test('handleArrowRight focuses first child for expanded process', () => {
   }
   expect(HandleArrowRight.handleArrowRight(state).focusedIndex).toBe(1)
 })
+
+test('handleArrowRight - missing focused process', () => {
+  const state = {
+    ...createDefaultState(),
+    focusedIndex: 99,
+    processes,
+    rootPid: 1,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
+  }
+
+  expect(HandleArrowRight.handleArrowRight(state)).toBe(state)
+})
+
+test('handleArrowRight - leaf process', () => {
+  const state = {
+    ...createDefaultState(),
+    focusedIndex: 2,
+    processes,
+    rootPid: 1,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
+  }
+
+  expect(HandleArrowRight.handleArrowRight(state)).toBe(state)
+})

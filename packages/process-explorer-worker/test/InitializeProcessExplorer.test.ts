@@ -50,6 +50,19 @@ test('initializeProcessExplorer - electron', async () => {
   expect(set).toHaveBeenCalledWith(electronRpc)
 })
 
+test('initializeProcessExplorer - already initialized', async () => {
+  await InitializeProcessExplorer.initializeProcessExplorer(
+    PlatformType.Electron,
+  )
+  await InitializeProcessExplorer.initializeProcessExplorer(
+    PlatformType.Electron,
+  )
+
+  expect(launchProcessExplorerElectron).toHaveBeenCalledTimes(1)
+  expect(launchProcessExplorerNode).not.toHaveBeenCalled()
+  expect(set).toHaveBeenCalledTimes(1)
+})
+
 test('initializeProcessExplorer - remote', async () => {
   await InitializeProcessExplorer.initializeProcessExplorer(PlatformType.Remote)
 
