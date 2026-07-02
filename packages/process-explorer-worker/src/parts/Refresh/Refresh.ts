@@ -1,36 +1,11 @@
 import { PlatformType } from '@lvce-editor/constants'
-import { ErrorWorker } from '@lvce-editor/rpc-registry'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
 import type { ProcessInfo } from '../ProcessInfo/ProcessInfo.ts'
 import * as GetFrontendMemoryUsage from '../GetFrontendMemoryUsage/GetFrontendMemoryUsage.ts'
 import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as InitializeProcessExplorer from '../InitializeProcessExplorer/InitializeProcessExplorer.ts'
+import * as PrepareError from '../PrepareError/PrepareError.ts'
 import * as ProcessExplorerModule from '../ProcessExplorer/ProcessExplorer.ts'
-
-interface PreparedError {
-  readonly codeFrame: string | undefined
-  readonly message: string | undefined
-  readonly stack: string | undefined
-}
-
-const getErrorMessage = (error: unknown): string => {
-  if (error instanceof Error) {
-    return error.message
-  }
-  return String(error)
-}
-
-const prepareError = async (error: unknown): Promise<PreparedError> => {
-  try {
-    return await ErrorWorker.prepare(error)
-  } catch {
-    return {
-      codeFrame: undefined,
-      message: getErrorMessage(error),
-      stack: undefined,
-    }
-  }
-}
 
 const getFocusedIndex = (
   oldFocusedIndex: number,
@@ -83,11 +58,11 @@ export const refresh = async (
       visibleProcesses,
     }
   } catch (error) {
-    const prettyError = await prepareError(error)
+    const prettyError = await PrepareError.prepareError(error)
     return {
       ...state,
       errorCodeFrame: prettyError.codeFrame || '',
-      errorMessage: prettyError.message || getErrorMessage(error),
+      errorMessage: prettyError.message || PrepareError.getErrorMessage(error),
       errorStack: prettyError.stack || '',
       initial: false,
     }
