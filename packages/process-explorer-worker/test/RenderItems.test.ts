@@ -55,6 +55,15 @@ test('renderItems - populated table', () => {
   expect(result[2]).toContainEqual(
     expect.objectContaining({
       ariaExpanded: true,
+      ariaLevel: 1,
+      className: 'ProcessExplorerRow',
+      name: '0',
+      title: 'main',
+    }),
+  )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      ariaExpanded: true,
       ariaLevel: 2,
       className: 'ProcessExplorerRow ProcessExplorerRowFocused',
       name: '1',

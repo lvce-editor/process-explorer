@@ -2,6 +2,7 @@ import { PlatformType } from '@lvce-editor/constants'
 import { ErrorWorker } from '@lvce-editor/rpc-registry'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
 import type { ProcessInfo } from '../ProcessInfo/ProcessInfo.ts'
+import * as GetFrontendMemoryUsage from '../GetFrontendMemoryUsage/GetFrontendMemoryUsage.ts'
 import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as InitializeProcessExplorer from '../InitializeProcessExplorer/InitializeProcessExplorer.ts'
 import * as ProcessExplorerModule from '../ProcessExplorer/ProcessExplorer.ts'
@@ -52,18 +53,21 @@ export const refresh = async (
     const includeElectronData = state.platform === PlatformType.Electron
     const rootPid =
       state.rootPid ||
-      (await ProcessExplorerModule.invoke(
-        'ProcessId.getMainProcessId',
+      (await ProcessExplorerModule.invoke('ProcessId.getMainProcessId', {
         includeElectronData,
-      ))
+      }))
     const processes: readonly ProcessInfo[] =
       await ProcessExplorerModule.invoke(
         'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
         rootPid,
         includeElectronData,
       )
+    const frontendMemoryProcesses = state.includeFrontendMemoryUsage
+      ? await GetFrontendMemoryUsage.getFrontendMemoryUsage(rootPid)
+      : []
+    const allProcesses = [...processes, ...frontendMemoryProcesses]
     const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
-      processes,
+      allProcesses,
       state.collapsedPids,
       rootPid,
     )
@@ -74,7 +78,7 @@ export const refresh = async (
       errorStack: '',
       focusedIndex: getFocusedIndex(state.focusedIndex, visibleProcesses),
       initial: false,
-      processes,
+      processes: allProcesses,
       rootPid,
       visibleProcesses,
     }
