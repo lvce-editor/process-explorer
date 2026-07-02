@@ -2,7 +2,7 @@ import type { Test } from '@lvce-editor/test-with-playwright'
 
 export const name = 'viewlet.process-explorer.open'
 
-export const skip = 1
+// export const skip = 1
 
 export const test: Test = async ({ Command, expect, Locator }) => {
   // act
