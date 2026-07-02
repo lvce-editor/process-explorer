@@ -7,6 +7,7 @@
   "scripts": {
     "build": "node packages/build/src/build.ts",
     "build:watch": "./packages/build/node_modules/.bin/esbuild --format=esm --bundle --external:node:buffer --external:electron --external:node:worker_threads --watch packages/process-explorer-worker/src/processExplorerWorkerMain.ts --outfile=.tmp/dist-process-explorer-worker/index.js",
+    "dev": "node packages/build/src/dev.ts",
     "e2e": "cd packages/e2e && npm run e2e",
     "e2e:firefox": "cd packages/e2e && npm run e2e:firefox",
     "e2e:firefox:headless": "cd packages/e2e && npm run e2e:firefox:headless",
