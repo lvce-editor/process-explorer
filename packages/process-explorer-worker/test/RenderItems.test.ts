@@ -72,6 +72,29 @@ test('renderItems - populated table', () => {
   )
 })
 
+test('renderItems - collapsed row', () => {
+  const state = {
+    ...createDefaultState(),
+    focusedIndex: 1,
+    initial: false,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(
+      processes,
+      [2],
+      1,
+    ),
+  }
+  const result = RenderItems.renderItems(createDefaultState(), state)
+
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      ariaExpanded: false,
+      ariaLevel: 2,
+      className: 'ProcessExplorerRow ProcessExplorerRowFocused',
+      title: 'node child.js',
+    }),
+  )
+})
+
 test('renderItems - initial is empty', () => {
   const state = {
     ...createDefaultState(),
@@ -128,6 +151,29 @@ test('renderItems - error only', () => {
   expect(result[2]).not.toContainEqual(
     expect.objectContaining({
       className: 'ProcessExplorerTable',
+    }),
+  )
+})
+
+test('renderItems - error message only', () => {
+  const state = {
+    ...createDefaultState(),
+    errorMessage: 'Pretty no pid',
+    initial: false,
+  }
+  const result = RenderItems.renderItems(createDefaultState(), state)
+
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      childCount: 1,
+      className: 'ProcessExplorerError',
+      type: VirtualDomElements.Div,
+    }),
+  )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      text: 'Pretty no pid',
+      type: VirtualDomElements.Text,
     }),
   )
 })

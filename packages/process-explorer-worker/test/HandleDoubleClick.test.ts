@@ -46,3 +46,15 @@ test('handleDoubleClick toggles process', () => {
     1,
   ])
 })
+
+test('handleDoubleClick - default index', () => {
+  const state = {
+    ...createDefaultState(),
+    focusedIndex: 0,
+    processes,
+    rootPid: 1,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
+  }
+
+  expect(HandleDoubleClick.handleDoubleClick(state).collapsedPids).toEqual([1])
+})
