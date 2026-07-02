@@ -23,7 +23,7 @@ const processes = [
   },
 ]
 
-const createState = () => ({
+const createState = (): ReturnType<typeof createDefaultState> => ({
   ...createDefaultState(),
   visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
 })

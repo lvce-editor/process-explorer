@@ -44,7 +44,7 @@ test('getFrontendMemoryUsage - measurement rejects', async () => {
   ).resolves.toEqual([])
 })
 
-test.each([undefined, '100', Number.NaN, -1])(
+test.each([undefined, '100', NaN, -1])(
   'getFrontendMemoryUsage - invalid total bytes %#',
   async (bytes) => {
     setPerformance({
@@ -60,13 +60,11 @@ test.each([undefined, '100', Number.NaN, -1])(
 )
 
 test('getFrontendMemoryUsage - window process without breakdown', async () => {
+  const measureUserAgentSpecificMemory = jest.fn(async () => ({
+    bytes: 100,
+  }))
   setPerformance({
-    measureUserAgentSpecificMemory: jest.fn(async function () {
-      expect(this).toBe(globalThis.performance)
-      return {
-        bytes: 100,
-      }
-    }),
+    measureUserAgentSpecificMemory,
   })
 
   await expect(
@@ -81,6 +79,9 @@ test('getFrontendMemoryUsage - window process without breakdown', async () => {
       synthetic: true,
     },
   ])
+  expect(measureUserAgentSpecificMemory.mock.contexts[0]).toBe(
+    globalThis.performance,
+  )
 })
 
 test('getFrontendMemoryUsage - breakdown names and filters entries', async () => {
@@ -157,7 +158,7 @@ test('getFrontendMemoryUsage - breakdown names and filters entries', async () =>
           types: ['ignored negative'],
         },
         {
-          bytes: Number.NaN,
+          bytes: NaN,
           types: ['ignored nan'],
         },
         {
