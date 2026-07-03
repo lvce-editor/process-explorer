@@ -18,21 +18,21 @@ const getRawMessage = (rawError: RawError): string => {
   return String(rawError.message)
 }
 
-const toError = (rawError: unknown): Error => {
+const toError = (rawError: unknown): unknown => {
   if (rawError instanceof Error) {
     return rawError
   }
   if (!isRawError(rawError)) {
     return new Error(String(rawError))
   }
-  const error = new Error(getRawMessage(rawError))
   if (typeof rawError.stack === 'string') {
-    Object.defineProperty(error, 'stack', {
-      configurable: true,
-      value: rawError.stack,
-      writable: true,
-    })
+    return {
+      code: rawError.code,
+      message: getRawMessage(rawError),
+      stack: rawError.stack,
+    }
   }
+  const error = new Error(getRawMessage(rawError))
   if (typeof rawError.code === 'string') {
     Object.assign(error, {
       code: rawError.code,

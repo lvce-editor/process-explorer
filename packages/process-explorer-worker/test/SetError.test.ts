@@ -36,8 +36,7 @@ test('setError', async () => {
   })
 
   expect(prepare).toHaveBeenCalledTimes(1)
-  expect(prepare.mock.calls[0][0]).toBeInstanceOf(Error)
-  expect(prepare.mock.calls[0][0]).toMatchObject({
+  expect(prepare.mock.calls[0][0]).toEqual({
     code: 'ERR_TEST',
     message: 'Fixture error',
     stack: 'Error: Fixture error\n    at fixture (/tmp/fixture.ts:1:1)',
