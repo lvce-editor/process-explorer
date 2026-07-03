@@ -14,7 +14,6 @@ export const getPsOutput = async (): Promise<string> => {
     ])
     return stdout.trim()
   } catch (error) {
-    // @ts-ignore
     if (error && error.signal === Signal.SIGINT) {
       return ''
     }
