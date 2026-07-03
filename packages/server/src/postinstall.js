@@ -30,7 +30,13 @@ const workerPath = join(
   'dist-process-explorer-worker',
   'index.js',
 )
-const processExplorerPath = join(root, 'dist', 'dist', 'index.js')
+const processExplorerPath = join(
+  root,
+  'packages',
+  'process-explorer',
+  'src',
+  'processExplorerMain.ts',
+)
 
 const serverStaticPath = join(
   nodeModulesPath,
