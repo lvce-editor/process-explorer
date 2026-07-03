@@ -32,7 +32,6 @@ export const listProcessesWithMemoryUsage = async (
     )
     return result
   } catch (error) {
-    // @ts-ignore
     throw new VError(error, `Failed to list processes`)
   }
 }

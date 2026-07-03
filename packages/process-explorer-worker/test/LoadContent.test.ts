@@ -1,6 +1,6 @@
 import { afterEach, expect, jest, test } from '@jest/globals'
 import { createMockRpc } from '@lvce-editor/rpc'
-import { RendererWorker } from '@lvce-editor/rpc-registry'
+import { ErrorWorker, RendererWorker } from '@lvce-editor/rpc-registry'
 import * as AutoRefresh from '../src/parts/AutoRefresh/AutoRefresh.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as LoadContent from '../src/parts/LoadContent/LoadContent.ts'
@@ -9,6 +9,7 @@ import * as ProcessExplorerStates from '../src/parts/ProcessExplorerStates/Proce
 
 afterEach(() => {
   AutoRefresh.clear()
+  ErrorWorker.set(createMockRpc({ commandMap: {} }))
   ProcessExplorerModule.clear()
   ProcessExplorerStates.clear()
   jest.useRealTimers()
@@ -57,5 +58,52 @@ test('loadContent - refreshes and starts auto refresh', async () => {
   expect(result.state).toMatchObject({
     initial: false,
     rootPid: 1,
+  })
+})
+
+test('loadContent - does not start auto refresh after load error', async () => {
+  jest.useFakeTimers()
+  const update = jest.fn()
+  using _mockRendererRpc = RendererWorker.registerMockRpc({
+    'ProcessExplorer.update': update,
+  })
+  const prepare = jest.fn((_error: unknown) => ({
+    codeFrame: '1 | throw new Error()',
+    message: 'Pretty no pid',
+    stack: 'Pretty stack',
+  }))
+  ErrorWorker.set(
+    createMockRpc({
+      commandMap: {
+        'Errors.prepare': prepare,
+      },
+    }),
+  )
+  ProcessExplorerModule.set(
+    createMockRpc({
+      commandMap: {
+        'ProcessId.getMainProcessId': jest.fn(() => {
+          throw new Error('no pid')
+        }),
+      },
+    }),
+  )
+  const state = {
+    ...createDefaultState(),
+    uid: 7,
+  }
+  ProcessExplorerStates.set(7, state, state)
+
+  const result = await LoadContent.loadContent(state)
+  await jest.advanceTimersByTimeAsync(1000)
+
+  expect(prepare).toHaveBeenCalledTimes(1)
+  expect(update).not.toHaveBeenCalled()
+  expect(result.error).toBeUndefined()
+  expect(result.state).toMatchObject({
+    errorCodeFrame: '1 | throw new Error()',
+    errorMessage: 'Pretty no pid',
+    errorStack: 'Pretty stack',
+    initial: false,
   })
 })
