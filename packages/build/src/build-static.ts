@@ -48,7 +48,12 @@ const rendererWorkerPath = join(
   'dist',
   'rendererWorkerMain.js',
 )
-const workerPath = join(root, '.tmp', 'dist-process-explorer-worker', 'index.js')
+const workerPath = join(
+  root,
+  '.tmp',
+  'dist-process-explorer-worker',
+  'index.js',
+)
 const remoteUrl = getRemoteUrl(workerPath)
 
 const occurrence = `// const processExplorerWorkerUrl = \`\${assetDir}/packages/process-explorer-worker/index.js\`
