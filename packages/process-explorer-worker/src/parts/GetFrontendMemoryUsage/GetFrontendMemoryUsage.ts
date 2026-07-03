@@ -22,6 +22,8 @@ interface PerformanceWithMemory extends Performance {
 
 const WindowPid = -1
 
+const QueryOrHashRegex = /[?#]/
+
 const isValidMemoryValue = (value: unknown): value is number => {
   return typeof value === 'number' && Number.isFinite(value) && value >= 0
 }
@@ -44,7 +46,7 @@ const getUrlName = (url: string): string => {
     const parts = parsed.pathname.split('/').filter(Boolean)
     return parts.at(-1) || parsed.hostname || url
   } catch {
-    const withoutQuery = url.split(/[?#]/, 1)[0]
+    const withoutQuery = url.split(QueryOrHashRegex, 1)[0]
     const parts = withoutQuery.split('/').filter(Boolean)
     return parts.at(-1) || url
   }

@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "node packages/build/src/build.ts",
+    "build:static": "node packages/build/src/build-static.ts",
     "build:watch": "./packages/build/node_modules/.bin/esbuild --format=esm --bundle --external:node:buffer --external:electron --external:node:worker_threads --watch packages/process-explorer-worker/src/processExplorerWorkerMain.ts --outfile=.tmp/dist-process-explorer-worker/index.js",
     "dev": "node packages/build/src/dev.ts",
     "e2e": "cd packages/e2e && npm run e2e",
@@ -34,9 +35,7 @@
   },
   "devDependencies": {
     "@lerna/legacy-package-management": "^8.2.4",
-    "@lvce-editor/eslint-config": "^15.0.0",
-    "@lvce-editor/eslint-plugin-github-actions": "^15.0.0",
-    "@lvce-editor/eslint-plugin-tsconfig": "^15.0.0",
+    "@lvce-editor/eslint-config": "^15.1.0",
     "@types/node": "^20.12.8",
     "eslint": "^10.6.0",
     "knip": "^6.24.0",
