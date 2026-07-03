@@ -119,10 +119,9 @@ export const processExplorerPath = ${JSON.stringify(processExplorerPath)};`,
 
 await replace({
   path: protocolTypePath,
-  marker: '// export const ProcessExplorer = ',
+  marker: 'export const ProcessExplorer = ',
   occurrence: `export const TerminalProcess = 'terminal-process';`,
   replacement: `export const TerminalProcess = 'terminal-process';
-// export const ProcessExplorer = 'process-explorer';
 export const ProcessExplorer = 'process-explorer';`,
 })
 
@@ -139,42 +138,38 @@ export const handleWebSocket = (message, handle) => {
 
 await replace({
   path: handleWebSocketModulePath,
-  marker: '// import * as HandleWebSocketForProcessExplorer from ',
+  marker: 'import * as HandleWebSocketForProcessExplorer from ',
   occurrence: `import * as HandleWebSocketForFileSystemProcess from '../HandleWebSocketForFileSystemProcess/HandleWebSocketForFileSystemProcess.js';`,
   replacement: `import * as HandleWebSocketForFileSystemProcess from '../HandleWebSocketForFileSystemProcess/HandleWebSocketForFileSystemProcess.js';
-// import * as HandleWebSocketForProcessExplorer from '../HandleWebSocketForProcessExplorer/HandleWebSocketForProcessExplorer.js';
 import * as HandleWebSocketForProcessExplorer from '../HandleWebSocketForProcessExplorer/HandleWebSocketForProcessExplorer.js';`,
 })
 
 await replace({
   path: handleWebSocketModulePath,
-  marker: '// case ProtocolType.ProcessExplorer:',
+  marker: 'case ProtocolType.ProcessExplorer:',
   occurrence: `        case ProtocolType.FileSystemProcess:
             return HandleWebSocketForFileSystemProcess;`,
   replacement: `        case ProtocolType.FileSystemProcess:
             return HandleWebSocketForFileSystemProcess;
-        // case ProtocolType.ProcessExplorer:
         case ProtocolType.ProcessExplorer:
             return HandleWebSocketForProcessExplorer;`,
 })
 
 await replace({
   path: handleIpcProcessExplorerPath,
-  marker: '// import * as IpcId from ',
+  marker: `import * as IpcId from '../IpcId/IpcId.js';`,
   occurrence: `import * as Assert from '../Assert/Assert.js';`,
   replacement: `import * as Assert from '../Assert/Assert.js';
-// import * as IpcId from '../IpcId/IpcId.js';
 import * as IpcId from '../IpcId/IpcId.js';`,
 })
 
 await replace({
   path: handleIpcProcessExplorerPath,
-  marker: '// export const targetWebSocket = ',
+  marker: 'export const targetWebSocket = ',
   occurrence: `export const targetMessagePort = () => {
     return ProcessExplorer.getOrCreate();
 };`,
-  replacement: `// export const targetWebSocket = () => ProcessExplorer.getOrCreate();
-export const targetWebSocket = () => {
+  replacement: `export const targetWebSocket = () => {
     return ProcessExplorer.getOrCreate();
 };
 export const targetMessagePort = () => {
@@ -184,7 +179,7 @@ export const targetMessagePort = () => {
 
 await replace({
   path: handleIpcProcessExplorerPath,
-  marker: '// export const upgradeWebSocket = ',
+  marker: 'export const upgradeWebSocket = ',
   occurrence: `export const upgradeMessagePort = (port) => {
     Assert.object(port);
     return {
@@ -193,8 +188,7 @@ await replace({
         params: [port],
     };
 };`,
-  replacement: `// export const upgradeWebSocket = (handle, message) => ({ type: 'send', method: 'HandleWebSocket.handleWebSocket', params: [handle, message, IpcId.ProcessExplorerRenderer] });
-export const upgradeWebSocket = (handle, message) => {
+  replacement: `export const upgradeWebSocket = (handle, message) => {
     Assert.object(handle);
     Assert.object(message);
     return {
