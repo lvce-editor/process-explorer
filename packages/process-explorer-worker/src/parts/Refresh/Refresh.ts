@@ -1,14 +1,11 @@
+import { PlatformType } from '@lvce-editor/constants'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
 import type { ProcessInfo } from '../ProcessInfo/ProcessInfo.ts'
-import * as FileSystemWorker from '../FileSystemWorker/FileSystemWorker.ts'
+import * as GetFrontendMemoryUsage from '../GetFrontendMemoryUsage/GetFrontendMemoryUsage.ts'
 import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses.ts'
-
-const getErrorMessage = (error: unknown): string => {
-  if (error instanceof Error) {
-    return error.message
-  }
-  return String(error)
-}
+import * as InitializeProcessExplorer from '../InitializeProcessExplorer/InitializeProcessExplorer.ts'
+import * as PrepareError from '../PrepareError/PrepareError.ts'
+import * as ProcessExplorerModule from '../ProcessExplorer/ProcessExplorer.ts'
 
 const getFocusedIndex = (
   oldFocusedIndex: number,
@@ -27,31 +24,46 @@ export const refresh = async (
   state: ProcessExplorerState,
 ): Promise<ProcessExplorerState> => {
   try {
+    await InitializeProcessExplorer.initializeProcessExplorer(state.platform)
+    const includeElectronData = state.platform === PlatformType.Electron
     const rootPid =
       state.rootPid ||
-      (await FileSystemWorker.invoke('ProcessId.getMainProcessId'))
-    const processes: readonly ProcessInfo[] = await FileSystemWorker.invoke(
-      'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
-      rootPid,
-    )
+      (await ProcessExplorerModule.invoke('ProcessId.getMainProcessId', {
+        includeElectronData,
+      }))
+    const processes: readonly ProcessInfo[] =
+      await ProcessExplorerModule.invoke(
+        'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
+        rootPid,
+        includeElectronData,
+      )
+    const frontendMemoryProcesses = state.includeFrontendMemoryUsage
+      ? await GetFrontendMemoryUsage.getFrontendMemoryUsage(rootPid)
+      : []
+    const allProcesses = [...processes, ...frontendMemoryProcesses]
     const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
-      processes,
+      allProcesses,
       state.collapsedPids,
       rootPid,
     )
     return {
       ...state,
+      errorCodeFrame: '',
       errorMessage: '',
+      errorStack: '',
       focusedIndex: getFocusedIndex(state.focusedIndex, visibleProcesses),
       initial: false,
-      processes,
+      processes: allProcesses,
       rootPid,
       visibleProcesses,
     }
   } catch (error) {
+    const prettyError = await PrepareError.prepareError(error)
     return {
       ...state,
-      errorMessage: getErrorMessage(error),
+      errorCodeFrame: prettyError.codeFrame || '',
+      errorMessage: prettyError.message || PrepareError.getErrorMessage(error),
+      errorStack: prettyError.stack || '',
       initial: false,
     }
   }

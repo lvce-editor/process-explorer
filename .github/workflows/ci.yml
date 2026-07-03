@@ -5,13 +5,22 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   ci:
     strategy:
       matrix:
         os: [ubuntu-22.04, macos-14, windows-2022]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -34,3 +43,49 @@ jobs:
       - run: npm run type-check
       - name: Build
         run: npm run build
+      - name: install playwright system dependencies
+        working-directory: ./packages/e2e
+        if: runner.os == 'Linux'
+        run: sudo npx playwright install-deps chromium firefox webkit
+      - name: install playwright dependencies
+        working-directory: ./packages/e2e
+        run: npx playwright install chromium firefox webkit
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: 0
+      - name: e2e
+        working-directory: ./packages/e2e
+        run: npm run e2e:headless
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: 0
+      - name: e2e firefox
+        working-directory: ./packages/e2e
+        run: npm run e2e:firefox:headless
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: 0
+      - name: e2e webkit
+        working-directory: ./packages/e2e
+        run: npm run e2e:webkit:headless
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: 0
+      - name: Build static
+        run: npm run build:static
+      - name: Upload artifact
+        if: matrix.os == 'ubuntu-22.04'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./.tmp/static
+      - name: Clean up
+        run: rm -rf .tmp
+        shell: bash
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-22.04
+    needs: ci
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

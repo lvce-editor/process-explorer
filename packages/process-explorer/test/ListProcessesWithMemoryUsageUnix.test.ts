@@ -2,7 +2,7 @@ import { beforeEach, expect, jest, test } from '@jest/globals'
 import * as ErrorCodes from '../src/parts/ErrorCodes/ErrorCodes.ts'
 
 beforeEach(() => {
-  jest.resetAllMocks()
+  jest.clearAllMocks()
 })
 
 jest.unstable_mockModule('node:child_process', () => ({
@@ -27,10 +27,12 @@ jest.unstable_mockModule('node:fs/promises', () => ({
   }),
 }))
 
+const createPidMap = jest.fn((): Record<string, never> => {
+  return {}
+})
+
 jest.unstable_mockModule('../src/parts/CreatePidMap/CreatePidMap.js', () => ({
-  createPidMap(): Record<string, never> {
-    return {}
-  },
+  createPidMap,
 }))
 
 const childProcess = await import('node:child_process')
@@ -124,6 +126,34 @@ test('listProcessesWithMemoryUsage', async () => {
       ppid: 1442,
     },
   ])
+  expect(createPidMap).toHaveBeenCalledTimes(1)
+})
+
+test('listProcessesWithMemoryUsage - without electron data', async () => {
+  // @ts-ignore
+  childProcess.execFile.mockImplementation((command, args, callback) => {
+    callback(null, {
+      stdout: `1       0  0.0  0.1 /sbin/init splash
+2127    1442  0.0  0.2 /usr/libexec/gsd-keyboard
+`,
+    })
+  })
+  // @ts-ignore
+  fsPromises.readFile.mockImplementation(() => '41700 2023 1199 224 0 5027 0')
+
+  await expect(
+    ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(1442, false),
+  ).resolves.toEqual([
+    {
+      cmd: '/usr/libexec/gsd-keyboard',
+      depth: 1,
+      memory: 3_375_104,
+      name: '/usr/libexec/gsd-keyboard',
+      pid: 2127,
+      ppid: 1442,
+    },
+  ])
+  expect(createPidMap).not.toHaveBeenCalled()
 })
 
 test('listProcessesWithMemoryUsage - bug with parsing this specific line', async () => {

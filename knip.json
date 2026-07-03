@@ -7,7 +7,12 @@
     },
     "packages/build": {
       "entry": ["src/build.ts", "src/computeNodeModulesCacheKey.ts"],
+      "ignoreDependencies": ["esbuild"],
       "project": ["src/**/*.ts"]
+    },
+    "packages/e2e": {
+      "entry": ["src/**/*.ts", "scripts/*.js"],
+      "project": ["src/**/*.ts", "scripts/*.js"]
     },
     "packages/process-explorer": {
       "entry": ["src/parts/**/*.ipc.ts", "test/**/*.test.ts"],

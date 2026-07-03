@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { expect, jest, test } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
 import * as LoadContent from '../src/parts/LoadContent/LoadContent.ts'
@@ -16,7 +17,117 @@ test('loadContent refreshes process explorer state', async () => {
   expect(result.state).toMatchObject({
     errorMessage: '',
     focusedIndex: 0,
+=======
+import { afterEach, expect, jest, test } from '@jest/globals'
+import { createMockRpc } from '@lvce-editor/rpc'
+import { ErrorWorker, RendererWorker } from '@lvce-editor/rpc-registry'
+import * as AutoRefresh from '../src/parts/AutoRefresh/AutoRefresh.ts'
+import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
+import * as LoadContent from '../src/parts/LoadContent/LoadContent.ts'
+import * as ProcessExplorerModule from '../src/parts/ProcessExplorer/ProcessExplorer.ts'
+import * as ProcessExplorerStates from '../src/parts/ProcessExplorerStates/ProcessExplorerStates.ts'
+
+afterEach(() => {
+  AutoRefresh.clear()
+  ErrorWorker.set(createMockRpc({ commandMap: {} }))
+  ProcessExplorerModule.clear()
+  ProcessExplorerStates.clear()
+  jest.useRealTimers()
+})
+
+test('loadContent - refreshes and starts auto refresh', async () => {
+  jest.useFakeTimers()
+  const update = jest.fn()
+  using _mockRendererRpc = RendererWorker.registerMockRpc({
+    'ProcessExplorer.update': update,
+  })
+  const listProcessesWithMemoryUsage = jest.fn(
+    (_rootPid: number, _includeElectronData: boolean) => [
+      {
+        cmd: 'main',
+        memory: 1,
+        name: 'main',
+        pid: 1,
+        ppid: 0,
+      },
+    ],
+  )
+  const getMainProcessId = jest.fn(() => 1)
+  ProcessExplorerModule.set(
+    createMockRpc({
+      commandMap: {
+        'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage':
+          listProcessesWithMemoryUsage,
+        'ProcessId.getMainProcessId': getMainProcessId,
+      },
+    }),
+  )
+  const state = {
+    ...createDefaultState(),
+    uid: 7,
+  }
+  ProcessExplorerStates.set(7, state, state)
+
+  const result = await LoadContent.loadContent(state)
+  await jest.advanceTimersByTimeAsync(1000)
+
+  expect(getMainProcessId).toHaveBeenCalledTimes(1)
+  expect(listProcessesWithMemoryUsage).toHaveBeenCalledWith(1, false)
+  expect(update).toHaveBeenCalledTimes(1)
+  expect(result.error).toBeUndefined()
+  expect(result.state).toMatchObject({
+>>>>>>> origin/main
     initial: false,
     rootPid: 1,
   })
 })
+<<<<<<< HEAD
+=======
+
+test('loadContent - does not start auto refresh after load error', async () => {
+  jest.useFakeTimers()
+  const update = jest.fn()
+  using _mockRendererRpc = RendererWorker.registerMockRpc({
+    'ProcessExplorer.update': update,
+  })
+  const prepare = jest.fn((_error: unknown) => ({
+    codeFrame: '1 | throw new Error()',
+    message: 'Pretty no pid',
+    stack: 'Pretty stack',
+  }))
+  ErrorWorker.set(
+    createMockRpc({
+      commandMap: {
+        'Errors.prepare': prepare,
+      },
+    }),
+  )
+  ProcessExplorerModule.set(
+    createMockRpc({
+      commandMap: {
+        'ProcessId.getMainProcessId': jest.fn(() => {
+          throw new Error('no pid')
+        }),
+      },
+    }),
+  )
+  const state = {
+    ...createDefaultState(),
+    uid: 7,
+  }
+  ProcessExplorerStates.set(7, state, state)
+
+  const result = await LoadContent.loadContent(state)
+  await jest.advanceTimersByTimeAsync(1000)
+
+  expect(prepare).toHaveBeenCalledTimes(1)
+  expect(update).not.toHaveBeenCalled()
+  expect(result.error).toBeUndefined()
+  expect(result.state).toMatchObject({
+    errorCodeFrame: '1 | throw new Error()',
+    errorMessage: 'Pretty no pid',
+    errorStack: 'Pretty stack',
+    initial: false,
+  })
+})
+>>>>>>> origin/main

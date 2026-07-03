@@ -61,3 +61,129 @@ test('getName - detect sublime', () => {
     'sublime-text',
   )
 })
+
+test('getName - detect root process', () => {
+  const pid = 123
+  const cmd = 'node ./main.js'
+  const rootPid = 123
+  const pidMap = {}
+  expect(ListProcessGetName.getName(pid, cmd, rootPid, pidMap)).toBe('main')
+})
+
+test('getName - detect common process patterns', () => {
+  const rootPid = 1
+  const pidMap = {}
+  expect(
+    ListProcessGetName.getName(2, 'electron --type=zygote', rootPid, pidMap),
+  ).toBe('zygote')
+  expect(
+    ListProcessGetName.getName(
+      3,
+      'electron --type=gpu-process',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('gpu-process')
+  expect(
+    ListProcessGetName.getName(
+      4,
+      'node dist/extensionHostMain.js',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('extension-host')
+  expect(
+    ListProcessGetName.getName(
+      5,
+      'electron --lvce-window-kind=process-explorer',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('process-explorer')
+  expect(
+    ListProcessGetName.getName(
+      6,
+      'node /test/node_modules/@lvce-editor/file-system-process/dist/index.js',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('file-system-process')
+  expect(
+    ListProcessGetName.getName(
+      7,
+      'node C:\\test\\node_modules\\@lvce-editor\\file-watcher-process\\dist\\index.js',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('file-watcher-process')
+  expect(
+    ListProcessGetName.getName(
+      8,
+      'node /test/node_modules/@lvce-editor/typescript-compile-process/dist/index.js',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('typescript-compile-process')
+  expect(
+    ListProcessGetName.getName(
+      9,
+      'node /test/packages/process-explorer/src/processExplorerMain.ts',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('process-explorer')
+  expect(
+    ListProcessGetName.getName(
+      10,
+      'node /test/packages/shared-process/src/sharedProcessMain.js',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('shared-process')
+  expect(
+    ListProcessGetName.getName(11, 'node tsserver.js', rootPid, pidMap),
+  ).toBe('tsserver.js')
+  expect(
+    ListProcessGetName.getName(12, 'node typingsInstaller.js', rootPid, pidMap),
+  ).toBe('typingsInstaller.js')
+  expect(
+    ListProcessGetName.getName(13, '/usr/bin/bash -i', rootPid, pidMap),
+  ).toBe('/usr/bin/bash -i')
+  expect(ListProcessGetName.getName(14, 'bash -i', rootPid, pidMap)).toBe(
+    'bash',
+  )
+  expect(ListProcessGetName.getName(15, '/bin/rg test', rootPid, pidMap)).toBe(
+    'ripgrep',
+  )
+  expect(
+    ListProcessGetName.getName(16, 'C:\\tools\\rg.exe test', rootPid, pidMap),
+  ).toBe('ripgrep')
+  expect(
+    ListProcessGetName.getName(
+      17,
+      'C:\\Windows\\System32\\conhost.exe',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('conhost.exe')
+})
+
+test('getName - pid map empty name', () => {
+  const pid = 123
+  const cmd = 'electron --type=renderer'
+  const rootPid = 1
+  const pidMap = {
+    123: '',
+  }
+  expect(ListProcessGetName.getName(pid, cmd, rootPid, pidMap)).toBe(
+    '<unknown>',
+  )
+})
+
+test('getName - fallback to command', () => {
+  const pid = 123
+  const cmd = 'custom-process --flag'
+  const rootPid = 1
+  const pidMap = {}
+  expect(ListProcessGetName.getName(pid, cmd, rootPid, pidMap)).toBe(cmd)
+})

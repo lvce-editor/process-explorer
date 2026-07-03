@@ -1,0 +1,20 @@
+{
+  "name": "e2e",
+  "version": "0.0.0-dev",
+  "license": "MIT",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "e2e": "node ./node_modules/@lvce-editor/test-with-playwright/bin/test-with-playwright.js --only-extension=. --test-path=. --reuse-page",
+    "e2e:firefox": "npm run patch:playwright-firefox-worker-websocket && node ./node_modules/@lvce-editor/test-with-playwright/bin/test-with-playwright.js --only-extension=. --test-path=. --browser=firefox --reuse-page",
+    "e2e:firefox:headless": "npm run patch:playwright-firefox-worker-websocket && node ./node_modules/@lvce-editor/test-with-playwright/bin/test-with-playwright.js --only-extension=. --test-path=. --browser=firefox --headless --reuse-page",
+    "e2e:headless": "node ./node_modules/@lvce-editor/test-with-playwright/bin/test-with-playwright.js --only-extension=. --test-path=. --headless --reuse-page",
+    "e2e:webkit": "node ./node_modules/@lvce-editor/test-with-playwright/bin/test-with-playwright.js --only-extension=. --test-path=. --browser=webkit --reuse-page",
+    "e2e:webkit:headless": "node ./node_modules/@lvce-editor/test-with-playwright/bin/test-with-playwright.js --only-extension=. --test-path=. --browser=webkit --headless --reuse-page",
+    "patch:playwright-firefox-worker-websocket": "node ./scripts/patch-playwright-firefox-worker-websocket.js",
+    "type-check": "tsc"
+  },
+  "devDependencies": {
+    "@lvce-editor/test-with-playwright": "^22.1.0"
+  }
+}

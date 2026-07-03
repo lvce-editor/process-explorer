@@ -2,13 +2,15 @@ import { beforeEach, expect, jest, test } from '@jest/globals'
 import { VError } from '../src/parts/VError/VError.ts'
 
 beforeEach(() => {
-  jest.resetAllMocks()
+  jest.clearAllMocks()
+})
+
+const createPidMap = jest.fn((): Record<string, never> => {
+  return {}
 })
 
 jest.unstable_mockModule('../src/parts/CreatePidMap/CreatePidMap.ts', () => ({
-  createPidMap(): Record<string, never> {
-    return {}
-  },
+  createPidMap,
 }))
 
 jest.unstable_mockModule('@vscode/windows-process-tree', () => {
@@ -191,6 +193,42 @@ test('listProcessesWithMemoryUsage', async () => {
       ppid: 9176,
     },
   ])
+  expect(createPidMap).toHaveBeenCalledTimes(1)
+})
+
+test('listProcessesWithMemoryUsage - without electron data', async () => {
+  const processList = [
+    {
+      commandLine:
+        '"C:\\Users\\test-user\\Documents\\app\\packages\\main-process\\node_modules\\electron\\dist\\electron.exe" --type=gpu-process /prefetch:2',
+      cpu: 0.19305019305019305,
+      memory: 94_089_216,
+      name: 'electron.exe',
+      pid: 7004,
+      ppid: 9176,
+    },
+  ]
+  // @ts-ignore
+  WindowsProcessTree.getProcessList.mockImplementation((rootPid, callback) => {
+    callback(processList)
+  })
+  // @ts-ignore
+  WindowsProcessTree.getProcessCpuUsage.mockImplementation((list, callback) => {
+    callback(list)
+  })
+
+  await expect(
+    ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(25_666, false),
+  ).resolves.toEqual([
+    {
+      cmd: '"C:\\Users\\test-user\\Documents\\app\\packages\\main-process\\node_modules\\electron\\dist\\electron.exe" --type=gpu-process /prefetch:2',
+      memory: 94_089_216,
+      name: 'gpu-process',
+      pid: 7004,
+      ppid: 9176,
+    },
+  ])
+  expect(createPidMap).not.toHaveBeenCalled()
 })
 
 test('listProcessesWithMemoryUsage - error - rootPid not found', async () => {

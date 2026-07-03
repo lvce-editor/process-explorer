@@ -1,19 +1,126 @@
+<<<<<<< HEAD
 import { expect, jest, test } from '@jest/globals'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as Refresh from '../src/parts/Refresh/Refresh.ts'
 import { processes } from './fixtures/ProcessExplorerFixtures.ts'
+=======
+import { afterEach, beforeEach, expect, jest, test } from '@jest/globals'
+import { PlatformType } from '@lvce-editor/constants'
+import { createMockRpc } from '@lvce-editor/rpc'
+import { ErrorWorker } from '@lvce-editor/rpc-registry'
 
-test('refresh - success', async () => {
-  using _mockRpc = RendererWorker.registerMockRpc({
-    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage': jest.fn(
-      () => processes,
-    ),
-    'ProcessId.getMainProcessId': jest.fn(() => 1),
+const initializeProcessExplorer = jest.fn(
+  async (..._args: readonly unknown[]) => {},
+)
+
+jest.unstable_mockModule(
+  '../src/parts/InitializeProcessExplorer/InitializeProcessExplorer.ts',
+  () => ({
+    clear: jest.fn(),
+    initializeProcessExplorer,
+  }),
+)
+
+const { createDefaultState } =
+  await import('../src/parts/CreateDefaultState/CreateDefaultState.ts')
+const ProcessExplorerModule =
+  await import('../src/parts/ProcessExplorer/ProcessExplorer.ts')
+const Refresh = await import('../src/parts/Refresh/Refresh.ts')
+
+interface DisposableMockRpc {
+  [Symbol.dispose](): void
+}
+
+const originalPerformance = globalThis.performance
+
+const setPerformance = (performance: unknown): void => {
+  Object.defineProperty(globalThis, 'performance', {
+    configurable: true,
+    value: performance,
   })
-  const result = await Refresh.refresh(createDefaultState())
+}
+
+const registerErrorWorkerMock = (
+  commandMap: Record<string, unknown>,
+): DisposableMockRpc => {
+  ErrorWorker.set(createMockRpc({ commandMap }))
+  return {
+    [Symbol.dispose](): void {
+      ErrorWorker.set(createMockRpc({ commandMap: {} }))
+    },
+  }
+}
+
+const registerProcessExplorerMock = (
+  commandMap: Record<string, unknown>,
+): DisposableMockRpc => {
+  ProcessExplorerModule.set(createMockRpc({ commandMap }))
+  return {
+    [Symbol.dispose](): void {
+      ProcessExplorerModule.clear()
+    },
+  }
+}
+
+const processes = [
+  {
+    cmd: 'main',
+    memory: 1,
+    name: 'main',
+    pid: 1,
+    ppid: 0,
+  },
+  {
+    cmd: 'node child.js',
+    memory: 1500,
+    name: 'child',
+    pid: 2,
+    ppid: 1,
+  },
+  {
+    cmd: 'leaf',
+    memory: 2_500_000,
+    name: 'leaf',
+    pid: 3,
+    ppid: 2,
+  },
+  {
+    cmd: 'orphan',
+    memory: 1,
+    name: 'orphan',
+    pid: 4,
+    ppid: 999,
+  },
+]
+>>>>>>> origin/main
+
+beforeEach(() => {
+  initializeProcessExplorer.mockClear()
+})
+
+afterEach(() => {
+  setPerformance(originalPerformance)
+})
+
+test('refresh - success - remote', async () => {
+  const listProcessesWithMemoryUsage = jest.fn(
+    (..._args: readonly unknown[]) => processes,
+  )
+  const getMainProcessId = jest.fn((..._args: readonly unknown[]) => 1)
+  using _mockRpc = registerProcessExplorerMock({
+    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage':
+      listProcessesWithMemoryUsage,
+    'ProcessId.getMainProcessId': getMainProcessId,
+  })
+  const result = await Refresh.refresh({
+    ...createDefaultState(),
+    platform: PlatformType.Remote,
+  })
   expect(result).toMatchObject({
+    errorCodeFrame: '',
     errorMessage: '',
+    errorStack: '',
     focusedIndex: 0,
     initial: false,
     rootPid: 1,
@@ -21,16 +128,181 @@ test('refresh - success', async () => {
   expect(result.visibleProcesses.map((process) => process.pid)).toEqual([
     1, 2, 3,
   ])
+  expect(initializeProcessExplorer).toHaveBeenCalledWith(PlatformType.Remote)
+  expect(getMainProcessId).toHaveBeenCalledWith({ includeElectronData: false })
+  expect(listProcessesWithMemoryUsage).toHaveBeenCalledWith(1, false)
+})
+
+test('refresh - success - electron', async () => {
+  const listProcessesWithMemoryUsage = jest.fn(
+    (..._args: readonly unknown[]) => processes,
+  )
+  const getMainProcessId = jest.fn((..._args: readonly unknown[]) => 1)
+  using _mockRpc = registerProcessExplorerMock({
+    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage':
+      listProcessesWithMemoryUsage,
+    'ProcessId.getMainProcessId': getMainProcessId,
+  })
+  const result = await Refresh.refresh({
+    ...createDefaultState(),
+    platform: PlatformType.Electron,
+  })
+
+  expect(result.rootPid).toBe(1)
+  expect(initializeProcessExplorer).toHaveBeenCalledWith(PlatformType.Electron)
+  expect(getMainProcessId).toHaveBeenCalledWith({ includeElectronData: true })
+  expect(listProcessesWithMemoryUsage).toHaveBeenCalledWith(1, true)
+})
+
+test('refresh - uses existing root pid', async () => {
+  const listProcessesWithMemoryUsage = jest.fn(
+    (..._args: readonly unknown[]) => processes,
+  )
+  const getMainProcessId = jest.fn((..._args: readonly unknown[]) => 99)
+  using _mockRpc = registerProcessExplorerMock({
+    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage':
+      listProcessesWithMemoryUsage,
+    'ProcessId.getMainProcessId': getMainProcessId,
+  })
+  const result = await Refresh.refresh({
+    ...createDefaultState(),
+    rootPid: 1,
+  })
+
+  expect(result.rootPid).toBe(1)
+  expect(getMainProcessId).not.toHaveBeenCalled()
+  expect(listProcessesWithMemoryUsage).toHaveBeenCalledWith(1, false)
+})
+
+test('refresh - includes frontend memory usage', async () => {
+  setPerformance({
+    measureUserAgentSpecificMemory: jest.fn(async () => ({
+      breakdown: [
+        {
+          attribution: [
+            {
+              scope: 'script',
+              url: 'https://example.com/app.js',
+            },
+          ],
+          bytes: 20,
+        },
+      ],
+      bytes: 100,
+    })),
+  })
+  const listProcessesWithMemoryUsage = jest.fn(
+    (..._args: readonly unknown[]) => processes,
+  )
+  const getMainProcessId = jest.fn((..._args: readonly unknown[]) => 1)
+  using _mockRpc = registerProcessExplorerMock({
+    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage':
+      listProcessesWithMemoryUsage,
+    'ProcessId.getMainProcessId': getMainProcessId,
+  })
+  const result = await Refresh.refresh({
+    ...createDefaultState(),
+    includeFrontendMemoryUsage: true,
+  })
+
+  expect(result.processes.map((process) => process.pid)).toEqual([
+    1, 2, 3, 4, -1, -2,
+  ])
+  expect(result.visibleProcesses.map((process) => process.pid)).toEqual([
+    1, 2, 3, -1, -2,
+  ])
+})
+
+test('refresh - no visible processes', async () => {
+  const listProcessesWithMemoryUsage = jest.fn(
+    (..._args: readonly unknown[]) => [],
+  )
+  const getMainProcessId = jest.fn((..._args: readonly unknown[]) => 1)
+  using _mockRpc = registerProcessExplorerMock({
+    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage':
+      listProcessesWithMemoryUsage,
+    'ProcessId.getMainProcessId': getMainProcessId,
+  })
+  const result = await Refresh.refresh(createDefaultState())
+
+  expect(result.focusedIndex).toBe(-1)
+  expect(result.visibleProcesses).toEqual([])
+})
+
+test('refresh - clamps focused index', async () => {
+  const listProcessesWithMemoryUsage = jest.fn(
+    (..._args: readonly unknown[]) => processes,
+  )
+  const getMainProcessId = jest.fn((..._args: readonly unknown[]) => 1)
+  using _mockRpc = registerProcessExplorerMock({
+    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage':
+      listProcessesWithMemoryUsage,
+    'ProcessId.getMainProcessId': getMainProcessId,
+  })
+  const result = await Refresh.refresh({
+    ...createDefaultState(),
+    focusedIndex: 99,
+  })
+
+  expect(result.focusedIndex).toBe(2)
 })
 
 test('refresh - error', async () => {
-  using _mockRpc = RendererWorker.registerMockRpc({
+  const prepare = jest.fn((_error: unknown) => ({
+    codeFrame: '1 | throw new Error()',
+    message: 'Pretty no pid',
+    stack: 'Pretty stack',
+  }))
+  using _mockRpc = registerProcessExplorerMock({
     'ProcessId.getMainProcessId': jest.fn(() => {
       throw new Error('no pid')
     }),
   })
+  using _mockErrorRpc = registerErrorWorkerMock({
+    'Errors.prepare': prepare,
+  })
   const result = await Refresh.refresh(createDefaultState())
+  expect(prepare).toHaveBeenCalledTimes(1)
+  expect(prepare.mock.calls[0][0]).toBeInstanceOf(Error)
+  expect(result.errorCodeFrame).toBe('1 | throw new Error()')
+  expect(result.errorMessage).toBe('Pretty no pid')
+  expect(result.errorStack).toBe('Pretty stack')
+  expect(result.initial).toBe(false)
+})
+
+test('refresh - error prepare fails', async () => {
+  using _mockRpc = registerProcessExplorerMock({
+    'ProcessId.getMainProcessId': jest.fn(() => {
+      throw new Error('no pid')
+    }),
+  })
+  using _mockErrorRpc = registerErrorWorkerMock({
+    'Errors.prepare': jest.fn(() => {
+      throw new Error('prepare failed')
+    }),
+  })
+  const result = await Refresh.refresh(createDefaultState())
+  expect(result.errorCodeFrame).toBe('')
   expect(result.errorMessage).toBe('no pid')
+  expect(result.errorStack).toBe('')
+  expect(result.initial).toBe(false)
+})
+
+test('refresh - non error prepare fails', async () => {
+  using _mockRpc = registerProcessExplorerMock({
+    'ProcessId.getMainProcessId': jest.fn(() => {
+      throw 'no pid'
+    }),
+  })
+  using _mockErrorRpc = registerErrorWorkerMock({
+    'Errors.prepare': jest.fn(() => {
+      throw new Error('prepare failed')
+    }),
+  })
+  const result = await Refresh.refresh(createDefaultState())
+  expect(result.errorCodeFrame).toBe('')
+  expect(result.errorMessage).toBe('no pid')
+  expect(result.errorStack).toBe('')
   expect(result.initial).toBe(false)
 })
 

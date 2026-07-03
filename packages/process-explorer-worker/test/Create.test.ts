@@ -10,6 +10,7 @@ test('create', () => {
     height: 400,
     initial: true,
     parentUid: 5,
+    platform: 0,
     uid: 7,
     width: 300,
     x: 1,
@@ -18,9 +19,36 @@ test('create', () => {
   expect(ProcessExplorerStates.get(7).newState).toBe(state)
 })
 
+<<<<<<< HEAD
 test('create uses default asset dir', () => {
   ProcessExplorerStates.clear()
   const state = create(8, '', 1, 2, 300, 400, [], 5)
   expect(state.assetDir).toBe('')
   expect(state.uid).toBe(8)
+=======
+test('create - defaults and include frontend memory usage', () => {
+  ProcessExplorerStates.clear()
+  const state = create(
+    8,
+    '',
+    1,
+    2,
+    300,
+    400,
+    { includeFrontendMemoryUsage: true },
+    5,
+  )
+  expect(state).toMatchObject({
+    assetDir: '',
+    includeFrontendMemoryUsage: true,
+    platform: 0,
+  })
+  expect(ProcessExplorerStates.get(8).newState).toBe(state)
+})
+
+test('create - missing args', () => {
+  ProcessExplorerStates.clear()
+  const state = create(9, '', 1, 2, 300, 400, undefined, 5)
+  expect(state.includeFrontendMemoryUsage).toBe(false)
+>>>>>>> origin/main
 })

@@ -44,7 +44,7 @@
     "collectCoverage": true,
     "coverageThreshold": {
       "global": {
-        "branches": 0,
+        "branches": 90,
         "functions": 0,
         "lines": 0
       }
@@ -52,9 +52,9 @@
   },
   "devDependencies": {
     "@jest/globals": "^30.4.1",
-    "@lvce-editor/constants": "^5.14.0",
+    "@lvce-editor/constants": "^5.15.0",
     "@lvce-editor/rpc": "^6.4.0",
-    "@lvce-editor/rpc-registry": "^9.27.0",
+    "@lvce-editor/rpc-registry": "^9.29.0",
     "@lvce-editor/verror": "^1.7.0",
     "@lvce-editor/viewlet-registry": "^5.0.0",
     "@lvce-editor/virtual-dom-worker": "^11.0.0",
