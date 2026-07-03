@@ -14,5 +14,4 @@ export const commandMap = {
   'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage':
     ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage,
   'ProcessId.getMainProcessId': ProcessId.getMainProcessId,
-  // 'ElectronContextMenu.openContextMenu': ElectronWebContentsView.handleContextMenu,
 }
