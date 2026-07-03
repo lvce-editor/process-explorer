@@ -9,7 +9,6 @@ interface RendererWorkerWithProcessExplorer {
 export const sendMessagePortToProcessExplorer = async (
   port: MessagePort,
 ): Promise<void> => {
-  const rendererWorker =
-    RendererWorker as unknown as RendererWorkerWithProcessExplorer
-  await rendererWorker.sendMessagePortToProcessExplorer(port)
+  const rendererWorker = RendererWorker
+  await rendererWorker.toproc(port)
 }
