@@ -39,6 +39,7 @@ export const processNamePatterns: readonly ProcessNamePattern[] = [
   {
     matches: (cmd) =>
       cmd.includes('--lvce-window-kind=process-explorer') ||
+      includesPackagePath(cmd, 'process-explorer') ||
       cmd.includes('processExplorerMain.ts') ||
       cmd.includes('processExplorerMain.js') ||
       cmd.includes('processExplorer.js'),
