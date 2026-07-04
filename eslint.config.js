@@ -17,7 +17,9 @@ export default [
     files: [
       'packages/process-explorer/test/ListProcessesWithMemoryUsageUnix.test.ts',
       'packages/process-explorer/test/ListProcessesWithMemoryUsageWindows.test.ts',
+      'packages/process-explorer/test/E2eFixtureProcess.test.ts',
       'packages/process-explorer/test/WindowsProcessTree.test.ts',
+      'packages/process-explorer-worker/test/E2eFixtureProcess.test.ts',
       'packages/process-explorer-worker/test/InitializeProcessExplorer.test.ts',
       'packages/process-explorer-worker/test/LaunchProcessExplorerElectron.test.ts',
       'packages/process-explorer-worker/test/LaunchProcessExplorerNode.test.ts',

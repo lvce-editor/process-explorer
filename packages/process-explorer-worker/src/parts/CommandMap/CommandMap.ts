@@ -4,6 +4,7 @@ import * as Create from '../Create/Create.ts'
 import * as DebugProcess from '../DebugProcess/DebugProcess.ts'
 import * as Diff2 from '../Diff2/Diff2.ts'
 import * as Dispose from '../Dispose/Dispose.ts'
+import * as E2eFixtureProcess from '../E2eFixtureProcess/E2eFixtureProcess.ts'
 import * as ExpandAll from '../ExpandAll/ExpandAll.ts'
 import * as FocusFirst from '../FocusFirst/FocusFirst.ts'
 import * as FocusLast from '../FocusLast/FocusLast.ts'
@@ -33,11 +34,16 @@ export const commandMap = {
     CollapseAll.collapseAll,
   ),
   'ProcessExplorer.create': Create.create,
+  'ProcessExplorer.createE2eFixtureProcess': ProcessExplorerStates.wrapCommand(
+    E2eFixtureProcess.createE2eFixtureProcess,
+  ),
   'ProcessExplorer.debugProcess': ProcessExplorerStates.wrapCommand(
     DebugProcess.debugProcess,
   ),
   'ProcessExplorer.diff2': Diff2.diff2,
   'ProcessExplorer.dispose': Dispose.dispose,
+  'ProcessExplorer.disposeE2eFixtureProcess':
+    E2eFixtureProcess.disposeE2eFixtureProcess,
   'ProcessExplorer.expandAll': ProcessExplorerStates.wrapCommand(
     ExpandAll.expandAll,
   ),
