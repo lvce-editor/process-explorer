@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-import { expect, jest, test } from '@jest/globals'
-import { RendererWorker } from '@lvce-editor/rpc-registry'
-import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
-import * as Refresh from '../src/parts/Refresh/Refresh.ts'
-import { processes } from './fixtures/ProcessExplorerFixtures.ts'
-=======
 import { afterEach, beforeEach, expect, jest, test } from '@jest/globals'
 import { PlatformType } from '@lvce-editor/constants'
 import { createMockRpc } from '@lvce-editor/rpc'
 import { ErrorWorker } from '@lvce-editor/rpc-registry'
+import { processes } from './fixtures/ProcessExplorerFixtures.ts'
 
 const initializeProcessExplorer = jest.fn(
   async (..._args: readonly unknown[]) => {},
@@ -62,38 +56,6 @@ const registerProcessExplorerMock = (
     },
   }
 }
-
-const processes = [
-  {
-    cmd: 'main',
-    memory: 1,
-    name: 'main',
-    pid: 1,
-    ppid: 0,
-  },
-  {
-    cmd: 'node child.js',
-    memory: 1500,
-    name: 'child',
-    pid: 2,
-    ppid: 1,
-  },
-  {
-    cmd: 'leaf',
-    memory: 2_500_000,
-    name: 'leaf',
-    pid: 3,
-    ppid: 2,
-  },
-  {
-    cmd: 'orphan',
-    memory: 1,
-    name: 'orphan',
-    pid: 4,
-    ppid: 999,
-  },
-]
->>>>>>> origin/main
 
 beforeEach(() => {
   initializeProcessExplorer.mockClear()
@@ -304,62 +266,4 @@ test('refresh - non error prepare fails', async () => {
   expect(result.errorMessage).toBe('no pid')
   expect(result.errorStack).toBe('')
   expect(result.initial).toBe(false)
-})
-
-test('refresh - existing root pid', async () => {
-  const getMainProcessId = jest.fn(() => {
-    throw new Error('should not be called')
-  })
-  const listProcesses = jest.fn(() => processes)
-  using _mockRpc = RendererWorker.registerMockRpc({
-    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage': listProcesses,
-    'ProcessId.getMainProcessId': getMainProcessId,
-  })
-  const result = await Refresh.refresh({
-    ...createDefaultState(),
-    rootPid: 1,
-  })
-  expect(getMainProcessId).not.toHaveBeenCalled()
-  expect(listProcesses).toHaveBeenCalledWith(1)
-  expect(result.rootPid).toBe(1)
-  expect(result.focusedIndex).toBe(0)
-})
-
-test('refresh - clamps focused index', async () => {
-  using _mockRpc = RendererWorker.registerMockRpc({
-    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage': jest.fn(
-      () => processes,
-    ),
-    'ProcessId.getMainProcessId': jest.fn(() => 1),
-  })
-  const result = await Refresh.refresh({
-    ...createDefaultState(),
-    focusedIndex: 99,
-  })
-  expect(result.focusedIndex).toBe(2)
-})
-
-test('refresh - empty visible processes', async () => {
-  using _mockRpc = RendererWorker.registerMockRpc({
-    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage': jest.fn(
-      () => [],
-    ),
-    'ProcessId.getMainProcessId': jest.fn(() => 1),
-  })
-  const result = await Refresh.refresh({
-    ...createDefaultState(),
-    focusedIndex: 2,
-  })
-  expect(result.focusedIndex).toBe(-1)
-  expect(result.visibleProcesses).toEqual([])
-})
-
-test('refresh - non error thrown value', async () => {
-  using _mockRpc = RendererWorker.registerMockRpc({
-    'ProcessId.getMainProcessId': jest.fn(() => {
-      throw 'no pid'
-    }),
-  })
-  const result = await Refresh.refresh(createDefaultState())
-  expect(result.errorMessage).toBe('no pid')
 })

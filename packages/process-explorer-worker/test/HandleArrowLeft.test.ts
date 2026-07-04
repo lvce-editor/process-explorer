@@ -18,7 +18,6 @@ test('handleArrowLeft focuses parent for leaf', () => {
   expect(HandleArrowLeft.handleArrowLeft(state).focusedIndex).toBe(1)
 })
 
-<<<<<<< HEAD
 test('handleArrowLeft returns state without focused process', () => {
   const state = createProcessState({
     focusedIndex: 99,
@@ -40,33 +39,5 @@ test('handleArrowLeft returns state when focused process has no parent', () => {
     focusedIndex: 0,
     processes,
   })
-=======
-test('handleArrowLeft - missing focused process', () => {
-  const state = {
-    ...createDefaultState(),
-    focusedIndex: 99,
-    processes,
-    rootPid: 1,
-    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
-  }
-
-  expect(HandleArrowLeft.handleArrowLeft(state)).toBe(state)
-})
-
-test('handleArrowLeft - no parent', () => {
-  const singleProcess = [processes[0]]
-  const state = {
-    ...createDefaultState(),
-    focusedIndex: 0,
-    processes: singleProcess,
-    rootPid: 1,
-    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(
-      singleProcess,
-      [],
-      1,
-    ),
-  }
-
->>>>>>> origin/main
   expect(HandleArrowLeft.handleArrowLeft(state)).toBe(state)
 })

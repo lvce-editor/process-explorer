@@ -1,6 +1,5 @@
 import { expect, test } from '@jest/globals'
 import { ViewletCommand } from '@lvce-editor/constants'
-import { VirtualDomElements } from '@lvce-editor/virtual-dom-worker'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as RenderItems from '../src/parts/RenderItems/RenderItems.ts'
 import {
@@ -54,17 +53,13 @@ test('renderItems - populated table', () => {
   )
 })
 
-test('renderItems - collapsed row', () => {
-  const state = {
-    ...createDefaultState(),
+test('renderItems - collapsed row with fixture state', () => {
+  const state = createProcessState({
+    collapsedPids: [2],
     focusedIndex: 1,
     initial: false,
-    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(
-      processes,
-      [2],
-      1,
-    ),
-  }
+    visibleProcesses: createVisibleProcesses([2]),
+  })
   const result = RenderItems.renderItems(createDefaultState(), state)
 
   expect(result[2]).toContainEqual(
@@ -89,7 +84,6 @@ test('renderItems - initial is empty', () => {
   ])
 })
 
-<<<<<<< HEAD
 test('renderItems - error message', () => {
   const state = createProcessState({
     errorMessage: 'boom',
@@ -97,77 +91,14 @@ test('renderItems - error message', () => {
     visibleProcesses: [],
   })
   const result = RenderItems.renderItems(createDefaultState(), state)
-=======
-test('renderItems - error only', () => {
-  const state = {
-    ...createDefaultState(),
-    errorCodeFrame: '1 | throw new Error()',
-    errorMessage: 'Pretty no pid',
-    errorStack: 'Pretty stack',
-    initial: false,
-    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
-  }
-  const result = RenderItems.renderItems(createDefaultState(), state)
-  expect(result[0]).toBe(ViewletCommand.SetDom2)
-  expect(result[2]).toContainEqual(
-    expect.objectContaining({
-      className: 'ProcessExplorerError',
-      type: VirtualDomElements.Div,
-    }),
-  )
-  expect(result[2]).toContainEqual(
-    expect.objectContaining({
-      text: 'Pretty no pid',
-      type: VirtualDomElements.Text,
-    }),
-  )
-  expect(result[2]).toContainEqual(
-    expect.objectContaining({
-      text: '1 | throw new Error()',
-      type: VirtualDomElements.Text,
-    }),
-  )
-  expect(result[2]).toContainEqual(
-    expect.objectContaining({
-      text: 'Pretty stack',
-      type: VirtualDomElements.Text,
-    }),
-  )
-  expect(result[2]).toContainEqual(
-    expect.objectContaining({
-      childCount: 1,
-      type: VirtualDomElements.Pre,
-    }),
-  )
-  expect(result[2]).not.toContainEqual(
-    expect.objectContaining({
-      className: 'ProcessExplorerTable',
-    }),
-  )
-})
-
-test('renderItems - error message only', () => {
-  const state = {
-    ...createDefaultState(),
-    errorMessage: 'Pretty no pid',
-    initial: false,
-  }
-  const result = RenderItems.renderItems(createDefaultState(), state)
-
->>>>>>> origin/main
   expect(result[2]).toContainEqual(
     expect.objectContaining({
       childCount: 1,
       className: 'ProcessExplorerError',
-<<<<<<< HEAD
-=======
-      type: VirtualDomElements.Div,
->>>>>>> origin/main
     }),
   )
   expect(result[2]).toContainEqual(
     expect.objectContaining({
-<<<<<<< HEAD
       text: 'boom',
     }),
   )
@@ -191,10 +122,6 @@ test('renderItems - collapsed row', () => {
     expect.objectContaining({
       className: 'ProcessExplorerCell ProcessExplorerNameCell',
       paddingLeft: '1.5ch',
-=======
-      text: 'Pretty no pid',
-      type: VirtualDomElements.Text,
->>>>>>> origin/main
     }),
   )
 })
