@@ -127,7 +127,7 @@ test('getName - detect common process patterns', () => {
   expect(
     ListProcessGetName.getName(
       9,
-      'node /test/packages/process-explorer/src/processExplorerMain.ts',
+      'node /test/node_modules/@lvce-editor/process-explorer/dist/index.js --ipc-type=node-forked-process',
       rootPid,
       pidMap,
     ),
@@ -135,32 +135,48 @@ test('getName - detect common process patterns', () => {
   expect(
     ListProcessGetName.getName(
       10,
+      'node C:\\test\\node_modules\\@lvce-editor\\process-explorer\\dist\\index.js --ipc-type=node-forked-process',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('process-explorer')
+  expect(
+    ListProcessGetName.getName(
+      11,
+      'node /test/packages/process-explorer/src/processExplorerMain.ts',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('process-explorer')
+  expect(
+    ListProcessGetName.getName(
+      12,
       'node /test/packages/shared-process/src/sharedProcessMain.js',
       rootPid,
       pidMap,
     ),
   ).toBe('shared-process')
   expect(
-    ListProcessGetName.getName(11, 'node tsserver.js', rootPid, pidMap),
+    ListProcessGetName.getName(13, 'node tsserver.js', rootPid, pidMap),
   ).toBe('tsserver.js')
   expect(
-    ListProcessGetName.getName(12, 'node typingsInstaller.js', rootPid, pidMap),
+    ListProcessGetName.getName(14, 'node typingsInstaller.js', rootPid, pidMap),
   ).toBe('typingsInstaller.js')
   expect(
-    ListProcessGetName.getName(13, '/usr/bin/bash -i', rootPid, pidMap),
+    ListProcessGetName.getName(15, '/usr/bin/bash -i', rootPid, pidMap),
   ).toBe('/usr/bin/bash -i')
-  expect(ListProcessGetName.getName(14, 'bash -i', rootPid, pidMap)).toBe(
+  expect(ListProcessGetName.getName(16, 'bash -i', rootPid, pidMap)).toBe(
     'bash',
   )
-  expect(ListProcessGetName.getName(15, '/bin/rg test', rootPid, pidMap)).toBe(
+  expect(ListProcessGetName.getName(17, '/bin/rg test', rootPid, pidMap)).toBe(
     'ripgrep',
   )
   expect(
-    ListProcessGetName.getName(16, 'C:\\tools\\rg.exe test', rootPid, pidMap),
+    ListProcessGetName.getName(18, 'C:\\tools\\rg.exe test', rootPid, pidMap),
   ).toBe('ripgrep')
   expect(
     ListProcessGetName.getName(
-      17,
+      19,
       'C:\\Windows\\System32\\conhost.exe',
       rootPid,
       pidMap,
