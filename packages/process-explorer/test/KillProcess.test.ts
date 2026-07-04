@@ -1,17 +1,13 @@
 import { expect, jest, test } from '@jest/globals'
-
-const kill = jest.fn()
-
-jest.unstable_mockModule('../src/parts/Process/Process.ts', () => ({
-  kill,
-}))
-
-const KillProcess = await import(
-  '../src/parts/KillProcess/KillProcess.ts'
-)
+import * as KillProcess from '../src/parts/KillProcess/KillProcess.ts'
 
 test('killProcess', () => {
-  KillProcess.killProcess(123)
+  const kill = jest.spyOn(process, 'kill').mockImplementation(() => true)
 
-  expect(kill).toHaveBeenCalledWith(123, 'SIGTERM')
+  try {
+    KillProcess.killProcess(123)
+    expect(kill).toHaveBeenCalledWith(123, 'SIGTERM')
+  } finally {
+    kill.mockRestore()
+  }
 })
