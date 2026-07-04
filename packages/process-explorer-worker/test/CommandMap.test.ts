@@ -17,4 +17,7 @@ test('commandMap exposes context menu commands', () => {
   expect(CommandMap.commandMap['ProcessExplorer.setError']).toEqual(
     expect.any(Function),
   )
+  expect(CommandMap.commandMap['ProcessExplorer.setRootProcessId']).toEqual(
+    expect.any(Function),
+  )
 })
