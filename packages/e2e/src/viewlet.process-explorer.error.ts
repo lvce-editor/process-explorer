@@ -2,8 +2,6 @@ import type { Test } from '@lvce-editor/test-with-playwright'
 
 export const name = 'viewlet.process-explorer.error'
 
-export const skip = 1
-
 const fixtureMessage = 'Process Explorer e2e fixture error'
 const fixtureThrowLine = `throw new Error('${fixtureMessage}')`
 
