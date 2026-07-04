@@ -2,7 +2,7 @@ import type { Test } from '@lvce-editor/test-with-playwright'
 
 export const name = 'viewlet.process-explorer.open'
 
-export const skip = 1
+// export const skip = 1
 
 export const test: Test = async ({ Command, expect, Locator }) => {
   // act
@@ -20,7 +20,7 @@ export const test: Test = async ({ Command, expect, Locator }) => {
     .locator('.ProcessExplorerHeaderCell')
     .nth(2)
   await expect(processExplorer).toBeVisible()
-  await expect(processExplorerError).not.toBeVisible()
+  await expect(processExplorerError).toBeHidden()
   await expect(processExplorerGrid).toBeVisible()
   await expect(nameHeader).toHaveText('Name')
   await expect(pidHeader).toHaveText('PID')
