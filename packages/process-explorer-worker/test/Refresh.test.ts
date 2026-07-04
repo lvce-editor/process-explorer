@@ -166,6 +166,26 @@ test('refresh - uses existing root pid', async () => {
   expect(listProcessesWithMemoryUsage).toHaveBeenCalledWith(1, false)
 })
 
+test('refresh - reuses root pid after first refresh', async () => {
+  const listProcessesWithMemoryUsage = jest.fn(
+    (..._args: readonly unknown[]) => processes,
+  )
+  const getMainProcessId = jest.fn((..._args: readonly unknown[]) => 1)
+  using _mockRpc = registerProcessExplorerMock({
+    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage':
+      listProcessesWithMemoryUsage,
+    'ProcessId.getMainProcessId': getMainProcessId,
+  })
+  const firstResult = await Refresh.refresh(createDefaultState())
+  const secondResult = await Refresh.refresh(firstResult)
+
+  expect(secondResult.rootPid).toBe(1)
+  expect(getMainProcessId).toHaveBeenCalledTimes(1)
+  expect(listProcessesWithMemoryUsage).toHaveBeenCalledTimes(2)
+  expect(listProcessesWithMemoryUsage).toHaveBeenNthCalledWith(1, 1, false)
+  expect(listProcessesWithMemoryUsage).toHaveBeenNthCalledWith(2, 1, false)
+})
+
 test('refresh - includes frontend memory usage', async () => {
   setPerformance({
     measureUserAgentSpecificMemory: jest.fn(async () => ({
