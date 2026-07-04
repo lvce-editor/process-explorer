@@ -118,8 +118,11 @@ const processExplorerWorkerUrl = \`${workerRemoteUrl}\``,
 await replace({
   path: processExplorerPathPath,
   marker: '// export const processExplorerPath = ',
-  occurrence: `export const processExplorerPath = Path.join(Root.root, 'packages', 'shared-process', 'node_modules', '@lvce-editor', 'process-explorer', 'dist', 'index.js');`,
-  replacement: `// export const processExplorerPath = Path.join(Root.root, 'packages', 'shared-process', 'node_modules', '@lvce-editor', 'process-explorer', 'dist', 'index.js');
+  occurrence: `import * as ResolveBin from '../ResolveBin/ResolveBin.js';
+export const processExplorerPath = ResolveBin.resolveBin('@lvce-editor/process-explorer');
+`,
+  replacement: `// import * as ResolveBin from '../ResolveBin/ResolveBin.js';
+// export const processExplorerPath = ResolveBin.resolveBin('@lvce-editor/process-explorer');
 export const processExplorerPath = ${JSON.stringify(processExplorerPath)};`,
 })
 
