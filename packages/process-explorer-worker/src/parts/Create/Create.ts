@@ -40,7 +40,7 @@ export const create = (
     parentUid,
     platform,
     processes: [],
-    rootPid: 0,
+    rootPid: -1,
     uid: id,
     visibleProcesses: [],
     width,

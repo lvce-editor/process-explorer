@@ -15,7 +15,7 @@ export const createDefaultState = (): ProcessExplorerState => ({
   parentUid: 0,
   platform: 0,
   processes: [],
-  rootPid: 0,
+  rootPid: -1,
   uid: 1,
   visibleProcesses: [],
   width: 100,

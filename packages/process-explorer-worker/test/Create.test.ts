@@ -11,6 +11,7 @@ test('create', () => {
     initial: true,
     parentUid: 5,
     platform: 0,
+    rootPid: -1,
     uid: 7,
     width: 300,
     x: 1,

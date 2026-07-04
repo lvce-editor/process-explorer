@@ -11,7 +11,7 @@ test('createDefaultState', () => {
     focusedIndex: -1,
     platform: 0,
     processes: [],
-    rootPid: 0,
+    rootPid: -1,
     visibleProcesses: [],
   })
 })
