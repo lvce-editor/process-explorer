@@ -70,3 +70,13 @@ await writeFile(rendererWorkerPath, newContent)
 const staticDist = join(root, '.tmp', 'static')
 await rm(staticDist, { recursive: true, force: true })
 await cp(join(root, 'dist'), staticDist, { recursive: true })
+await cp(
+  workerPath,
+  join(
+    staticDist,
+    commitHash,
+    'packages',
+    'process-explorer-worker',
+    'index.js',
+  ),
+)
