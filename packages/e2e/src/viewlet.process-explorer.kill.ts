@@ -45,5 +45,6 @@ export const test: Test = async ({ Command, expect, Locator }) => {
     await expect(row).toBeHidden()
   } finally {
     await Command.execute('ProcessExplorer.disposeE2eFixtureProcess', marker)
+    await Command.execute('ProcessExplorer.setRootProcessId', -1)
   }
 }
