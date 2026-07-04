@@ -2,6 +2,7 @@ import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { execa } from 'execa'
 import { bundleJs } from './bundleJs.ts'
+import { bundleNodeJs } from './bundleNodeJs.ts'
 import { root } from './root.ts'
 
 const dist = join(root, 'dist')
@@ -74,17 +75,11 @@ await rm(processExplorerWorkerDist, { recursive: true, force: true })
 await mkdir(dist, { recursive: true })
 await mkdir(processExplorerWorkerDist, { recursive: true })
 
-await bundleJs({
+await bundleNodeJs({
   cwd: root,
   from: 'packages/process-explorer/src/processExplorerMain.ts',
   outFile: 'dist/dist/index.js',
-  external: [
-    '@lvce-editor/assert',
-    '@lvce-editor/rpc',
-    '@lvce-editor/rpc-registry',
-    '@lvce-editor/verror',
-    '@vscode/windows-process-tree',
-  ],
+  external: ['@vscode/windows-process-tree', 'electron'],
 })
 
 await bundleJs({
@@ -117,6 +112,15 @@ delete packageJson.scripts
 delete packageJson.devDependencies
 delete packageJson.prettier
 delete packageJson.jest
+delete packageJson.dependencies
+const windowsProcessTreeVersion =
+  packageJson.optionalDependencies?.['@vscode/windows-process-tree']
+delete packageJson.optionalDependencies
+if (windowsProcessTreeVersion) {
+  packageJson.optionalDependencies = {
+    '@vscode/windows-process-tree': windowsProcessTreeVersion,
+  }
+}
 packageJson.version = version
 packageJson.main = 'dist/index.js'
 
