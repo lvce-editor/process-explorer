@@ -1,9 +1,26 @@
 import { expect, jest, test } from '@jest/globals'
+import { createMockRpc } from '@lvce-editor/rpc'
 import { RendererWorker } from '@lvce-editor/rpc-registry'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DebugProcess from '../src/parts/DebugProcess/DebugProcess.ts'
 import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as KillProcess from '../src/parts/KillProcess/KillProcess.ts'
+import * as ProcessExplorer from '../src/parts/ProcessExplorer/ProcessExplorer.ts'
+
+interface DisposableMockRpc {
+  [Symbol.dispose](): void
+}
+
+const registerProcessExplorerMock = (
+  commandMap: Record<string, unknown>,
+): DisposableMockRpc => {
+  ProcessExplorer.set(createMockRpc({ commandMap }))
+  return {
+    [Symbol.dispose](): void {
+      ProcessExplorer.clear()
+    },
+  }
+}
 
 const processes = [
   {
@@ -24,7 +41,7 @@ const processes = [
 
 test('killProcess', async () => {
   const kill = jest.fn()
-  using _mockRpc = RendererWorker.registerMockRpc({
+  using _mockRpc = registerProcessExplorerMock({
     'Process.kill': kill,
   })
   const state = {
@@ -32,12 +49,12 @@ test('killProcess', async () => {
     visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
   }
   await expect(KillProcess.killProcess(state, 0)).resolves.toBe(state)
-  expect(kill).toHaveBeenCalledWith(1, 'SIGTERM')
+  expect(kill).toHaveBeenCalledWith(1)
 })
 
 test('killProcess - missing process', async () => {
   const kill = jest.fn()
-  using _mockRpc = RendererWorker.registerMockRpc({
+  using _mockRpc = registerProcessExplorerMock({
     'Process.kill': kill,
   })
   const state = createDefaultState()
