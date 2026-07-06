@@ -1,6 +1,7 @@
 import { type Rpc, NodeWebSocketRpcClient } from '@lvce-editor/rpc'
 import * as Assert from '../Assert/Assert.ts'
 import * as GetCommandMap from '../GetCommandMap/GetCommandMap.ts'
+import * as HandleRpcClose from '../HandleRpcClose/HandleRpcClose.ts'
 import * as RequiresSocket from '../RequiresSocket/RequiresSocket.ts'
 import * as RpcRegistry from '../RpcRegistry/RpcRegistry.ts'
 
@@ -41,5 +42,6 @@ export const handleWebSocket = async (
     handle,
     request,
   )
+  HandleRpcClose.listen(rpc)
   RpcRegistry.setRpc(rpc, rpcId)
 }

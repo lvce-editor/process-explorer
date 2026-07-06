@@ -25,3 +25,9 @@ export const set = (newRpc: Rpc): void => {
 export const clear = (): void => {
   state.rpc = undefined
 }
+
+export const dispose = async (): Promise<void> => {
+  const { rpc } = state
+  state.rpc = undefined
+  await rpc?.dispose()
+}

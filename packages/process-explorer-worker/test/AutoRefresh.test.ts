@@ -92,7 +92,7 @@ test('auto refresh - dispose clears interval and state', async () => {
   createState(7)
 
   AutoRefresh.start(7, 100)
-  Dispose.dispose(7)
+  await Dispose.dispose(7)
   await jest.advanceTimersByTimeAsync(100)
 
   expect(update).not.toHaveBeenCalled()
