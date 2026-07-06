@@ -11,7 +11,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@lvce-editor/server": "0.84.17"
+    "@lvce-editor/server": "0.84.18"
   },
   "devDependencies": {
     "@types/node": "^26.1.0"
