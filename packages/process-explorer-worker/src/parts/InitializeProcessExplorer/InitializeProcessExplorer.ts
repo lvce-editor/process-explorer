@@ -34,3 +34,8 @@ export const initializeProcessExplorer = async (
 export const clear = (): void => {
   state.initializedPlatform = 0
 }
+
+export const dispose = async (): Promise<void> => {
+  state.initializedPlatform = 0
+  await ProcessExplorerModule.dispose()
+}
