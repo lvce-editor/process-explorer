@@ -8,7 +8,7 @@ import * as RequiresSocket from '../src/parts/RequiresSocket/RequiresSocket.ts'
 import * as SplitLines from '../src/parts/SplitLines/SplitLines.ts'
 
 test('parseMemory', () => {
-  expect(ParseMemory.parseMemory('100 5 2 0 0 0 0')).toBe(12_288)
+  expect(ParseMemory.parseMemory('100 5 2 0 0 0 0')).toBe(20_480)
 })
 
 test('hasPositiveMemoryUsage', () => {
