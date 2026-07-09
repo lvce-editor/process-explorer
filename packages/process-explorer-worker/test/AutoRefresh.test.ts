@@ -112,3 +112,17 @@ test('auto refresh - zero interval disables updates', async () => {
 
   expect(update).not.toHaveBeenCalled()
 })
+
+test('auto refresh - negative interval disables updates', async () => {
+  jest.useFakeTimers()
+  const update = jest.fn()
+  using _mockRpc = RendererWorker.registerMockRpc({
+    'ProcessExplorer.update': update,
+  })
+  createState(7)
+
+  AutoRefresh.start(7, -1)
+  await jest.advanceTimersByTimeAsync(1000)
+
+  expect(update).not.toHaveBeenCalled()
+})

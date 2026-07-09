@@ -48,6 +48,7 @@ const getCellDom = (
     {
       childCount: 1,
       className,
+      'data-index': index,
       name: String(index),
       paddingLeft,
       role: AriaRoles.GridCell,

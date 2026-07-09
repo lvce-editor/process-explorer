@@ -18,6 +18,7 @@ export interface ProcessExplorerState {
   readonly processes: readonly ProcessInfo[]
   readonly rootPid: number
   readonly uid: number
+  readonly updateInterval: number
   readonly visibleProcesses: readonly VisibleProcess[]
   readonly width: number
   readonly x: number

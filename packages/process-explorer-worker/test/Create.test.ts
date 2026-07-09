@@ -36,8 +36,15 @@ test('create - defaults and include frontend memory usage', () => {
     assetDir: '',
     includeFrontendMemoryUsage: true,
     platform: 0,
+    updateInterval: 1000,
   })
   expect(ProcessExplorerStates.get(8).newState).toBe(state)
+})
+
+test('create - update interval', () => {
+  ProcessExplorerStates.clear()
+  const state = create(10, '', 1, 2, 300, 400, { updateInterval: -1 }, 5)
+  expect(state.updateInterval).toBe(-1)
 })
 
 test('create - missing args', () => {

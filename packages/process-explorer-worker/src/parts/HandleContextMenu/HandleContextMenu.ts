@@ -5,22 +5,23 @@ import * as ProcessExplorerStates from '../ProcessExplorerStates/ProcessExplorer
 
 export const handleContextMenu = async (
   state: ProcessExplorerState,
-  index: number = state.focusedIndex,
+  index: number | string = state.focusedIndex,
   x: number = 0,
   y: number = 0,
 ): Promise<ProcessExplorerState> => {
-  const process = state.visibleProcesses[index]
+  const numericIndex = Number(index)
+  const process = state.visibleProcesses[numericIndex]
   if (!process) {
     return state
   }
   const newState: ProcessExplorerState = {
     ...state,
     focused: false,
-    focusedIndex: index,
+    focusedIndex: numericIndex,
   }
   ProcessExplorerStates.set(state.uid, state, newState)
   await ContextMenu.show2(state.uid, MenuEntryId.ProcessExplorer, x, y, {
-    index,
+    index: numericIndex,
     menuId: MenuEntryId.ProcessExplorer,
   })
   return newState

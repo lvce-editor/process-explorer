@@ -3,7 +3,7 @@ import * as ToggleIndex from '../ToggleIndex/ToggleIndex.ts'
 
 export const handleDoubleClick = (
   state: ProcessExplorerState,
-  index: number = state.focusedIndex,
+  index: number | string = state.focusedIndex,
 ): ProcessExplorerState => {
-  return ToggleIndex.toggleIndex(state, index)
+  return ToggleIndex.toggleIndex(state, Number(index))
 }

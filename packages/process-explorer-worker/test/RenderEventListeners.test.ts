@@ -7,7 +7,7 @@ test('renderEventListeners', () => {
     expect.arrayContaining([
       expect.objectContaining({
         name: DomEventListenerFunctions.HandleClick,
-        params: ['handleClickAt', 'event.target.name'],
+        params: ['handleClickAt', 'event.target.dataset.index'],
       }),
       expect.objectContaining({
         name: DomEventListenerFunctions.HandleContextMenu,

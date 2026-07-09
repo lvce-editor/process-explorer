@@ -1,8 +1,10 @@
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
 import * as ProcessExplorerStates from '../ProcessExplorerStates/ProcessExplorerStates.ts'
+import * as ProcessExplorerUpdateInterval from '../ProcessExplorerUpdateInterval/ProcessExplorerUpdateInterval.ts'
 
 interface CreateArgs {
   readonly includeFrontendMemoryUsage?: boolean
+  readonly updateInterval?: number
 }
 
 const getIncludeFrontendMemoryUsage = (args: unknown): boolean => {
@@ -11,6 +13,17 @@ const getIncludeFrontendMemoryUsage = (args: unknown): boolean => {
   }
   const createArgs = args as CreateArgs
   return createArgs.includeFrontendMemoryUsage === true
+}
+
+const getUpdateInterval = (args: unknown): number => {
+  if (!args || typeof args !== 'object') {
+    return ProcessExplorerUpdateInterval.processExplorerUpdateInterval
+  }
+  const createArgs = args as CreateArgs
+  if (typeof createArgs.updateInterval !== 'number') {
+    return ProcessExplorerUpdateInterval.processExplorerUpdateInterval
+  }
+  return createArgs.updateInterval
 }
 
 export const create = (
@@ -42,6 +55,7 @@ export const create = (
     processes: [],
     rootPid: -1,
     uid: id,
+    updateInterval: getUpdateInterval(args),
     visibleProcesses: [],
     width,
     x,
