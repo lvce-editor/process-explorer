@@ -12,6 +12,7 @@
     "@babel/preset-typescript": "^7.28.5",
     "@lvce-editor/verror": "^1.7.0",
     "@rollup/plugin-babel": "^7.1.0",
+    "@rollup/plugin-commonjs": "^29.0.3",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@types/node": "^25.0.8",
     "esbuild": "^0.28.1",
