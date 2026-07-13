@@ -21,9 +21,6 @@ const getPaddingLeft = (process: VisibleProcess): string => {
     return '0'
   }
   const depthCh = (process.depth - 1) * 1.5
-  if (process.flags === ProcessFlag.None) {
-    return `calc(${depthCh}ch + 17px)`
-  }
   return `${depthCh}ch`
 }
 
