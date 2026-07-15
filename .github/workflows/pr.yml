@@ -30,11 +30,12 @@ jobs:
       - name: npm ci
         run: npm ci --ignore-scripts && npm run postinstall
         if: steps.npm-cache.outputs.cache-hit != 'true'
-      - run: npm run lint
-      - run: npm test
-      - run: npm run type-check
       - name: Build
         run: npm run build
+      - name: Build static
+        run: npm run build:static
+      - run: npm test
+      - run: npm run type-check
       - name: install playwright system dependencies
         working-directory: ./packages/e2e
         if: runner.os == 'Linux'
@@ -60,5 +61,4 @@ jobs:
         run: npm run e2e:webkit:headless
         env:
           PLAYWRIGHT_BROWSERS_PATH: 0
-      - name: Build static
-        run: npm run build:static
+      - run: npm run lint
