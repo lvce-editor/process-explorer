@@ -38,9 +38,9 @@
     "@lvce-editor/eslint-config": "^16.4.0",
     "@types/node": "^20.12.8",
     "eslint": "^10.7.0",
-    "knip": "^6.24.0",
+    "knip": "^6.26.0",
     "lerna": "^8.2.3",
-    "prettier": "^3.9.4",
+    "prettier": "^3.9.5",
     "typescript": "^6.0.3"
   },
   "prettier": {
