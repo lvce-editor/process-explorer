@@ -14,6 +14,26 @@ import * as FormatMemory from '../FormatMemory/FormatMemory.ts'
 import * as ProcessFlag from '../ProcessFlag/ProcessFlag.ts'
 import * as TabIndex from '../TabIndex/TabIndex.ts'
 
+const tableHeadNode: VirtualDomNode = {
+  childCount: 1,
+  className: ClassNames.TableHead,
+  role: AriaRoles.RowGroup,
+  type: VirtualDomElements.THead,
+}
+
+const headerRowNode: VirtualDomNode = {
+  childCount: 3,
+  className: ClassNames.Row,
+  role: AriaRoles.Row,
+  type: VirtualDomElements.Tr,
+}
+
+const headerCellNode: VirtualDomNode = {
+  childCount: 1,
+  className: ClassNames.HeaderCell,
+  type: VirtualDomElements.Th,
+}
+
 const getRowClassName = (focused: boolean): string => {
   if (focused) {
     return mergeClassNames(ClassNames.Row, ClassNames.RowFocused)
@@ -63,24 +83,10 @@ const getCellDom = (
 
 const getHeaderDom = (): readonly VirtualDomNode[] => {
   return [
-    {
-      childCount: 1,
-      className: ClassNames.TableHead,
-      role: AriaRoles.RowGroup,
-      type: VirtualDomElements.THead,
-    },
-    {
-      childCount: 3,
-      className: ClassNames.Row,
-      role: AriaRoles.Row,
-      type: VirtualDomElements.Tr,
-    },
+    tableHeadNode,
+    headerRowNode,
     ...['Name', 'PID', 'Memory'].flatMap((label) => [
-      {
-        childCount: 1,
-        className: ClassNames.HeaderCell,
-        type: VirtualDomElements.Th,
-      },
+      headerCellNode,
       text(label),
     ]),
   ]
@@ -105,7 +111,7 @@ const getRowDom = (
       type: VirtualDomElements.Tr,
     },
     ...getCellDom(
-      `${ClassNames.Cell} ${ClassNames.NameCell}`,
+      mergeClassNames(ClassNames.Cell, ClassNames.NameCell),
       process.name,
       index,
       getPaddingLeft(process),
