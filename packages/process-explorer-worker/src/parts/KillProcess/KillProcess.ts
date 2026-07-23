@@ -9,6 +9,11 @@ export const killProcess = async (
   if (!process) {
     return state
   }
-  await ProcessExplorer.invoke('Process.kill', process.pid)
+  const killPromise = ProcessExplorer.invoke('Process.kill', process.pid)
+  if (process.name === 'process-explorer') {
+    void killPromise.catch(() => {})
+    return state
+  }
+  await killPromise
   return state
 }
