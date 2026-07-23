@@ -6,6 +6,7 @@ export const test: Test = async ({ Command, expect, KeyBoard, Locator }) => {
   // arrange
   await Command.execute('Developer.openProcessExplorer')
   const table = Locator('.ProcessExplorerTable')
+  await expect(table).toBeVisible()
   await Command.execute('ProcessExplorer.focusFirst')
 
   // act
@@ -14,6 +15,5 @@ export const test: Test = async ({ Command, expect, KeyBoard, Locator }) => {
 
   // assert
   const focusedRow = Locator('.ProcessExplorerRowFocused')
-  await expect(table).toBeVisible()
   await expect(focusedRow).toBeVisible()
 }
