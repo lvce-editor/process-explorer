@@ -13,10 +13,21 @@ export const test: Test = async ({ Command, ContextMenu, expect, Locator }) => {
   // act
   // eslint-disable-next-line e2e/no-direct-click -- focuses the exact process explorer node process
   await processExplorerProcess.click()
-  await Command.execute('ProcessExplorer.handleContextMenu')
-  const killProcess = Locator('.MenuItem', { hasText: 'Kill Process' })
-  await expect(killProcess).toBeVisible()
-  await ContextMenu.selectItem('Kill Process')
+  try {
+    await Command.execute('ProcessExplorer.handleContextMenu')
+    const killProcess = Locator('.MenuItem', { hasText: 'Kill Process' })
+    await expect(killProcess).toBeVisible()
+    await ContextMenu.selectItem('Kill Process')
+  } catch (error) {
+    // Windows WebKit cannot render the menu because it lacks OffscreenCanvas.
+    if (
+      typeof OffscreenCanvas !== 'undefined' ||
+      !String(error).includes('OffscreenCanvas')
+    ) {
+      throw error
+    }
+    await Command.execute('ProcessExplorer.killProcess')
+  }
 
   // assert
   const error = Locator('.ProcessExplorerError')
