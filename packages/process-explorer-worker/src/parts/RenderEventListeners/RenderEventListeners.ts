@@ -14,19 +14,19 @@ export const renderEventListeners = (): readonly DomEventListener[] => {
     },
     {
       name: DomEventListenerFunctions.HandleClick,
-      params: ['handleClickAt', EventExpression.TargetName],
+      params: ['handleClickAt', 'event.target.dataset.index'],
       preventDefault: true,
     },
     {
       name: DomEventListenerFunctions.HandleDoubleClick,
-      params: ['handleDoubleClick', EventExpression.TargetName],
+      params: ['handleDoubleClick', 'event.target.dataset.index'],
       preventDefault: true,
     },
     {
       name: DomEventListenerFunctions.HandleContextMenu,
       params: [
         'handleContextMenu',
-        EventExpression.TargetName,
+        'event.target.dataset.index',
         EventExpression.ClientX,
         EventExpression.ClientY,
       ],
@@ -34,7 +34,7 @@ export const renderEventListeners = (): readonly DomEventListener[] => {
     },
     {
       name: DomEventListenerFunctions.HandlePointerDown,
-      params: ['handleClickAt', EventExpression.TargetName],
+      params: ['handleClickAt', 'event.target.dataset.index'],
     },
   ]
 }

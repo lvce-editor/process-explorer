@@ -57,6 +57,15 @@ test('handleClickAt', () => {
   expect(HandleClickAt.handleClickAt(state, 1).focusedIndex).toBe(1)
 })
 
+test('handleClickAt - string index', () => {
+  const state = {
+    ...createDefaultState(),
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
+  }
+
+  expect(HandleClickAt.handleClickAt(state, '1').focusedIndex).toBe(1)
+})
+
 test('getMenuEntryIds', () => {
   expect(GetMenuEntryIds.getMenuEntryIds()).toEqual([
     MenuEntryId.ProcessExplorer,

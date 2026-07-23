@@ -1,4 +1,5 @@
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
+import * as ProcessExplorerUpdateInterval from '../ProcessExplorerUpdateInterval/ProcessExplorerUpdateInterval.ts'
 
 export const createDefaultState = (): ProcessExplorerState => ({
   assetDir: '',
@@ -17,6 +18,7 @@ export const createDefaultState = (): ProcessExplorerState => ({
   processes: [],
   rootPid: -1,
   uid: 1,
+  updateInterval: ProcessExplorerUpdateInterval.processExplorerUpdateInterval,
   visibleProcesses: [],
   width: 100,
   x: 0,

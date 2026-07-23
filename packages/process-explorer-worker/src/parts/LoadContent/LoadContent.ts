@@ -12,7 +12,7 @@ export const loadContent = async (
 ): Promise<LoadContentResult<ProcessExplorerState>> => {
   const newState = await Refresh.refresh(state)
   if (!hasError(newState)) {
-    AutoRefresh.start(newState.uid)
+    AutoRefresh.start(newState.uid, newState.updateInterval)
   }
   return {
     error: undefined,

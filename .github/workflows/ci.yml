@@ -22,7 +22,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
@@ -30,7 +30,7 @@ jobs:
         id: nodeModulesCacheKey
         run: echo "value=$(node packages/build/src/computeNodeModulesCacheKey.ts)" >> $GITHUB_OUTPUT
         shell: bash
-      - uses: actions/cache@v5
+      - uses: actions/cache@v6
         id: npm-cache
         with:
           path: '**/node_modules'
@@ -38,11 +38,12 @@ jobs:
       - name: npm ci
         run: npm ci --ignore-scripts && npm run postinstall
         if: steps.npm-cache.outputs.cache-hit != 'true'
-      - run: npm run lint
-      - run: npm test
-      - run: npm run type-check
       - name: Build
         run: npm run build
+      - name: Build static
+        run: npm run build:static
+      - run: npm test
+      - run: npm run type-check
       - name: install playwright system dependencies
         working-directory: ./packages/e2e
         if: runner.os == 'Linux'
@@ -68,11 +69,10 @@ jobs:
         run: npm run e2e:webkit:headless
         env:
           PLAYWRIGHT_BROWSERS_PATH: 0
-      - name: Build static
-        run: npm run build:static
+      - run: npm run lint
       - name: Upload artifact
         if: matrix.os == 'ubuntu-22.04'
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./.tmp/static
       - name: Clean up
@@ -88,4 +88,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

@@ -1,5 +1,9 @@
 import { ViewletCommand } from '@lvce-editor/constants'
-import { text, VirtualDomElements } from '@lvce-editor/virtual-dom-worker'
+import {
+  mergeClassNames,
+  text,
+  VirtualDomElements,
+} from '@lvce-editor/virtual-dom-worker'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
 import type { VirtualDomNode } from '../VirtualDomNode/VirtualDomNode.ts'
 import type { VisibleProcess } from '../VisibleProcess/VisibleProcess.ts'
@@ -8,10 +12,31 @@ import * as ClassNames from '../ClassNames/ClassNames.ts'
 import * as DomEventListenerFunctions from '../DomEventListenerFunctions/DomEventListenerFunctions.ts'
 import * as FormatMemory from '../FormatMemory/FormatMemory.ts'
 import * as ProcessFlag from '../ProcessFlag/ProcessFlag.ts'
+import * as TabIndex from '../TabIndex/TabIndex.ts'
+
+const tableHeadNode: VirtualDomNode = {
+  childCount: 1,
+  className: ClassNames.TableHead,
+  role: AriaRoles.RowGroup,
+  type: VirtualDomElements.THead,
+}
+
+const headerRowNode: VirtualDomNode = {
+  childCount: 3,
+  className: ClassNames.Row,
+  role: AriaRoles.Row,
+  type: VirtualDomElements.Tr,
+}
+
+const headerCellNode: VirtualDomNode = {
+  childCount: 1,
+  className: ClassNames.HeaderCell,
+  type: VirtualDomElements.Th,
+}
 
 const getRowClassName = (focused: boolean): string => {
   if (focused) {
-    return `${ClassNames.Row} ${ClassNames.RowFocused}`
+    return mergeClassNames(ClassNames.Row, ClassNames.RowFocused)
   }
   return ClassNames.Row
 }
@@ -21,9 +46,6 @@ const getPaddingLeft = (process: VisibleProcess): string => {
     return '0'
   }
   const depthCh = (process.depth - 1) * 1.5
-  if (process.flags === ProcessFlag.None) {
-    return `calc(${depthCh}ch + 17px)`
-  }
   return `${depthCh}ch`
 }
 
@@ -48,6 +70,7 @@ const getCellDom = (
     {
       childCount: 1,
       className,
+      'data-index': index,
       name: String(index),
       paddingLeft,
       role: AriaRoles.GridCell,
@@ -60,24 +83,10 @@ const getCellDom = (
 
 const getHeaderDom = (): readonly VirtualDomNode[] => {
   return [
-    {
-      childCount: 1,
-      className: ClassNames.TableHead,
-      role: AriaRoles.RowGroup,
-      type: VirtualDomElements.THead,
-    },
-    {
-      childCount: 3,
-      className: ClassNames.Row,
-      role: AriaRoles.Row,
-      type: VirtualDomElements.Tr,
-    },
+    tableHeadNode,
+    headerRowNode,
     ...['Name', 'PID', 'Memory'].flatMap((label) => [
-      {
-        childCount: 1,
-        className: ClassNames.HeaderCell,
-        type: VirtualDomElements.Th,
-      },
+      headerCellNode,
       text(label),
     ]),
   ]
@@ -90,7 +99,6 @@ const getRowDom = (
 ): readonly VirtualDomNode[] => {
   return [
     {
-      ariaDescription: '',
       ariaExpanded: getAriaExpanded(process),
       ariaLevel: process.depth,
       childCount: 3,
@@ -103,7 +111,7 @@ const getRowDom = (
       type: VirtualDomElements.Tr,
     },
     ...getCellDom(
-      `${ClassNames.Cell} ${ClassNames.NameCell}`,
+      mergeClassNames(ClassNames.Cell, ClassNames.NameCell),
       process.name,
       index,
       getPaddingLeft(process),
@@ -149,27 +157,29 @@ const getErrorSectionDom = (
 }
 
 const hasError = (state: ProcessExplorerState): boolean => {
-  return Boolean(state.errorMessage || state.errorCodeFrame || state.errorStack)
+  const { errorCodeFrame, errorMessage, errorStack } = state
+  return Boolean(errorMessage || errorCodeFrame || errorStack)
 }
 
 const getErrorDom = (
   state: ProcessExplorerState,
 ): readonly VirtualDomNode[] => {
-  const messageDom = getErrorSectionDom(
-    state.errorMessage,
-    VirtualDomElements.Div,
-  )
+  const { errorCodeFrame, errorMessage, errorStack } = state
+  const messageDom = getErrorSectionDom(errorMessage, VirtualDomElements.Div)
   const codeFrameDom = getErrorSectionDom(
-    state.errorCodeFrame,
+    errorCodeFrame,
     VirtualDomElements.Pre,
   )
-  const stackDom = getErrorSectionDom(state.errorStack, VirtualDomElements.Pre)
+  const stackDom = getErrorSectionDom(errorStack, VirtualDomElements.Pre)
   const childCount =
     messageDom.length / 2 + codeFrameDom.length / 2 + stackDom.length / 2
   return [
     {
       childCount: 1,
-      className: `${ClassNames.Viewlet} ${ClassNames.ProcessExplorer}`,
+      className: mergeClassNames(
+        ClassNames.Viewlet,
+        ClassNames.ProcessExplorer,
+      ),
       role: AriaRoles.None,
       type: VirtualDomElements.Div,
     },
@@ -187,16 +197,20 @@ const getErrorDom = (
 const getTableDom = (
   state: ProcessExplorerState,
 ): readonly VirtualDomNode[] => {
+  const { visibleProcesses } = state
   return [
     {
       childCount: 1,
-      className: `${ClassNames.Viewlet} ${ClassNames.ProcessExplorer}`,
+      className: mergeClassNames(
+        ClassNames.Viewlet,
+        ClassNames.ProcessExplorer,
+      ),
       role: AriaRoles.None,
       type: VirtualDomElements.Div,
     },
     {
       ariaLabel: 'Process Explorer',
-      ariaRowCount: state.visibleProcesses.length + 1,
+      ariaRowCount: visibleProcesses.length + 1,
       childCount: 2,
       className: ClassNames.Table,
       onBlur: DomEventListenerFunctions.HandleBlur,
@@ -206,7 +220,7 @@ const getTableDom = (
       onFocus: DomEventListenerFunctions.HandleFocus,
       onPointerDown: DomEventListenerFunctions.HandlePointerDown,
       role: AriaRoles.Grid,
-      tabIndex: 0,
+      tabIndex: TabIndex.Focusable,
       type: VirtualDomElements.Table,
     },
     ...getHeaderDom(),
@@ -215,7 +229,8 @@ const getTableDom = (
 }
 
 const getDom = (state: ProcessExplorerState): readonly VirtualDomNode[] => {
-  if (state.initial) {
+  const { initial } = state
+  if (initial) {
     return []
   }
   if (hasError(state)) {

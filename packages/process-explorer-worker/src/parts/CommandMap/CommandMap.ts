@@ -28,6 +28,7 @@ import * as Render2 from '../Render2/Render2.ts'
 import * as RenderEventListeners from '../RenderEventListeners/RenderEventListeners.ts'
 import * as SetError from '../SetError/SetError.ts'
 import * as SetRootProcessId from '../SetRootProcessId/SetRootProcessId.ts'
+import * as SetUpdateInterval from '../SetUpdateInterval/SetUpdateInterval.ts'
 
 export const commandMap = {
   'ProcessExplorer.collapseAll': ProcessExplorerStates.wrapCommand(
@@ -101,6 +102,9 @@ export const commandMap = {
   ),
   'ProcessExplorer.setRootProcessId': ProcessExplorerStates.wrapCommand(
     SetRootProcessId.setRootProcessId,
+  ),
+  'ProcessExplorer.setUpdateInterval': ProcessExplorerStates.wrapCommand(
+    SetUpdateInterval.setUpdateInterval,
   ),
   'ProcessExplorer.terminate': terminate,
   'ProcessExplorer.update': ProcessExplorerStates.wrapCommand(Refresh.refresh),

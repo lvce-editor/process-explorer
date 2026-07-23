@@ -1,7 +1,7 @@
 import { expect, jest, test } from '@jest/globals'
 
-const sendMessagePortToProcessExplorer = jest.fn(
-  async (_port: MessagePort) => undefined,
+const invokeAndTransfer = jest.fn(
+  async (..._args: readonly unknown[]) => undefined,
 )
 const mockRpc = {
   invoke: jest.fn(),
@@ -26,7 +26,7 @@ jest.unstable_mockModule('@lvce-editor/rpc', () => ({
 
 jest.unstable_mockModule('@lvce-editor/rpc-registry', () => ({
   RendererWorker: {
-    sendMessagePortToProcessExplorer,
+    invokeAndTransfer,
   },
 }))
 
@@ -42,7 +42,10 @@ test('launchProcessExplorerElectron - creates rpc and sends message port', async
     commandMap: {},
     send: expect.any(Function),
   })
-  expect(sendMessagePortToProcessExplorer).toHaveBeenCalledWith(
+  expect(invokeAndTransfer).toHaveBeenCalledWith(
+    'SendMessagePortToMainProcess.sendMessagePortToMainProcess',
     expect.anything(),
+    'HandleElectronMessagePort.handleElectronMessagePort',
+    33,
   )
 })

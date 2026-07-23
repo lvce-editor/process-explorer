@@ -42,11 +42,16 @@ export const start = (
   uid: number,
   interval: number = ProcessExplorerUpdateInterval.processExplorerUpdateInterval,
 ): void => {
-  if (interval === 0 || intervals.has(uid)) {
+  if (interval <= 0 || intervals.has(uid)) {
     return
   }
   const intervalId = setInterval(() => {
     void update(uid)
   }, interval)
   intervals.set(uid, intervalId)
+}
+
+export const restart = (uid: number, interval: number): void => {
+  dispose(uid)
+  start(uid, interval)
 }

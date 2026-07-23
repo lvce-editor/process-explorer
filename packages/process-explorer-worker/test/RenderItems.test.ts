@@ -1,6 +1,7 @@
 import { expect, test } from '@jest/globals'
 import { ViewletCommand } from '@lvce-editor/constants'
 import { VirtualDomElements } from '@lvce-editor/virtual-dom-worker'
+import type { VirtualDomNode } from '../src/parts/VirtualDomNode/VirtualDomNode.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as RenderItems from '../src/parts/RenderItems/RenderItems.ts'
@@ -91,6 +92,70 @@ test('renderItems - collapsed row', () => {
       ariaLevel: 2,
       className: 'ProcessExplorerRow ProcessExplorerRowFocused',
       title: 'node child.js',
+    }),
+  )
+})
+
+test('renderItems - aligns leaf and expandable siblings', () => {
+  const zygoteProcesses = [
+    {
+      cmd: 'main',
+      memory: 1,
+      name: 'main',
+      pid: 1,
+      ppid: 0,
+    },
+    {
+      cmd: 'zygote',
+      memory: 1,
+      name: 'zygote',
+      pid: 2,
+      ppid: 1,
+    },
+    {
+      cmd: 'zygote',
+      memory: 1,
+      name: 'zygote',
+      pid: 3,
+      ppid: 1,
+    },
+    {
+      cmd: 'zygote child',
+      memory: 1,
+      name: 'zygote',
+      pid: 4,
+      ppid: 3,
+    },
+  ]
+  const state = {
+    ...createDefaultState(),
+    initial: false,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(
+      zygoteProcesses,
+      [],
+      1,
+    ),
+  }
+  const result = RenderItems.renderItems(createDefaultState(), state)
+  const leafZygoteNameCell = result[2].find(
+    (node: VirtualDomNode) =>
+      node.className === 'ProcessExplorerCell ProcessExplorerNameCell' &&
+      node['data-index'] === 1,
+  )
+  const expandableZygoteNameCell = result[2].find(
+    (node: VirtualDomNode) =>
+      node.className === 'ProcessExplorerCell ProcessExplorerNameCell' &&
+      node['data-index'] === 2,
+  )
+
+  expect(leafZygoteNameCell).toEqual(
+    expect.objectContaining({
+      paddingLeft: '1.5ch',
+    }),
+  )
+  expect(expandableZygoteNameCell).toEqual(
+    expect.objectContaining({
+      paddingLeft: '1.5ch',
     }),
   )
 })

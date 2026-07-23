@@ -2,6 +2,7 @@ import { join } from 'node:path'
 import { VError } from '@lvce-editor/verror'
 import pluginTypeScript from '@babel/preset-typescript'
 import { babel } from '@rollup/plugin-babel'
+import commonjs from '@rollup/plugin-commonjs'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import {
   rollup,
@@ -9,6 +10,9 @@ import {
   type OutputOptions,
   type RollupOptions,
 } from 'rollup'
+
+const commonjsPlugin =
+  commonjs as unknown as typeof import('@rollup/plugin-commonjs').default
 
 interface BundleJsOptions {
   readonly cwd: string
@@ -35,6 +39,7 @@ export const bundleJs = async ({
         browser,
         preferBuiltins: true,
       }),
+      commonjsPlugin(),
     ]
     if (typescript) {
       plugins.push(

@@ -58,3 +58,17 @@ test('handleDoubleClick - default index', () => {
 
   expect(HandleDoubleClick.handleDoubleClick(state).collapsedPids).toEqual([1])
 })
+
+test('handleDoubleClick - string index', () => {
+  const state = {
+    ...createDefaultState(),
+    focusedIndex: 0,
+    processes,
+    rootPid: 1,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
+  }
+
+  expect(HandleDoubleClick.handleDoubleClick(state, '0').collapsedPids).toEqual(
+    [1],
+  )
+})
