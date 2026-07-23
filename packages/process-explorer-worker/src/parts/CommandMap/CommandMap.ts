@@ -26,6 +26,7 @@ import * as ProcessExplorerStates from '../ProcessExplorerStates/ProcessExplorer
 import * as Refresh from '../Refresh/Refresh.ts'
 import * as Render2 from '../Render2/Render2.ts'
 import * as RenderEventListeners from '../RenderEventListeners/RenderEventListeners.ts'
+import * as Rerender from '../Rerender/Rerender.ts'
 import * as SetError from '../SetError/SetError.ts'
 import * as SetRootProcessId from '../SetRootProcessId/SetRootProcessId.ts'
 import * as SetUpdateInterval from '../SetUpdateInterval/SetUpdateInterval.ts'
@@ -97,6 +98,9 @@ export const commandMap = {
   'ProcessExplorer.render2': Render2.render2,
   'ProcessExplorer.renderEventListeners':
     RenderEventListeners.renderEventListeners,
+  'ProcessExplorer.rerender': ProcessExplorerStates.wrapCommand(
+    Rerender.rerender,
+  ),
   'ProcessExplorer.setError': ProcessExplorerStates.wrapCommand(
     SetError.setError,
   ),
