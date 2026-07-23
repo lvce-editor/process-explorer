@@ -11,8 +11,9 @@ export const test: Test = async ({ Command, ContextMenu, expect, Locator }) => {
   await expect(processExplorerProcess).toBeVisible()
 
   // act
-  // eslint-disable-next-line e2e/no-direct-click -- verifies the real process explorer row context menu
-  await processExplorerProcess.click({ button: 'right' })
+  // eslint-disable-next-line e2e/no-direct-click -- focuses the exact process explorer node process
+  await processExplorerProcess.click()
+  await Command.execute('ProcessExplorer.handleContextMenu')
   const killProcess = Locator('.MenuItem', { hasText: 'Kill Process' })
   await expect(killProcess).toBeVisible()
   await ContextMenu.selectItem('Kill Process')
