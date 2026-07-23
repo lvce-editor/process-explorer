@@ -82,7 +82,12 @@ test('killProcess - does not wait for process explorer rpc response', async () =
     ],
   }
 
-  await expect(KillProcess.killProcess(state, 0)).resolves.toBe(state)
+  await expect(KillProcess.killProcess(state, 0)).resolves.toMatchObject({
+    errorCodeFrame: '',
+    errorMessage: 'Process explorer RPC connection was closed',
+    errorStack: '',
+    initial: false,
+  })
   expect(kill).toHaveBeenCalledWith(3)
 })
 
