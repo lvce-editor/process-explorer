@@ -46,5 +46,6 @@ export const test: Test = async ({ Command, expect, Locator }) => {
   } finally {
     await Command.execute('ProcessExplorer.disposeE2eFixtureProcess', marker)
     await Command.execute('ProcessExplorer.setRootProcessId', -1)
+    await Command.execute('ProcessExplorer.refresh')
   }
 }
