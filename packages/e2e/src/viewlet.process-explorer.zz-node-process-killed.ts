@@ -2,13 +2,6 @@ import type { Test } from '@lvce-editor/test-with-playwright'
 
 export const name = 'viewlet.process-explorer.node-process-killed'
 
-const contextMenuEventInit = {
-  bubbles: true,
-  button: 2,
-  clientX: 10,
-  clientY: 10,
-} as unknown as string
-
 export const test: Test = async ({ Command, ContextMenu, expect, Locator }) => {
   // arrange
   await Command.execute('Developer.openProcessExplorer')
@@ -18,10 +11,8 @@ export const test: Test = async ({ Command, ContextMenu, expect, Locator }) => {
   await expect(processExplorerProcess).toBeVisible()
 
   // act
-  await processExplorerProcess.dispatchEvent(
-    'contextmenu',
-    contextMenuEventInit,
-  )
+  // eslint-disable-next-line e2e/no-direct-click -- verifies the real process explorer row context menu
+  await processExplorerProcess.click({ button: 'right' })
   const killProcess = Locator('.MenuItem', { hasText: 'Kill Process' })
   await expect(killProcess).toBeVisible()
   await ContextMenu.selectItem('Kill Process')
