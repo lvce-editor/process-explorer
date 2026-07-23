@@ -23,7 +23,7 @@ export const test: Test = async ({ Command, expect, Locator }) => {
     'contextmenu',
     contextMenuEventInit,
   )
-  const killProcess = Locator('.ContextMenuItem[title="Kill Process"]')
+  const killProcess = Locator('.MenuItem', { hasText: 'Kill Process' })
   await expect(killProcess).toBeVisible()
   await killProcess.dispatchEvent('click', clickEventInit)
 
