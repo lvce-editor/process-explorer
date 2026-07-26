@@ -4,6 +4,8 @@ import { join } from 'node:path'
 const file = join(
   import.meta.dirname,
   '..',
+  '..',
+  '..',
   'node_modules',
   'playwright-core',
   'lib',

@@ -1,34 +1,9 @@
 import { createHash } from 'node:crypto'
-import { existsSync, readdirSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { root } from './root.ts'
 
-const getPackageLocations = (): string[] => {
-  const packageLocations: string[] = []
-  const packagesFolder = join(root, 'packages')
-  const dirents = readdirSync(packagesFolder)
-  for (const dirent of dirents) {
-    const packageLockPath = join(packagesFolder, dirent, 'package-lock.json')
-    if (existsSync(packageLockPath)) {
-      packageLocations.push(`packages/${dirent}/package-lock.json`)
-    }
-  }
-
-  packageLocations.push('package-lock.json')
-  return packageLocations
-}
-
-const locations: string[] = [
-  'lerna.json',
-  '.nvmrc',
-  ...getPackageLocations(),
-  '.github/workflows/pr.yml',
-  '.github/workflows/ci.yml',
-  '.github/workflows/release.yml',
-  'packages/build/src/computeNodeModulesCacheKey.ts',
-  'packages/server/src/postinstall.js',
-]
+const locations: string[] = ['package.json', 'package-lock.json']
 
 const getAbsolutePath = (relativePath: string): string => {
   return join(root, relativePath)
