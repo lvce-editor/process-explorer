@@ -23,7 +23,7 @@ const replace = async ({ path, marker, occurrence, replacement }) => {
   await writeFile(path, newContent)
 }
 
-const nodeModulesPath = join(root, 'packages', 'server', 'node_modules')
+const nodeModulesPath = join(root, 'node_modules')
 const workerPath = join(
   root,
   '.tmp',

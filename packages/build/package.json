@@ -4,7 +4,9 @@
   "description": "",
   "type": "module",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "build:watch": "esbuild --format=esm --bundle --external:node:buffer --external:electron --external:node:worker_threads --watch ../process-explorer-worker/src/processExplorerWorkerMain.ts --outfile=../../.tmp/dist-process-explorer-worker/index.js"
+  },
   "keywords": [],
   "author": "",
   "license": "MIT",

@@ -22,8 +22,6 @@ export const getRemoteUrl = (path: string): string => {
 
 const sharedProcessPath = join(
   root,
-  'packages',
-  'server',
   'node_modules',
   '@lvce-editor',
   'shared-process',
