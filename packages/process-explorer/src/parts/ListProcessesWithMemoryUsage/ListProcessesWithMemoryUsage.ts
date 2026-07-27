@@ -1,3 +1,4 @@
+import type { PidMap } from '../PidMap/PidMap.ts'
 import type {
   ProcessItem,
   ProcessItemWithDepth,
@@ -7,7 +8,12 @@ import * as GetListProcessesWithMemoryUsageModule from '../GetListProcessesWithM
 export const listProcessesWithMemoryUsage = async (
   rootPid: number,
   includeElectronData = true,
+  pidMap?: PidMap,
 ): Promise<readonly ProcessItem[] | readonly ProcessItemWithDepth[]> => {
   const module = await GetListProcessesWithMemoryUsageModule.getModule()
-  return module.listProcessesWithMemoryUsage(rootPid, includeElectronData)
+  return module.listProcessesWithMemoryUsage(
+    rootPid,
+    includeElectronData,
+    pidMap,
+  )
 }

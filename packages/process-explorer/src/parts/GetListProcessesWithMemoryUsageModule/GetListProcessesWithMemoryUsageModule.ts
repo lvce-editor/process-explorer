@@ -1,3 +1,4 @@
+import type { PidMap } from '../PidMap/PidMap.ts'
 import type {
   ProcessItem,
   ProcessItemWithDepth,
@@ -8,6 +9,7 @@ export interface ListProcessesWithMemoryUsageModule {
   readonly listProcessesWithMemoryUsage: (
     rootPid: number,
     includeElectronData?: boolean,
+    pidMap?: PidMap,
   ) => Promise<readonly ProcessItem[] | readonly ProcessItemWithDepth[]>
 }
 
