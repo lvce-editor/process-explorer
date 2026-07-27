@@ -231,6 +231,42 @@ test('listProcessesWithMemoryUsage - without electron data', async () => {
   expect(createPidMap).not.toHaveBeenCalled()
 })
 
+test('listProcessesWithMemoryUsage - with provided electron pid map', async () => {
+  const processList = [
+    {
+      commandLine: 'electron --type=utility',
+      cpu: 0,
+      memory: 1,
+      name: 'electron.exe',
+      pid: 7004,
+      ppid: 9176,
+    },
+  ]
+  // @ts-ignore
+  WindowsProcessTree.getProcessList.mockImplementation((rootPid, callback) => {
+    callback(processList)
+  })
+  // @ts-ignore
+  WindowsProcessTree.getProcessCpuUsage.mockImplementation((list, callback) => {
+    callback(list)
+  })
+
+  await expect(
+    ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(25_666, false, {
+      7004: 'shared-process',
+    }),
+  ).resolves.toEqual([
+    {
+      cmd: 'electron --type=utility',
+      memory: 1,
+      name: 'shared-process',
+      pid: 7004,
+      ppid: 9176,
+    },
+  ])
+  expect(createPidMap).not.toHaveBeenCalled()
+})
+
 test('listProcessesWithMemoryUsage - error - rootPid not found', async () => {
   // @ts-ignore
   WindowsProcessTree.getProcessList.mockImplementation((rootPid, callback) => {

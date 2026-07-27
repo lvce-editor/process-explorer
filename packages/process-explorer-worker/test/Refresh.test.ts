@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, jest, test } from '@jest/globals'
 import { PlatformType } from '@lvce-editor/constants'
 import { createMockRpc } from '@lvce-editor/rpc'
-import { ErrorWorker } from '@lvce-editor/rpc-registry'
+import { ErrorWorker, MainProcess } from '@lvce-editor/rpc-registry'
 
 const initializeProcessExplorer = jest.fn(
   async (..._args: readonly unknown[]) => {},
@@ -52,6 +52,17 @@ const registerProcessExplorerMock = (
   return {
     [Symbol.dispose](): void {
       ProcessExplorerModule.clear()
+    },
+  }
+}
+
+const registerMainProcessMock = (
+  commandMap: Record<string, unknown>,
+): DisposableMockRpc => {
+  MainProcess.set(createMockRpc({ commandMap }))
+  return {
+    [Symbol.dispose](): void {
+      MainProcess.set(createMockRpc({ commandMap: {} }))
     },
   }
 }
@@ -126,6 +137,10 @@ test('refresh - success - remote', async () => {
 })
 
 test('refresh - success - electron', async () => {
+  const pidMap = {
+    2: 'shared-process',
+  }
+  const createPidMap = jest.fn(() => pidMap)
   const listProcessesWithMemoryUsage = jest.fn(
     (..._args: readonly unknown[]) => processes,
   )
@@ -135,6 +150,9 @@ test('refresh - success - electron', async () => {
       listProcessesWithMemoryUsage,
     'ProcessId.getMainProcessId': getMainProcessId,
   })
+  using _mockMainProcessRpc = registerMainProcessMock({
+    'CreatePidMap.createPidMap': createPidMap,
+  })
   const result = await Refresh.refresh({
     ...createDefaultState(),
     platform: PlatformType.Electron,
@@ -143,7 +161,8 @@ test('refresh - success - electron', async () => {
   expect(result.rootPid).toBe(1)
   expect(initializeProcessExplorer).toHaveBeenCalledWith(PlatformType.Electron)
   expect(getMainProcessId).toHaveBeenCalledWith({ includeElectronData: true })
-  expect(listProcessesWithMemoryUsage).toHaveBeenCalledWith(1, true)
+  expect(createPidMap).toHaveBeenCalledTimes(1)
+  expect(listProcessesWithMemoryUsage).toHaveBeenCalledWith(1, false, pidMap)
 })
 
 test('refresh - uses existing root pid', async () => {

@@ -156,6 +156,43 @@ test('listProcessesWithMemoryUsage - without electron data', async () => {
   expect(createPidMap).not.toHaveBeenCalled()
 })
 
+test('listProcessesWithMemoryUsage - with provided electron pid map', async () => {
+  // @ts-ignore
+  childProcess.execFile.mockImplementation((command, args, callback) => {
+    callback(null, {
+      stdout: `1442       1  0.0  0.2 electron
+2127    1442  0.0  0.2 electron --type=utility
+`,
+    })
+  })
+  // @ts-ignore
+  fsPromises.readFile.mockImplementation(() => '41700 2023 1199 224 0 5027 0')
+
+  await expect(
+    ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(1442, false, {
+      2127: 'shared-process',
+    }),
+  ).resolves.toEqual([
+    {
+      cmd: 'electron',
+      depth: 1,
+      memory: 8_286_208,
+      name: 'main',
+      pid: 1442,
+      ppid: 1,
+    },
+    {
+      cmd: 'electron --type=utility',
+      depth: 2,
+      memory: 8_286_208,
+      name: 'shared-process',
+      pid: 2127,
+      ppid: 1442,
+    },
+  ])
+  expect(createPidMap).not.toHaveBeenCalled()
+})
+
 test('listProcessesWithMemoryUsage - bug with parsing this specific line', async () => {
   // @ts-ignore
   childProcess.execFile.mockImplementation((command, args, callback) => {

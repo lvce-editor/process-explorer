@@ -1,4 +1,5 @@
 import { PlatformType } from '@lvce-editor/constants'
+import { MainProcess } from '@lvce-editor/rpc-registry'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
 import type { ProcessInfo } from '../ProcessInfo/ProcessInfo.ts'
 import * as GetFrontendMemoryUsage from '../GetFrontendMemoryUsage/GetFrontendMemoryUsage.ts'
@@ -20,6 +21,26 @@ const getFocusedIndex = (
   return Math.min(oldFocusedIndex, visibleProcesses.length - 1)
 }
 
+const listProcesses = async (
+  rootPid: number,
+  platform: number,
+): Promise<readonly ProcessInfo[]> => {
+  if (platform === PlatformType.Electron) {
+    const pidMap = await MainProcess.invoke('CreatePidMap.createPidMap')
+    return ProcessExplorerModule.invoke(
+      'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
+      rootPid,
+      false,
+      pidMap,
+    )
+  }
+  return ProcessExplorerModule.invoke(
+    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
+    rootPid,
+    false,
+  )
+}
+
 export const refresh = async (
   state: ProcessExplorerState,
 ): Promise<ProcessExplorerState> => {
@@ -32,12 +53,7 @@ export const refresh = async (
             includeElectronData,
           })
         : state.rootPid
-    const processes: readonly ProcessInfo[] =
-      await ProcessExplorerModule.invoke(
-        'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
-        rootPid,
-        includeElectronData,
-      )
+    const processes = await listProcesses(rootPid, state.platform)
     const frontendMemoryProcesses = state.includeFrontendMemoryUsage
       ? await GetFrontendMemoryUsage.getFrontendMemoryUsage(rootPid)
       : []
