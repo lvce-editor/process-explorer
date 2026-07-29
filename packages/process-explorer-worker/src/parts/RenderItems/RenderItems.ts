@@ -34,6 +34,13 @@ const headerCellNode: VirtualDomNode = {
   type: VirtualDomElements.Th,
 }
 
+const processExplorer: VirtualDomNode = {
+  childCount: 1,
+  className: mergeClassNames(ClassNames.Viewlet, ClassNames.ProcessExplorer),
+  role: AriaRoles.None,
+  type: VirtualDomElements.Div,
+}
+
 const getRowClassName = (focused: boolean): string => {
   if (focused) {
     return mergeClassNames(ClassNames.Row, ClassNames.RowFocused)
@@ -174,15 +181,7 @@ const getErrorDom = (
   const childCount =
     messageDom.length / 2 + codeFrameDom.length / 2 + stackDom.length / 2
   return [
-    {
-      childCount: 1,
-      className: mergeClassNames(
-        ClassNames.Viewlet,
-        ClassNames.ProcessExplorer,
-      ),
-      role: AriaRoles.None,
-      type: VirtualDomElements.Div,
-    },
+    processExplorer,
     {
       childCount,
       className: ClassNames.Error,
@@ -199,15 +198,7 @@ const getTableDom = (
 ): readonly VirtualDomNode[] => {
   const { visibleProcesses } = state
   return [
-    {
-      childCount: 1,
-      className: mergeClassNames(
-        ClassNames.Viewlet,
-        ClassNames.ProcessExplorer,
-      ),
-      role: AriaRoles.None,
-      type: VirtualDomElements.Div,
-    },
+    processExplorer,
     {
       ariaLabel: 'Process Explorer',
       ariaRowCount: visibleProcesses.length + 1,

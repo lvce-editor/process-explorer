@@ -36,7 +36,7 @@
     "node": ">=18"
   },
   "devDependencies": {
-    "@lvce-editor/eslint-config": "^17.5.0",
+    "@lvce-editor/eslint-config": "^17.6.0",
     "@types/node": "^20.12.8",
     "eslint": "^10.8.0",
     "knip": "^6.26.0",
