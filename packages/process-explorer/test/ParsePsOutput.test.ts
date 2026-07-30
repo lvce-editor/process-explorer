@@ -16,6 +16,7 @@ test('parsePsOutput - linux', () => {
     {
       cmd: '/usr/libexec/gsd-keyboard',
       depth: 1,
+      memory: 0,
       name: '/usr/libexec/gsd-keyboard',
       pid: 2127,
       ppid: 1442,
@@ -23,6 +24,7 @@ test('parsePsOutput - linux', () => {
     {
       cmd: '/usr/libexec/gsd-media-keys',
       depth: 1,
+      memory: 0,
       name: '/usr/libexec/gsd-media-keys',
       pid: 2130,
       ppid: 1442,
@@ -30,6 +32,7 @@ test('parsePsOutput - linux', () => {
     {
       cmd: '/usr/libexec/gsd-power',
       depth: 1,
+      memory: 0,
       name: '/usr/libexec/gsd-power',
       pid: 2133,
       ppid: 1442,
@@ -37,6 +40,7 @@ test('parsePsOutput - linux', () => {
     {
       cmd: '/usr/libexec/gsd-print-notifications',
       depth: 1,
+      memory: 0,
       name: '/usr/libexec/gsd-print-notifications',
       pid: 2134,
       ppid: 1442,
@@ -44,6 +48,7 @@ test('parsePsOutput - linux', () => {
     {
       cmd: '/usr/libexec/gsd-rfkill',
       depth: 1,
+      memory: 0,
       name: '/usr/libexec/gsd-rfkill',
       pid: 2135,
       ppid: 1442,
@@ -51,6 +56,7 @@ test('parsePsOutput - linux', () => {
     {
       cmd: '/usr/libexec/gsd-screensaver-proxy',
       depth: 1,
+      memory: 0,
       name: '/usr/libexec/gsd-screensaver-proxy',
       pid: 2136,
       ppid: 1442,
@@ -58,6 +64,7 @@ test('parsePsOutput - linux', () => {
     {
       cmd: '/usr/libexec/gsd-sharing',
       depth: 1,
+      memory: 0,
       name: '/usr/libexec/gsd-sharing',
       pid: 2138,
       ppid: 1442,
@@ -80,6 +87,7 @@ test('parsePsOutput - macos', () => {
     {
       cmd: '/bin/bash ./scripts/run-electron.sh',
       depth: 1,
+      memory: 0,
       name: 'main',
       pid: 6341,
       ppid: 5373,
@@ -87,6 +95,7 @@ test('parsePsOutput - macos', () => {
     {
       cmd: 'node_modules/electron/dist/Electron.app/Contents/MacOS/Electron .',
       depth: 2,
+      memory: 0,
       name: 'node_modules/electron/dist/Electron.app/Contents/MacOS/Electron .',
       pid: 6343,
       ppid: 6341,
@@ -94,6 +103,7 @@ test('parsePsOutput - macos', () => {
     {
       cmd: '/Users/m1/Documents/lvce-editor/packages/main-process/node_modules/electron/dist/Electron.app/Contents/Frameworks/Electron Helper (GPU).app/Contents/MacOS/Electron Helper (GPU) --type=gpu-process --user-data-dir=/Users/m1/Library/Application Support/@lvce-editor/main-process --gpu-preferences=WAAAAAAAAAAgAAAEAAAAAAAAAAAAAAAAAABgAAAAAAA4AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaAcAAAAAAABoBwAAAAAAAHgCAABOAAAAcAIAAAAAAAB4AgAAAAAAAIACAAAAAAAAiAIAAAAAAACQAgAAAAAAAJgCAAAAAAAAoAIAAAAAAACoAgAAAAAAALACAAAAAAAAuAIAAAAAAADAAgAAAAAAAMgCAAAAAAAA0AIAAAAAAADYAgAAAAAAAOACAAAAAAAA6AIAAAAAAADwAgAAAAAAAPgCAAAAAAAAAAMAAAAAAAAIAwAAAAAAABADAAAAAAAAGAMAAAAAAAAgAwAAAAAAACgDAAAAAAAAMAMAAAAAAAA4AwAAAAAAAEADAAAAAAAASAMAAAAAAABQAwAAAAAAAFgDAAAAAAAAYAMAAAAAAABoAwAAAAAAAHADAAAAAAAAeAMAAAAAAACAAwAAAAAAAIgDAAAAAAAAkAMAAAAAAACYAwAAAAAAAKADAAAAAAAAqAMAAAAAAACwAwAAAAAAALgDAAAAAAAAwAMAAAAAAADIAwAAAAAAANADAAAAAAAA2AMAAAAAAADgAwAAAAAAAOgDAAAAAAAA8AMAAAAAAAD4AwAAAAAAAAAEAAAAAAAACAQAAAAAAAAQBAAAAAAAABgEAAAAAAAAIAQAAAAAAAAoBAAAAAAAADAEAAAAAAAAOAQAAAAAAABABAAAAAAAAEgEAAAAAAAAUAQAAAAAAABYBAAAAAAAAGAEAAAAAAAAaAQAAAAAAABwBAAAAAAAAHgEAAAAAAAAgAQAAAAAAACIBAAAAAAAAJAEAAAAAAAAmAQAAAAAAACgBAAAAAAAAKgEAAAAAAAAsAQAAAAAAAC4BAAAAAAAAMAEAAAAAAAAyAQAAAAAAADQBAAAAAAAANgEAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAEAAAAQAAAAAAAAAAAAAAACAAAAEAAAAAAAAAAAAAAAAwAAABAAAAAAAAAAAAAAAAYAAAAQAAAAAAAAAAAAAAAHAAAAEAAAAAAAAAAAAAAACAAAABAAAAAAAAAAAAAAAAkAAAAQAAAAAAAAAAAAAAALAAAAEAAAAAAAAAAAAAAADAAAABAAAAAAAAAAAAAAAA4AAAAQAAAAAAAAAAAAAAAPAAAAEAAAAAAAAAAAAAAAEAAAABAAAAAAAAAAAQAAAAAAAAAQAAAAAAAAAAEAAAABAAAAEAAAAAAAAAABAAAAAgAAABAAAAAAAAAAAQAAAAMAAAAQAAAAAAAAAAEAAAAGAAAAEAAAAAAAAAABAAAABwAAABAAAAAAAAAAAQAAAAgAAAAQAAAAAAAAAAEAAAAJAAAAEAAAAAAAAAABAAAACwAAABAAAAAAAAAAAQAAAAwAAAAQAAAAAAAAAAEAAAAOAAAAEAAAAAAAAAABAAAADwAAABAAAAAAAAAAAQAAABAAAAAQAAAAAAAAAAQAAAAAAAAAEAAAAAAAAAAEAAAAAQAAABAAAAAAAAAABAAAAAIAAAAQAAAAAAAAAAQAAAADAAAAEAAAAAAAAAAEAAAABgAAABAAAAAAAAAABAAAAAcAAAAQAAAAAAAAAAQAAAAIAAAAEAAAAAAAAAAEAAAACQAAABAAAAAAAAAABAAAAAsAAAAQAAAAAAAAAAQAAAAMAAAAEAAAAAAAAAAEAAAADgAAABAAAAAAAAAABAAAAA8AAAAQAAAAAAAAAAQAAAAQAAAAEAAAAAAAAAAHAAAAAAAAABAAAAAAAAAABwAAAAEAAAAQAAAAAAAAAAcAAAACAAAAEAAAAAAAAAAHAAAAAwAAABAAAAAAAAAABwAAAAYAAAAQAAAAAAAAAAcAAAAHAAAAEAAAAAAAAAAHAAAACAAAABAAAAAAAAAABwAAAAkAAAAQAAAAAAAAAAcAAAALAAAAEAAAAAAAAAAHAAAADAAAABAAAAAAAAAABwAAAA4AAAAQAAAAAAAAAAcAAAAPAAAAEAAAAAAAAAAHAAAAEAAAABAAAAAAAAAACAAAAAAAAAAQAAAAAAAAAAgAAAABAAAAEAAAAAAAAAAIAAAAAgAAABAAAAAAAAAACAAAAAMAAAAQAAAAAAAAAAgAAAAGAAAAEAAAAAAAAAAIAAAABwAAABAAAAAAAAAACAAAAAgAAAAQAAAAAAAAAAgAAAAJAAAAEAAAAAAAAAAIAAAACwAAABAAAAAAAAAACAAAAAwAAAAQAAAAAAAAAAgAAAAOAAAAEAAAAAAAAAAIAAAADwAAABAAAAAAAAAACAAAABAAAAAQAAAAAAAAAAoAAAAAAAAAEAAAAAAAAAAKAAAAAQAAABAAAAAAAAAACgAAAAIAAAAQAAAAAAAAAAoAAAADAAAAEAAAAAAAAAAKAAAABgAAABAAAAAAAAAACgAAAAcAAAAQAAAAAAAAAAoAAAAIAAAAEAAAAAAAAAAKAAAACQAAABAAAAAAAAAACgAAAAsAAAAQAAAAAAAAAAoAAAAMAAAAEAAAAAAAAAAKAAAADgAAABAAAAAAAAAACgAAAA8AAAAQAAAAAAAAAAoAAAAQAAAACAAAAAAAAAAIAAAAAAAAAA== --shared-files --field-trial-handle=1718379636,r,13753902317798746766,14167880203702055354,262144 --enable-features=kWebSQLAccess --disable-features=SpareRendererForSitePerProcess --variations-seed-version --seatbelt-client=37',
       depth: 3,
+      memory: 0,
       name: 'gpu-process',
       pid: 6344,
       ppid: 6343,
@@ -101,6 +111,7 @@ test('parsePsOutput - macos', () => {
     {
       cmd: '/Users/m1/Documents/lvce-editor/packages/main-process/node_modules/electron/dist/Electron.app/Contents/Frameworks/Electron Helper.app/Contents/MacOS/Electron Helper --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en --service-sandbox-type=network --user-data-dir=/Users/m1/Library/Application Support/@lvce-editor/main-process --standard-schemes=lvce-oss --secure-schemes=lvce-oss --fetch-schemes=lvce-oss --streaming-schemes=lvce-oss --code-cache-schemes=lvce-oss --shared-files --field-trial-handle=1718379636,r,13753902317798746766,14167880203702055354,262144 --enable-features=kWebSQLAccess --disable-features=SpareRendererForSitePerProcess --variations-seed-version --seatbelt-client=37',
       depth: 3,
+      memory: 0,
       name: 'utility',
       pid: 6345,
       ppid: 6343,
@@ -108,6 +119,7 @@ test('parsePsOutput - macos', () => {
     {
       cmd: '/Users/m1/Documents/lvce-editor/packages/main-process/node_modules/electron/dist/Electron.app/Contents/Frameworks/Electron Helper.app/Contents/MacOS/Electron Helper --type=utility --utility-sub-type=node.mojom.NodeService --lang=en --service-sandbox-type=none --enable-source-maps --user-data-dir=/Users/m1/Library/Application Support/@lvce-editor/main-process --standard-schemes=lvce-oss --secure-schemes=lvce-oss --fetch-schemes=lvce-oss --streaming-schemes=lvce-oss --code-cache-schemes=lvce-oss --shared-files --field-trial-handle=1718379636,r,13753902317798746766,14167880203702055354,262144 --enable-features=kWebSQLAccess --disable-features=SpareRendererForSitePerProcess --variations-seed-version',
       depth: 3,
+      memory: 0,
       name: 'utility',
       pid: 6346,
       ppid: 6343,
@@ -115,6 +127,7 @@ test('parsePsOutput - macos', () => {
     {
       cmd: '/Users/m1/Documents/lvce-editor/packages/main-process/node_modules/electron/dist/Electron.app/Contents/Frameworks/Electron Helper (Renderer).app/Contents/MacOS/Electron Helper (Renderer) --type=renderer --user-data-dir=/Users/m1/Library/Application Support/@lvce-editor/main-process --standard-schemes=lvce-oss --secure-schemes=lvce-oss --fetch-schemes=lvce-oss --streaming-schemes=lvce-oss --code-cache-schemes=lvce-oss --app-path=/Users/m1/Documents/lvce-editor/packages/main-process --enable-sandbox --lang=en --num-raster-threads=4 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=6 --time-ticks-at-unix-epoch=-1704110500487025 --launch-time-ticks=8967968436 --shared-files --field-trial-handle=1718379636,r,13753902317798746766,14167880203702055354,262144 --enable-features=kWebSQLAccess --disable-features=SpareRendererForSitePerProcess --variations-seed-version --lvce-window-kind --seatbelt-client=62',
       depth: 3,
+      memory: 0,
       name: 'renderer',
       pid: 6348,
       ppid: 6343,
@@ -122,6 +135,7 @@ test('parsePsOutput - macos', () => {
     {
       cmd: '/Users/m1/Documents/lvce-editor/packages/main-process/node_modules/electron/dist/Electron.app/Contents/Frameworks/Electron Helper (Renderer).app/Contents/MacOS/Electron Helper (Renderer) --type=renderer --user-data-dir=/Users/m1/Library/Application Support/@lvce-editor/main-process --standard-schemes=lvce-oss --secure-schemes=lvce-oss --fetch-schemes=lvce-oss --streaming-schemes=lvce-oss --code-cache-schemes=lvce-oss --app-path=/Users/m1/Documents/lvce-editor/packages/main-process --enable-sandbox --lang=en --num-raster-threads=4 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=8 --time-ticks-at-unix-epoch=-1704110500487025 --launch-time-ticks=8985794256 --shared-files --field-trial-handle=1718379636,r,13753902317798746766,14167880203702055354,262144 --enable-features=kWebSQLAccess --disable-features=SpareRendererForSitePerProcess --variations-seed-version --lvce-window-kind=process-explorer --seatbelt-client=69',
       depth: 3,
+      memory: 0,
       name: 'process-explorer',
       pid: 6353,
       ppid: 6343,
@@ -142,6 +156,7 @@ test('parsePsOutput - skips process without known parent depth', () => {
     {
       cmd: 'root',
       depth: 1,
+      memory: 0,
       name: 'main',
       pid: 10,
       ppid: 1,
@@ -149,6 +164,7 @@ test('parsePsOutput - skips process without known parent depth', () => {
     {
       cmd: 'child',
       depth: 2,
+      memory: 0,
       name: 'child',
       pid: 30,
       ppid: 10,

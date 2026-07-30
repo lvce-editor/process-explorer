@@ -12,7 +12,7 @@ jest.unstable_mockModule('node:child_process', () => ({
 }))
 
 jest.unstable_mockModule('../src/parts/IsMacos/IsMacos.ts', () => ({
-  isMacos: true,
+  isMacOs: false,
 }))
 
 jest.unstable_mockModule('node:path', () => ({

@@ -22,6 +22,11 @@ test('listProcessesWithMemoryUsage - unix selector', async () => {
     await ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(process.pid)
 
   expect(processes).toEqual(expect.any(Array))
+  const hasPositiveMacOsMemory =
+    processes.length > 0 && processes.every((item) => item.memory > 0)
+  expect(process.platform === 'darwin' ? hasPositiveMacOsMemory : true).toBe(
+    true,
+  )
   expect(mockMainProcessRpc.invoke).toHaveBeenCalledWith(
     'CreatePidMap.createPidMap',
   )
