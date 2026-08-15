@@ -13,9 +13,23 @@ export const render2 = (
   return renderDirect(uid, commands)
 }
 
-const renderDirect = async (uid: number, commands: readonly any[]): Promise<readonly any[]> => {
-  const rendererWorkerCommands = commands.filter((command) => command[0] === 'Viewlet.setFocusContext')
-  const rendererProcessCommands = commands.filter((command) => command[0] !== 'Viewlet.setFocusContext')
-  const transactionId = await RendererProcess.invoke('Viewlet.queueCommands', uid, rendererProcessCommands)
-  return [...rendererWorkerCommands, ['Viewlet.commitPending', uid, transactionId]]
+const renderDirect = async (
+  uid: number,
+  commands: readonly any[],
+): Promise<readonly any[]> => {
+  const rendererWorkerCommands = commands.filter(
+    (command) => command[0] === 'Viewlet.setFocusContext',
+  )
+  const rendererProcessCommands = commands.filter(
+    (command) => command[0] !== 'Viewlet.setFocusContext',
+  )
+  const transactionId = await RendererProcess.invoke(
+    'Viewlet.queueCommands',
+    uid,
+    rendererProcessCommands,
+  )
+  return [
+    ...rendererWorkerCommands,
+    ['Viewlet.commitPending', uid, transactionId],
+  ]
 }
