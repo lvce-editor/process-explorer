@@ -1,4 +1,5 @@
 import * as Assert from '../Assert/Assert.ts'
+import * as ConfiguredProcessNames from '../ConfiguredProcessNames/ConfiguredProcessNames.ts'
 import * as GetFallbackPatternName from '../GetFallbackPatternName/GetFallbackPatternName.ts'
 import * as GetPatternName from '../GetPatternName/GetPatternName.ts'
 
@@ -18,6 +19,11 @@ export const getName = (
   const patternName = GetPatternName.getPatternName(cmd)
   if (patternName) {
     return patternName
+  }
+  const configuredProcessName =
+    ConfiguredProcessNames.getConfiguredProcessName(cmd)
+  if (configuredProcessName) {
+    return configuredProcessName
   }
   if (pid in pidMap) {
     return pidMap[pid] || '<unknown>'
