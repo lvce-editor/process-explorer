@@ -11,7 +11,7 @@ interface CompiledProcessName {
 }
 
 const configuredProcessNames = JSON.parse(
-  readFileSync(new URL('./configuredProcessNames.json', import.meta.url), 'utf8'),
+  readFileSync(new URL('configuredProcessNames.json', import.meta.url), 'utf8'),
 ) as readonly ConfiguredProcessName[]
 
 const compiledProcessNames: readonly CompiledProcessName[] =
