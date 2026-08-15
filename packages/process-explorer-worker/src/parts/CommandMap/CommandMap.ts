@@ -20,6 +20,7 @@ import * as HandleClickAt from '../HandleClickAt/HandleClickAt.ts'
 import * as HandleContextMenu from '../HandleContextMenu/HandleContextMenu.ts'
 import * as HandleDoubleClick from '../HandleDoubleClick/HandleDoubleClick.ts'
 import * as HandleFocus from '../HandleFocus/HandleFocus.ts'
+import { handleMessagePort } from '../HandleMessagePort/HandleMessagePort.ts'
 import * as KillProcess from '../KillProcess/KillProcess.ts'
 import * as LoadContent from '../LoadContent/LoadContent.ts'
 import * as ProcessExplorerStates from '../ProcessExplorerStates/ProcessExplorerStates.ts'
@@ -88,6 +89,7 @@ export const commandMap = {
   'ProcessExplorer.handleFocus': ProcessExplorerStates.wrapCommand(
     HandleFocus.handleFocus,
   ),
+  'ProcessExplorer.handleMessagePort': handleMessagePort,
   'ProcessExplorer.killProcess': ProcessExplorerStates.wrapCommand(
     KillProcess.killProcess,
   ),

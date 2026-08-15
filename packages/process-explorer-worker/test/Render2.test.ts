@@ -38,7 +38,7 @@ const processes = [
   },
 ]
 
-test('render2', () => {
+test('render2', async () => {
   ProcessExplorerStates.clear()
   const uid = 1
   const oldState = createDefaultState()
@@ -48,7 +48,7 @@ test('render2', () => {
   }
   ProcessExplorerStates.set(uid, oldState, newState)
   expect(Diff2.diff2(uid)).toEqual([DiffType.RenderIncremental])
-  const commands = Render2.render2(uid, [DiffType.RenderIncremental])
+  const commands = await Render2.render2(uid, [DiffType.RenderIncremental])
   expect(commands[0][0]).toBe(ViewletCommand.SetPatches)
   expect(ProcessExplorerStates.get(uid).oldState).toBe(newState)
 })
