@@ -52,6 +52,30 @@ test('getName - detect extension host helper process', () => {
   )
 })
 
+test('getName - detect Zig language server', () => {
+  const pid = 123
+  const rootPid = 1
+  const pidMap = {
+    123: 'utility',
+  }
+  expect(
+    ListProcessGetName.getName(
+      pid,
+      '/home/simon/.local/share/lvce/extensions/language-features-zig/dist/language-server/zls',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('Zig Language Server')
+  expect(
+    ListProcessGetName.getName(
+      pid,
+      'C:\\Users\\simon\\extensions\\language-features-zig\\dist\\language-server\\zls.exe --enable-debug-log',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('Zig Language Server')
+})
+
 test('getName - detect sublime', () => {
   const pid = 123
   const cmd = '/opt/sublime_text/sublime_text --fwdargv0 /usr/bin/subl'

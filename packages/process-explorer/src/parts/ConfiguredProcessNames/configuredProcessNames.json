@@ -1,0 +1,6 @@
+[
+  {
+    "pathRegex": "[/\\\\]language-server[/\\\\]zls(?:\\.exe)?(?:[\\s\\\"']|$)",
+    "displayName": "Zig Language Server"
+  }
+]
