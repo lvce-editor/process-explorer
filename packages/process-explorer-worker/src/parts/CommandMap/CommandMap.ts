@@ -32,6 +32,9 @@ import * as SetError from '../SetError/SetError.ts'
 import * as SetRootProcessId from '../SetRootProcessId/SetRootProcessId.ts'
 import * as SetUpdateInterval from '../SetUpdateInterval/SetUpdateInterval.ts'
 
+const handleDirectMessagePort = (port: MessagePort): Promise<void> =>
+  handleMessagePort(port, commandMap)
+
 export const commandMap = {
   'ProcessExplorer.collapseAll': ProcessExplorerStates.wrapCommand(
     CollapseAll.collapseAll,
@@ -89,7 +92,7 @@ export const commandMap = {
   'ProcessExplorer.handleFocus': ProcessExplorerStates.wrapCommand(
     HandleFocus.handleFocus,
   ),
-  'ProcessExplorer.handleMessagePort': handleMessagePort,
+  'ProcessExplorer.handleMessagePort': handleDirectMessagePort,
   'ProcessExplorer.killProcess': ProcessExplorerStates.wrapCommand(
     KillProcess.killProcess,
   ),
