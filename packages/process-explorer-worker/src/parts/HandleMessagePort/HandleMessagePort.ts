@@ -5,6 +5,7 @@ import * as RendererProcess from '../RendererProcess/RendererProcess.ts'
 export const handleMessagePort = async (
   port: MessagePort,
   viewletCommandMap: Readonly<Record<string, unknown>>,
+  setAsRendererProcess = true,
 ): Promise<void> => {
   const executeViewletCommand = async (
     uid: number,
@@ -25,5 +26,7 @@ export const handleMessagePort = async (
     },
     messagePort: port,
   })
-  RendererProcess.set(rpc)
+  if (setAsRendererProcess) {
+    RendererProcess.set(rpc)
+  }
 }
