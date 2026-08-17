@@ -56,3 +56,27 @@ test('connects the view directly to the renderer process', async () => {
   await RendererWorker.dispose()
   await rendererProcessRpc.dispose()
 })
+
+test('keeps the renderer process rpc for a secondary direct connection', async () => {
+  const queueCommands = jest.fn(
+    (_uid: number, _commands: readonly unknown[]) => 31,
+  )
+  RendererProcessRegistry.set(
+    Object.assign(
+      createMockRpc({
+        commandMap: { 'Viewlet.queueCommands': queueCommands },
+      }),
+      { dispose: jest.fn() },
+    ),
+  )
+  const { port1, port2 } = new MessageChannel()
+
+  await handleMessagePort(port2, {}, false)
+
+  expect(RendererProcess.invoke('Viewlet.queueCommands', 7, [])).toBe(31)
+  expect(queueCommands).toHaveBeenCalledWith(7, [])
+
+  port1.close()
+  port2.close()
+  await RendererProcessRegistry.dispose()
+})
