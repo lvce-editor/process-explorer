@@ -7,6 +7,7 @@ import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses
 import * as InitializeProcessExplorer from '../InitializeProcessExplorer/InitializeProcessExplorer.ts'
 import * as PrepareError from '../PrepareError/PrepareError.ts'
 import * as ProcessExplorerModule from '../ProcessExplorer/ProcessExplorer.ts'
+import * as ReparentSharedProcessChildren from '../ReparentSharedProcessChildren/ReparentSharedProcessChildren.ts'
 
 const getFocusedIndex = (
   oldFocusedIndex: number,
@@ -58,8 +59,14 @@ export const refresh = async (
       ? await GetFrontendMemoryUsage.getFrontendMemoryUsage(rootPid)
       : []
     const allProcesses = [...processes, ...frontendMemoryProcesses]
+    const displayedProcesses =
+      state.platform === PlatformType.Electron
+        ? ReparentSharedProcessChildren.reparentSharedProcessChildren(
+            allProcesses,
+          )
+        : allProcesses
     const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
-      allProcesses,
+      displayedProcesses,
       state.collapsedPids,
       rootPid,
     )
@@ -70,7 +77,7 @@ export const refresh = async (
       errorStack: '',
       focusedIndex: getFocusedIndex(state.focusedIndex, visibleProcesses),
       initial: false,
-      processes: allProcesses,
+      processes: displayedProcesses,
       rootPid,
       visibleProcesses,
     }
