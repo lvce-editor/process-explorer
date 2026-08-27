@@ -1,4 +1,5 @@
 import { PlatformType } from '@lvce-editor/constants'
+import { MainProcess } from '@lvce-editor/rpc-registry'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
 import type { ProcessInfo } from '../ProcessInfo/ProcessInfo.ts'
 import * as GetFrontendMemoryUsage from '../GetFrontendMemoryUsage/GetFrontendMemoryUsage.ts'
@@ -6,6 +7,7 @@ import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses
 import * as InitializeProcessExplorer from '../InitializeProcessExplorer/InitializeProcessExplorer.ts'
 import * as PrepareError from '../PrepareError/PrepareError.ts'
 import * as ProcessExplorerModule from '../ProcessExplorer/ProcessExplorer.ts'
+import * as ReparentSharedProcessChildren from '../ReparentSharedProcessChildren/ReparentSharedProcessChildren.ts'
 
 const getFocusedIndex = (
   oldFocusedIndex: number,
@@ -20,6 +22,26 @@ const getFocusedIndex = (
   return Math.min(oldFocusedIndex, visibleProcesses.length - 1)
 }
 
+const listProcesses = async (
+  rootPid: number,
+  platform: number,
+): Promise<readonly ProcessInfo[]> => {
+  if (platform === PlatformType.Electron) {
+    const pidMap = await MainProcess.invoke('CreatePidMap.createPidMap')
+    return ProcessExplorerModule.invoke(
+      'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
+      rootPid,
+      false,
+      pidMap,
+    )
+  }
+  return ProcessExplorerModule.invoke(
+    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
+    rootPid,
+    false,
+  )
+}
+
 export const refresh = async (
   state: ProcessExplorerState,
 ): Promise<ProcessExplorerState> => {
@@ -32,18 +54,19 @@ export const refresh = async (
             includeElectronData,
           })
         : state.rootPid
-    const processes: readonly ProcessInfo[] =
-      await ProcessExplorerModule.invoke(
-        'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
-        rootPid,
-        includeElectronData,
-      )
+    const processes = await listProcesses(rootPid, state.platform)
     const frontendMemoryProcesses = state.includeFrontendMemoryUsage
       ? await GetFrontendMemoryUsage.getFrontendMemoryUsage(rootPid)
       : []
     const allProcesses = [...processes, ...frontendMemoryProcesses]
+    const displayedProcesses =
+      state.platform === PlatformType.Electron
+        ? ReparentSharedProcessChildren.reparentSharedProcessChildren(
+            allProcesses,
+          )
+        : allProcesses
     const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
-      allProcesses,
+      displayedProcesses,
       state.collapsedPids,
       rootPid,
     )
@@ -54,7 +77,7 @@ export const refresh = async (
       errorStack: '',
       focusedIndex: getFocusedIndex(state.focusedIndex, visibleProcesses),
       initial: false,
-      processes: allProcesses,
+      processes: displayedProcesses,
       rootPid,
       visibleProcesses,
     }

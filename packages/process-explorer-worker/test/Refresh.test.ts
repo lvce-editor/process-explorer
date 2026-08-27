@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, jest, test } from '@jest/globals'
 import { PlatformType } from '@lvce-editor/constants'
 import { createMockRpc } from '@lvce-editor/rpc'
-import { ErrorWorker } from '@lvce-editor/rpc-registry'
+import { ErrorWorker, MainProcess } from '@lvce-editor/rpc-registry'
 
 const initializeProcessExplorer = jest.fn(
   async (..._args: readonly unknown[]) => {},
@@ -52,6 +52,17 @@ const registerProcessExplorerMock = (
   return {
     [Symbol.dispose](): void {
       ProcessExplorerModule.clear()
+    },
+  }
+}
+
+const registerMainProcessMock = (
+  commandMap: Record<string, unknown>,
+): DisposableMockRpc => {
+  MainProcess.set(createMockRpc({ commandMap }))
+  return {
+    [Symbol.dispose](): void {
+      MainProcess.set(createMockRpc({ commandMap: {} }))
     },
   }
 }
@@ -126,6 +137,10 @@ test('refresh - success - remote', async () => {
 })
 
 test('refresh - success - electron', async () => {
+  const pidMap = {
+    2: 'shared-process',
+  }
+  const createPidMap = jest.fn(() => pidMap)
   const listProcessesWithMemoryUsage = jest.fn(
     (..._args: readonly unknown[]) => processes,
   )
@@ -135,6 +150,9 @@ test('refresh - success - electron', async () => {
       listProcessesWithMemoryUsage,
     'ProcessId.getMainProcessId': getMainProcessId,
   })
+  using _mockMainProcessRpc = registerMainProcessMock({
+    'CreatePidMap.createPidMap': createPidMap,
+  })
   const result = await Refresh.refresh({
     ...createDefaultState(),
     platform: PlatformType.Electron,
@@ -143,7 +161,59 @@ test('refresh - success - electron', async () => {
   expect(result.rootPid).toBe(1)
   expect(initializeProcessExplorer).toHaveBeenCalledWith(PlatformType.Electron)
   expect(getMainProcessId).toHaveBeenCalledWith({ includeElectronData: true })
-  expect(listProcessesWithMemoryUsage).toHaveBeenCalledWith(1, true)
+  expect(createPidMap).toHaveBeenCalledTimes(1)
+  expect(listProcessesWithMemoryUsage).toHaveBeenCalledWith(1, false, pidMap)
+})
+
+test('refresh - groups conceptual processes below shared process on electron', async () => {
+  const electronProcesses = [
+    processes[0],
+    {
+      cmd: 'shared',
+      memory: 1,
+      name: 'shared-process',
+      pid: 10,
+      ppid: 1,
+    },
+    {
+      cmd: 'terminal',
+      memory: 1,
+      name: 'terminal-process',
+      pid: 11,
+      ppid: 1,
+    },
+    {
+      cmd: 'bash',
+      memory: 1,
+      name: 'bash',
+      pid: 12,
+      ppid: 11,
+    },
+  ]
+  using _mockRpc = registerProcessExplorerMock({
+    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage': jest.fn(
+      () => electronProcesses,
+    ),
+    'ProcessId.getMainProcessId': jest.fn(() => 1),
+  })
+  using _mockMainProcessRpc = registerMainProcessMock({
+    'CreatePidMap.createPidMap': jest.fn(() => ({})),
+  })
+
+  const result = await Refresh.refresh({
+    ...createDefaultState(),
+    platform: PlatformType.Electron,
+  })
+
+  expect(result.processes.find((process) => process.pid === 11)?.ppid).toBe(10)
+  expect(
+    result.visibleProcesses.map(({ depth, pid }) => ({ depth, pid })),
+  ).toEqual([
+    { depth: 1, pid: 1 },
+    { depth: 2, pid: 10 },
+    { depth: 3, pid: 11 },
+    { depth: 4, pid: 12 },
+  ])
 })
 
 test('refresh - uses existing root pid', async () => {

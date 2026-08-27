@@ -1,3 +1,4 @@
+import type { PidMap } from '../PidMap/PidMap.ts'
 import type { ProcessItemWithDepth } from '../ProcessItem/ProcessItem.ts'
 import * as AddAccurateMemoryUsage from '../AddAccurateMemoryUsage/AddAccurateMemoryUsage.ts'
 import * as CreatePidMap from '../CreatePidMap/CreatePidMap.ts'
@@ -8,10 +9,13 @@ import * as ParsePsOutput from '../ParsePsOutput/ParsePsOutput.ts'
 export const listProcessesWithMemoryUsage = async (
   rootPid: number,
   includeElectronData = true,
+  electronPidMap?: PidMap,
 ): Promise<readonly ProcessItemWithDepth[]> => {
   // console.time('getPsOutput')
   const stdout = await GetPsOutput.getPsOutput()
-  const pidMap = includeElectronData ? await CreatePidMap.createPidMap() : {}
+  const pidMap =
+    electronPidMap ??
+    (includeElectronData ? await CreatePidMap.createPidMap() : {})
   // console.log({ stdout })
   // console.timeEnd('getPsOutput')
   // console.time('parsePsOutput')

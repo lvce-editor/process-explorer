@@ -20,15 +20,22 @@ import * as HandleClickAt from '../HandleClickAt/HandleClickAt.ts'
 import * as HandleContextMenu from '../HandleContextMenu/HandleContextMenu.ts'
 import * as HandleDoubleClick from '../HandleDoubleClick/HandleDoubleClick.ts'
 import * as HandleFocus from '../HandleFocus/HandleFocus.ts'
+import { handleMessagePort } from '../HandleMessagePort/HandleMessagePort.ts'
 import * as KillProcess from '../KillProcess/KillProcess.ts'
 import * as LoadContent from '../LoadContent/LoadContent.ts'
 import * as ProcessExplorerStates from '../ProcessExplorerStates/ProcessExplorerStates.ts'
 import * as Refresh from '../Refresh/Refresh.ts'
 import * as Render2 from '../Render2/Render2.ts'
 import * as RenderEventListeners from '../RenderEventListeners/RenderEventListeners.ts'
+import * as Rerender from '../Rerender/Rerender.ts'
 import * as SetError from '../SetError/SetError.ts'
 import * as SetRootProcessId from '../SetRootProcessId/SetRootProcessId.ts'
 import * as SetUpdateInterval from '../SetUpdateInterval/SetUpdateInterval.ts'
+
+const handleDirectMessagePort = (
+  port: MessagePort,
+  setAsRendererProcess = true,
+): Promise<void> => handleMessagePort(port, commandMap, setAsRendererProcess)
 
 export const commandMap = {
   'ProcessExplorer.collapseAll': ProcessExplorerStates.wrapCommand(
@@ -87,6 +94,7 @@ export const commandMap = {
   'ProcessExplorer.handleFocus': ProcessExplorerStates.wrapCommand(
     HandleFocus.handleFocus,
   ),
+  'ProcessExplorer.handleMessagePort': handleDirectMessagePort,
   'ProcessExplorer.killProcess': ProcessExplorerStates.wrapCommand(
     KillProcess.killProcess,
   ),
@@ -97,6 +105,9 @@ export const commandMap = {
   'ProcessExplorer.render2': Render2.render2,
   'ProcessExplorer.renderEventListeners':
     RenderEventListeners.renderEventListeners,
+  'ProcessExplorer.rerender': ProcessExplorerStates.wrapCommand(
+    Rerender.rerender,
+  ),
   'ProcessExplorer.setError': ProcessExplorerStates.wrapCommand(
     SetError.setError,
   ),

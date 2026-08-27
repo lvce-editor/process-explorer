@@ -11,6 +11,9 @@ test('commandMap exposes context menu commands', () => {
   expect(CommandMap.commandMap['ProcessExplorer.killProcess']).toEqual(
     expect.any(Function),
   )
+  expect(CommandMap.commandMap['ProcessExplorer.rerender']).toEqual(
+    expect.any(Function),
+  )
   expect(
     CommandMap.commandMap['ProcessExplorer.createE2eFixtureProcess'],
   ).toEqual(expect.any(Function))

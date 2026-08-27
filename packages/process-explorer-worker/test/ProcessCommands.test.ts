@@ -62,6 +62,35 @@ test('killProcess - missing process', async () => {
   expect(kill).not.toHaveBeenCalled()
 })
 
+test('killProcess - does not wait for process explorer rpc response', async () => {
+  const kill = jest.fn((_pid: number) => new Promise(() => {}))
+  using _mockRpc = registerProcessExplorerMock({
+    'Process.kill': kill,
+  })
+  const state = {
+    ...createDefaultState(),
+    visibleProcesses: [
+      {
+        cmd: 'processExplorerMain.ts',
+        depth: 0,
+        flags: 0,
+        memory: 1,
+        name: 'process-explorer',
+        pid: 3,
+        ppid: 1,
+      },
+    ],
+  }
+
+  await expect(KillProcess.killProcess(state, 0)).resolves.toMatchObject({
+    errorCodeFrame: '',
+    errorMessage: 'Process explorer RPC connection was closed',
+    errorStack: '',
+    initial: false,
+  })
+  expect(kill).toHaveBeenCalledWith(3)
+})
+
 test('debugProcess', async () => {
   const attachDebugger = jest.fn()
   using _mockRpc = RendererWorker.registerMockRpc({
