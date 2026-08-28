@@ -12,7 +12,7 @@ test('parsePsOutput - linux', () => {
   2138    1442  0.0  0.0 /usr/libexec/gsd-sharing`
   const rootPid = 1442
   const pidMap = {}
-  expect(ParsePsOutput.parsePsOutput(output, rootPid, pidMap)).toEqual([
+  expect(ParsePsOutput.parsePsOutput(output, rootPid, pidMap)).toMatchObject([
     {
       cmd: '/usr/libexec/gsd-keyboard',
       depth: 1,
@@ -76,7 +76,7 @@ test('parsePsOutput - macos', () => {
   6353  6343   0.1  0.5 /Users/m1/Documents/lvce-editor/packages/main-process/node_modules/electron/dist/Electron.app/Contents/Frameworks/Electron Helper (Renderer).app/Contents/MacOS/Electron Helper (Renderer) --type=renderer --user-data-dir=/Users/m1/Library/Application Support/@lvce-editor/main-process --standard-schemes=lvce-oss --secure-schemes=lvce-oss --fetch-schemes=lvce-oss --streaming-schemes=lvce-oss --code-cache-schemes=lvce-oss --app-path=/Users/m1/Documents/lvce-editor/packages/main-process --enable-sandbox --lang=en --num-raster-threads=4 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=8 --time-ticks-at-unix-epoch=-1704110500487025 --launch-time-ticks=8985794256 --shared-files --field-trial-handle=1718379636,r,13753902317798746766,14167880203702055354,262144 --enable-features=kWebSQLAccess --disable-features=SpareRendererForSitePerProcess --variations-seed-version --lvce-window-kind=process-explorer --seatbelt-client=69`
   const rootPid = 6341
   const pidMap = {}
-  expect(ParsePsOutput.parsePsOutput(output, rootPid, pidMap)).toEqual([
+  expect(ParsePsOutput.parsePsOutput(output, rootPid, pidMap)).toMatchObject([
     {
       cmd: '/bin/bash ./scripts/run-electron.sh',
       depth: 1,
@@ -133,12 +133,25 @@ test('parsePsOutput - empty output', () => {
   expect(ParsePsOutput.parsePsOutput('', 1, {})).toEqual([])
 })
 
+test('parsePsOutput - parses resident memory in bytes', () => {
+  expect(ParsePsOutput.parsePsOutput('10 1 0.0 1234 root', 10, {})).toEqual([
+    {
+      cmd: 'root',
+      depth: 1,
+      memory: 1_263_616,
+      name: 'main',
+      pid: 10,
+      ppid: 1,
+    },
+  ])
+})
+
 test('parsePsOutput - skips process without known parent depth', () => {
   const output = `10 1 0.0 0.1 root
 20 999 0.0 0.1 orphan
 30 10 0.0 0.1 child`
 
-  expect(ParsePsOutput.parsePsOutput(output, 10, {})).toEqual([
+  expect(ParsePsOutput.parsePsOutput(output, 10, {})).toMatchObject([
     {
       cmd: 'root',
       depth: 1,

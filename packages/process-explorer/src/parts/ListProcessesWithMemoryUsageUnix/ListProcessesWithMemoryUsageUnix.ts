@@ -4,6 +4,7 @@ import * as AddAccurateMemoryUsage from '../AddAccurateMemoryUsage/AddAccurateMe
 import * as CreatePidMap from '../CreatePidMap/CreatePidMap.ts'
 import * as GetPsOutput from '../GetPsOutput/GetPsOutput.ts'
 import * as HasPositiveMemoryUsage from '../HasPositiveMemoryUsage/HasPositiveMemoryUsage.ts'
+import * as IsMacos from '../IsMacos/IsMacos.ts'
 import * as ParsePsOutput from '../ParsePsOutput/ParsePsOutput.ts'
 
 export const listProcessesWithMemoryUsage = async (
@@ -22,9 +23,11 @@ export const listProcessesWithMemoryUsage = async (
   const parsed = ParsePsOutput.parsePsOutput(stdout, rootPid, pidMap)
   // console.timeEnd('parsePsOutput')
   // console.time('addAccurateMemoryUsage')
-  const parsedWithAccurateMemoryUsage = await Promise.all(
-    parsed.map(AddAccurateMemoryUsage.addAccurateMemoryUsage),
-  )
+  const parsedWithAccurateMemoryUsage = IsMacos.isMacOs
+    ? parsed
+    : await Promise.all(
+        parsed.map(AddAccurateMemoryUsage.addAccurateMemoryUsage),
+      )
   // console.timeEnd('addAccurateMemoryUsage')
   const filtered = parsedWithAccurateMemoryUsage.filter(
     HasPositiveMemoryUsage.hasPositiveMemoryUsage,
