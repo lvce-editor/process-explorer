@@ -175,6 +175,7 @@ test('renderItems - initial is empty', () => {
 test('renderItems - error only', () => {
   const state = {
     ...createDefaultState(),
+    errorCode: 'E_PROCESS_EXPLORER_REFRESH_FAILED',
     errorCodeFrame: '1 | throw new Error()',
     errorMessage: 'Pretty no pid',
     errorStack: 'Pretty stack',
@@ -187,6 +188,12 @@ test('renderItems - error only', () => {
     expect.objectContaining({
       className: 'ProcessExplorerError',
       type: VirtualDomElements.Div,
+    }),
+  )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      text: 'E_PROCESS_EXPLORER_REFRESH_FAILED',
+      type: VirtualDomElements.Text,
     }),
   )
   expect(result[2]).toContainEqual(

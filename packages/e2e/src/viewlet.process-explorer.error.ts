@@ -31,6 +31,7 @@ export const test: Test = async ({ Command, expect, Locator }) => {
   try {
     await expect(error).toBeVisible()
     await expect(table).toBeHidden()
+    await expect(error).toContainText('ERR_PROCESS_EXPLORER_E2E')
     await expect(error).toContainText(fixtureMessage)
     await expect(error).toContainText(fixtureThrowLine)
     await expect(error).toContainText(stackLine)

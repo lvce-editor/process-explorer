@@ -1,4 +1,6 @@
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
+import * as ErrorCodes from '../ErrorCodes/ErrorCodes.ts'
+import * as GetErrorCode from '../GetErrorCode/GetErrorCode.ts'
 import * as PrepareError from '../PrepareError/PrepareError.ts'
 
 interface RawError {
@@ -49,6 +51,10 @@ export const setError = async (
   const prettyError = await PrepareError.prepareError(error)
   return {
     ...state,
+    errorCode: GetErrorCode.getErrorCode(
+      error,
+      ErrorCodes.ProcessExplorerError,
+    ),
     errorCodeFrame: prettyError.codeFrame || '',
     errorMessage: prettyError.message || PrepareError.getErrorMessage(error),
     errorStack: prettyError.stack || '',

@@ -346,10 +346,31 @@ test('refresh - error', async () => {
   const result = await Refresh.refresh(createDefaultState())
   expect(prepare).toHaveBeenCalledTimes(1)
   expect(prepare.mock.calls[0][0]).toBeInstanceOf(Error)
+  expect(result.errorCode).toBe('E_PROCESS_EXPLORER_REFRESH_FAILED')
   expect(result.errorCodeFrame).toBe('1 | throw new Error()')
   expect(result.errorMessage).toBe('Pretty no pid')
   expect(result.errorStack).toBe('Pretty stack')
   expect(result.initial).toBe(false)
+})
+
+test('refresh - preserves error code', async () => {
+  using _mockRpc = registerProcessExplorerMock({
+    'ProcessId.getMainProcessId': jest.fn(() => {
+      throw Object.assign(new Error('no pid'), { code: 'ERR_NO_PID' })
+    }),
+  })
+  using _mockErrorRpc = registerErrorWorkerMock({
+    'Errors.prepare': jest.fn(() => ({
+      codeFrame: undefined,
+      message: 'Pretty no pid',
+      stack: undefined,
+    })),
+  })
+
+  const result = await Refresh.refresh(createDefaultState())
+
+  expect(result.errorCode).toBe('ERR_NO_PID')
+  expect(result.errorMessage).toBe('Pretty no pid')
 })
 
 test('refresh - error prepare fails', async () => {
@@ -364,6 +385,7 @@ test('refresh - error prepare fails', async () => {
     }),
   })
   const result = await Refresh.refresh(createDefaultState())
+  expect(result.errorCode).toBe('E_PROCESS_EXPLORER_REFRESH_FAILED')
   expect(result.errorCodeFrame).toBe('')
   expect(result.errorMessage).toBe('no pid')
   expect(result.errorStack).toBe('')
@@ -382,6 +404,7 @@ test('refresh - non error prepare fails', async () => {
     }),
   })
   const result = await Refresh.refresh(createDefaultState())
+  expect(result.errorCode).toBe('E_PROCESS_EXPLORER_REFRESH_FAILED')
   expect(result.errorCodeFrame).toBe('')
   expect(result.errorMessage).toBe('no pid')
   expect(result.errorStack).toBe('')
