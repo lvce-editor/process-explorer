@@ -123,10 +123,14 @@ const getRowDom = (
       index,
       getPaddingLeft(process),
     ),
-    ...getCellDom(ClassNames.Cell, String(process.pid), index),
     ...getCellDom(
       ClassNames.Cell,
-      FormatMemory.formatMemory(process.memory),
+      process.synthetic ? '' : String(process.pid),
+      index,
+    ),
+    ...getCellDom(
+      ClassNames.Cell,
+      process.synthetic ? '' : FormatMemory.formatMemory(process.memory),
       index,
     ),
   ]

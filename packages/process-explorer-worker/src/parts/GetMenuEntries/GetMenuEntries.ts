@@ -8,7 +8,7 @@ export const getMenuEntries = (
   state: ProcessExplorerState,
 ): readonly MenuEntry[] => {
   const process = state.visibleProcesses[state.focusedIndex]
-  if (!process) {
+  if (!process || process.synthetic) {
     return []
   }
   const menuEntries: MenuEntry[] = [
