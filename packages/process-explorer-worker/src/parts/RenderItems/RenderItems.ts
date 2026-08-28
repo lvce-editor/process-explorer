@@ -164,14 +164,15 @@ const getErrorSectionDom = (
 }
 
 const hasError = (state: ProcessExplorerState): boolean => {
-  const { errorCodeFrame, errorMessage, errorStack } = state
-  return Boolean(errorMessage || errorCodeFrame || errorStack)
+  const { errorCode, errorCodeFrame, errorMessage, errorStack } = state
+  return Boolean(errorCode || errorMessage || errorCodeFrame || errorStack)
 }
 
 const getErrorDom = (
   state: ProcessExplorerState,
 ): readonly VirtualDomNode[] => {
-  const { errorCodeFrame, errorMessage, errorStack } = state
+  const { errorCode, errorCodeFrame, errorMessage, errorStack } = state
+  const errorCodeDom = getErrorSectionDom(errorCode, VirtualDomElements.Div)
   const messageDom = getErrorSectionDom(errorMessage, VirtualDomElements.Div)
   const codeFrameDom = getErrorSectionDom(
     errorCodeFrame,
@@ -179,7 +180,10 @@ const getErrorDom = (
   )
   const stackDom = getErrorSectionDom(errorStack, VirtualDomElements.Pre)
   const childCount =
-    messageDom.length / 2 + codeFrameDom.length / 2 + stackDom.length / 2
+    errorCodeDom.length / 2 +
+    messageDom.length / 2 +
+    codeFrameDom.length / 2 +
+    stackDom.length / 2
   return [
     processExplorer,
     {
@@ -187,6 +191,7 @@ const getErrorDom = (
       className: ClassNames.Error,
       type: VirtualDomElements.Div,
     },
+    ...errorCodeDom,
     ...messageDom,
     ...codeFrameDom,
     ...stackDom,

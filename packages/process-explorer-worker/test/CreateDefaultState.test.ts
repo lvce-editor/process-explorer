@@ -5,6 +5,7 @@ test('createDefaultState', () => {
   expect(createDefaultState()).toMatchObject({
     assetDir: '',
     collapsedPids: [],
+    errorCode: '',
     errorCodeFrame: '',
     errorMessage: '',
     errorStack: '',

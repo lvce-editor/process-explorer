@@ -2,6 +2,8 @@ import { PlatformType } from '@lvce-editor/constants'
 import { MainProcess } from '@lvce-editor/rpc-registry'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
 import type { ProcessInfo } from '../ProcessInfo/ProcessInfo.ts'
+import * as ErrorCodes from '../ErrorCodes/ErrorCodes.ts'
+import * as GetErrorCode from '../GetErrorCode/GetErrorCode.ts'
 import * as GetFrontendMemoryUsage from '../GetFrontendMemoryUsage/GetFrontendMemoryUsage.ts'
 import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as InitializeProcessExplorer from '../InitializeProcessExplorer/InitializeProcessExplorer.ts'
@@ -72,6 +74,7 @@ export const refresh = async (
     )
     return {
       ...state,
+      errorCode: '',
       errorCodeFrame: '',
       errorMessage: '',
       errorStack: '',
@@ -85,6 +88,10 @@ export const refresh = async (
     const prettyError = await PrepareError.prepareError(error)
     return {
       ...state,
+      errorCode: GetErrorCode.getErrorCode(
+        error,
+        ErrorCodes.ProcessExplorerRefreshFailed,
+      ),
       errorCodeFrame: prettyError.codeFrame || '',
       errorMessage: prettyError.message || PrepareError.getErrorMessage(error),
       errorStack: prettyError.stack || '',

@@ -32,6 +32,7 @@ test('handleProcessExplorerRpcClose - displays an error and stops refreshing', a
   await jest.advanceTimersByTimeAsync(100)
 
   expect(ProcessExplorerStates.get(7).scheduledState).toMatchObject({
+    errorCode: 'E_PROCESS_EXPLORER_RPC_CONNECTION_CLOSED',
     errorCodeFrame: '',
     errorMessage: HandleProcessExplorerRpcClose.processExplorerRpcClosedMessage,
     errorStack: '',
