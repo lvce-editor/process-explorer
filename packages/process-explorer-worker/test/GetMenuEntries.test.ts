@@ -77,3 +77,23 @@ test('getMenuEntries - missing process', () => {
   }
   expect(GetMenuEntries.getMenuEntries(state)).toEqual([])
 })
+
+test('getMenuEntries - process group', () => {
+  const state = {
+    ...createDefaultState(),
+    focusedIndex: 0,
+    visibleProcesses: [
+      {
+        cmd: 'Local',
+        depth: 1,
+        flags: 1,
+        memory: 0,
+        name: 'Local',
+        pid: 0,
+        ppid: 0,
+        synthetic: true as const,
+      },
+    ],
+  }
+  expect(GetMenuEntries.getMenuEntries(state)).toEqual([])
+})

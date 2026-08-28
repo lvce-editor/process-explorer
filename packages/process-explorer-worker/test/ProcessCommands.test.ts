@@ -6,6 +6,7 @@ import * as DebugProcess from '../src/parts/DebugProcess/DebugProcess.ts'
 import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as KillProcess from '../src/parts/KillProcess/KillProcess.ts'
 import * as ProcessExplorer from '../src/parts/ProcessExplorer/ProcessExplorer.ts'
+import * as RemoteProcessExplorer from '../src/parts/RemoteProcessExplorer/RemoteProcessExplorer.ts'
 
 interface DisposableMockRpc {
   [Symbol.dispose](): void
@@ -18,6 +19,17 @@ const registerProcessExplorerMock = (
   return {
     [Symbol.dispose](): void {
       ProcessExplorer.clear()
+    },
+  }
+}
+
+const registerRemoteProcessExplorerMock = (
+  commandMap: Record<string, unknown>,
+): DisposableMockRpc => {
+  RemoteProcessExplorer.set(createMockRpc({ commandMap }))
+  return {
+    [Symbol.dispose](): void {
+      RemoteProcessExplorer.clear()
     },
   }
 }
@@ -60,6 +72,51 @@ test('killProcess - missing process', async () => {
   const state = createDefaultState()
   await expect(KillProcess.killProcess(state, 0)).resolves.toBe(state)
   expect(kill).not.toHaveBeenCalled()
+})
+
+test('killProcess - remote process', async () => {
+  const kill = jest.fn()
+  using _mockRemoteRpc = registerRemoteProcessExplorerMock({
+    'Process.kill': kill,
+  })
+  const state = {
+    ...createDefaultState(),
+    visibleProcesses: [
+      {
+        cmd: 'remote child',
+        depth: 2,
+        flags: 0,
+        memory: 1,
+        name: 'remote-child',
+        pid: 2,
+        ppid: 1,
+        source: 'remote' as const,
+      },
+    ],
+  }
+
+  await expect(KillProcess.killProcess(state, 0)).resolves.toBe(state)
+  expect(kill).toHaveBeenCalledWith(2)
+})
+
+test('killProcess - process group', async () => {
+  const state = {
+    ...createDefaultState(),
+    visibleProcesses: [
+      {
+        cmd: 'Local',
+        depth: 1,
+        flags: 1,
+        memory: 0,
+        name: 'Local',
+        pid: 0,
+        ppid: 0,
+        synthetic: true as const,
+      },
+    ],
+  }
+
+  await expect(KillProcess.killProcess(state, 0)).resolves.toBe(state)
 })
 
 test('killProcess - does not wait for process explorer rpc response', async () => {
