@@ -25,7 +25,7 @@ test('createE2eFixtureProcess', () => {
   expect(E2eFixtureProcess.createE2eFixtureProcess('test-marker')).toBe(123)
   expect(childProcess.spawn).toHaveBeenCalledWith(
     process.execPath,
-    ['-e', expect.any(String), 'test-marker'],
+    ['--inspect=9000', '-e', expect.any(String), 'test-marker'],
     expect.objectContaining({
       env: expect.objectContaining({
         ELECTRON_RUN_AS_NODE: '1',

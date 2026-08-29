@@ -49,6 +49,13 @@ test('getMenuEntries - debuggable process', () => {
       id: 'debugProcess',
       label: 'Debug Process',
     },
+    {
+      args: [1],
+      command: 'ProcessExplorer.takeHeapSnapshot',
+      flags: MenuItemFlags.None,
+      id: 'takeHeapSnapshot',
+      label: 'Take Heap Snapshot',
+    },
   ])
 })
 

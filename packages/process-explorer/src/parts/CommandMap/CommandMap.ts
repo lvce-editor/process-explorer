@@ -6,6 +6,7 @@ import * as HandleWebSocket from '../HandleWebSocket/HandleWebSocket.ts'
 import * as KillProcess from '../KillProcess/KillProcess.ts'
 import * as ListProcessesWithMemoryUsage from '../ListProcessesWithMemoryUsage/ListProcessesWithMemoryUsage.ts'
 import * as ProcessId from '../ProcessId/ProcessId.ts'
+import * as TakeHeapSnapshot from '../TakeHeapSnapshot/TakeHeapSnapshot.ts'
 
 export const commandMap = {
   'HandleElectronMessagePort.handleElectronMessagePort':
@@ -19,5 +20,6 @@ export const commandMap = {
   'Process.disposeE2eFixtureProcess':
     E2eFixtureProcess.disposeE2eFixtureProcess,
   'Process.kill': KillProcess.killProcess,
+  'Process.takeHeapSnapshot': TakeHeapSnapshot.takeHeapSnapshot,
   'ProcessId.getMainProcessId': ProcessId.getMainProcessId,
 }
