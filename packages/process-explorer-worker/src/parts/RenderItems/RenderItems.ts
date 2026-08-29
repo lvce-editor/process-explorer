@@ -107,7 +107,7 @@ const getHeaderDom = (
     ...['Name', 'PID', 'Memory'].flatMap((label, index) => [
       {
         ...headerCellNode,
-        ...(index === 0 && nameColumnWidth ? { width: nameColumnWidth } : {}),
+        ...(index === 0 && nameColumnWidth && { width: nameColumnWidth }),
       },
       text(label),
     ]),
