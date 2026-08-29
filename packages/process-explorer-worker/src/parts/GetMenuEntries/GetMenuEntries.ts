@@ -28,6 +28,13 @@ export const getMenuEntries = (
       id: 'debugProcess',
       label: MenuItemLabels.DebugProcess,
     })
+    menuEntries.push({
+      args: [state.focusedIndex],
+      command: 'ProcessExplorer.takeHeapSnapshot',
+      flags: MenuItemFlags.None,
+      id: 'takeHeapSnapshot',
+      label: MenuItemLabels.TakeHeapSnapshot,
+    })
   }
   return menuEntries
 }

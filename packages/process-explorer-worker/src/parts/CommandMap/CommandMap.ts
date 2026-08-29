@@ -31,6 +31,7 @@ import * as Rerender from '../Rerender/Rerender.ts'
 import * as SetError from '../SetError/SetError.ts'
 import * as SetRootProcessId from '../SetRootProcessId/SetRootProcessId.ts'
 import * as SetUpdateInterval from '../SetUpdateInterval/SetUpdateInterval.ts'
+import * as TakeHeapSnapshot from '../TakeHeapSnapshot/TakeHeapSnapshot.ts'
 
 const handleDirectMessagePort = (
   port: MessagePort,
@@ -116,6 +117,9 @@ export const commandMap = {
   ),
   'ProcessExplorer.setUpdateInterval': ProcessExplorerStates.wrapCommand(
     SetUpdateInterval.setUpdateInterval,
+  ),
+  'ProcessExplorer.takeHeapSnapshot': ProcessExplorerStates.wrapCommand(
+    TakeHeapSnapshot.takeHeapSnapshot,
   ),
   'ProcessExplorer.terminate': terminate,
   'ProcessExplorer.update': ProcessExplorerStates.wrapCommand(Refresh.refresh),

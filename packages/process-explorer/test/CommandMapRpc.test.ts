@@ -6,6 +6,7 @@ import * as HandleMessagePort from '../src/parts/HandleMessagePort/HandleMessage
 import * as HandleSocket from '../src/parts/HandleSocket/HandleSocket.ts'
 import * as HandleWebSocket from '../src/parts/HandleWebSocket/HandleWebSocket.ts'
 import * as KillProcess from '../src/parts/KillProcess/KillProcess.ts'
+import * as TakeHeapSnapshot from '../src/parts/TakeHeapSnapshot/TakeHeapSnapshot.ts'
 
 test('commandMap exposes rpc handoff commands', () => {
   expect(CommandMap.commandMap['Process.createE2eFixtureProcess']).toBe(
@@ -29,4 +30,7 @@ test('commandMap exposes rpc handoff commands', () => {
     HandleWebSocket.handleWebSocket,
   )
   expect(CommandMap.commandMap['Process.kill']).toBe(KillProcess.killProcess)
+  expect(CommandMap.commandMap['Process.takeHeapSnapshot']).toBe(
+    TakeHeapSnapshot.takeHeapSnapshot,
+  )
 })
