@@ -88,12 +88,27 @@ const getCellDom = (
   ]
 }
 
-const getHeaderDom = (): readonly VirtualDomNode[] => {
+const getNameColumnWidth = (
+  visibleProcesses: readonly VisibleProcess[],
+): string | undefined => {
+  const hasWebContentsView = visibleProcesses.some((process) =>
+    process.name.toLowerCase().includes('webcontentsview'),
+  )
+  return hasWebContentsView ? '40%' : undefined
+}
+
+const getHeaderDom = (
+  visibleProcesses: readonly VisibleProcess[],
+): readonly VirtualDomNode[] => {
+  const nameColumnWidth = getNameColumnWidth(visibleProcesses)
   return [
     tableHeadNode,
     headerRowNode,
-    ...['Name', 'PID', 'Memory'].flatMap((label) => [
-      headerCellNode,
+    ...['Name', 'PID', 'Memory'].flatMap((label, index) => [
+      {
+        ...headerCellNode,
+        ...(index === 0 && nameColumnWidth && { width: nameColumnWidth }),
+      },
       text(label),
     ]),
   ]
@@ -223,7 +238,7 @@ const getTableDom = (
       tabIndex: TabIndex.Focusable,
       type: VirtualDomElements.Table,
     },
-    ...getHeaderDom(),
+    ...getHeaderDom(visibleProcesses),
     ...getBodyDom(state),
   ]
 }
