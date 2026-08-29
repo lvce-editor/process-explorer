@@ -71,6 +71,40 @@ test('renderItems - populated table', () => {
       title: 'node child.js',
     }),
   )
+  const nameHeader = result[2].find(
+    (node: VirtualDomNode) => node.className === 'ProcessExplorerHeaderCell',
+  )
+  expect(nameHeader).not.toHaveProperty('width')
+})
+
+test('renderItems - widens the name column for a webcontentsview process', () => {
+  const state = {
+    ...createDefaultState(),
+    initial: false,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(
+      [
+        ...processes,
+        {
+          cmd: 'renderer',
+          memory: 1,
+          name: 'renderer (webcontentsview, soundcloud.com)',
+          pid: 5,
+          ppid: 1,
+        },
+      ],
+      [],
+      1,
+    ),
+  }
+  const result = RenderItems.renderItems(createDefaultState(), state)
+  const headers = result[2].filter(
+    (node: VirtualDomNode) => node.className === 'ProcessExplorerHeaderCell',
+  )
+
+  expect(headers).toHaveLength(3)
+  expect(headers[0]).toHaveProperty('width', '40%')
+  expect(headers[1]).not.toHaveProperty('width')
+  expect(headers[2]).not.toHaveProperty('width')
 })
 
 test('renderItems - collapsed row', () => {
