@@ -101,10 +101,12 @@ test('renderItems - widens the name column for a webcontentsview process', () =>
     (node: VirtualDomNode) => node.className === 'ProcessExplorerHeaderCell',
   )
 
-  expect(headers).toHaveLength(3)
-  expect(headers[0]).toHaveProperty('width', '40%')
-  expect(headers[1]).not.toHaveProperty('width')
-  expect(headers[2]).not.toHaveProperty('width')
+  expect(headers).toHaveLength(2)
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      className: 'ProcessExplorerHeaderCell ProcessExplorerNameHeaderCellWide',
+    }),
+  )
 })
 
 test('renderItems - collapsed row', () => {
@@ -173,25 +175,19 @@ test('renderItems - aligns leaf and expandable siblings', () => {
   const result = RenderItems.renderItems(createDefaultState(), state)
   const leafZygoteNameCell = result[2].find(
     (node: VirtualDomNode) =>
-      node.className === 'ProcessExplorerCell ProcessExplorerNameCell' &&
+      node.className ===
+        'ProcessExplorerCell ProcessExplorerNameCell ProcessExplorerIndent-2' &&
       node['data-index'] === 1,
   )
   const expandableZygoteNameCell = result[2].find(
     (node: VirtualDomNode) =>
-      node.className === 'ProcessExplorerCell ProcessExplorerNameCell' &&
+      node.className ===
+        'ProcessExplorerCell ProcessExplorerNameCell ProcessExplorerIndent-2' &&
       node['data-index'] === 2,
   )
 
-  expect(leafZygoteNameCell).toEqual(
-    expect.objectContaining({
-      paddingLeft: '1.5ch',
-    }),
-  )
-  expect(expandableZygoteNameCell).toEqual(
-    expect.objectContaining({
-      paddingLeft: '1.5ch',
-    }),
-  )
+  expect(leafZygoteNameCell).not.toHaveProperty('paddingLeft')
+  expect(expandableZygoteNameCell).not.toHaveProperty('paddingLeft')
 })
 
 test('renderItems - initial is empty', () => {
