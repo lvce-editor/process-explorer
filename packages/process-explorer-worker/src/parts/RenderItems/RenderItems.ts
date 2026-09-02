@@ -48,14 +48,6 @@ const getRowClassName = (focused: boolean): string => {
   return ClassNames.Row
 }
 
-const getPaddingLeft = (process: VisibleProcess): string => {
-  if (process.depth <= 1) {
-    return '0'
-  }
-  const depthCh = (process.depth - 1) * 1.5
-  return `${depthCh}ch`
-}
-
 const getAriaExpanded = (process: VisibleProcess): boolean | undefined => {
   switch (process.flags) {
     case ProcessFlag.Collapsed:
@@ -71,7 +63,6 @@ const getCellDom = (
   className: string,
   value: string,
   index: number,
-  paddingLeft?: string,
 ): readonly VirtualDomNode[] => {
   return [
     {
@@ -79,7 +70,6 @@ const getCellDom = (
       className,
       'data-index': index,
       name: String(index),
-      paddingLeft,
       role: AriaRoles.GridCell,
       tabIndex: -1,
       type: VirtualDomElements.Td,
@@ -88,26 +78,31 @@ const getCellDom = (
   ]
 }
 
-const getNameColumnWidth = (
+const shouldUseWideNameColumn = (
   visibleProcesses: readonly VisibleProcess[],
-): string | undefined => {
-  const hasWebContentsView = visibleProcesses.some((process) =>
+): boolean => {
+  return visibleProcesses.some((process) =>
     process.name.toLowerCase().includes('webcontentsview'),
   )
-  return hasWebContentsView ? '40%' : undefined
 }
 
 const getHeaderDom = (
   visibleProcesses: readonly VisibleProcess[],
 ): readonly VirtualDomNode[] => {
-  const nameColumnWidth = getNameColumnWidth(visibleProcesses)
+  const useWideNameColumn = shouldUseWideNameColumn(visibleProcesses)
   return [
     tableHeadNode,
     headerRowNode,
     ...['Name', 'PID', 'Memory'].flatMap((label, index) => [
       {
         ...headerCellNode,
-        ...(index === 0 && nameColumnWidth && { width: nameColumnWidth }),
+        ...(index === 0 &&
+          useWideNameColumn && {
+            className: mergeClassNames(
+              ClassNames.HeaderCell,
+              ClassNames.NameHeaderCellWide,
+            ),
+          }),
       },
       text(label),
     ]),
@@ -133,10 +128,13 @@ const getRowDom = (
       type: VirtualDomElements.Tr,
     },
     ...getCellDom(
-      mergeClassNames(ClassNames.Cell, ClassNames.NameCell),
+      mergeClassNames(
+        ClassNames.Cell,
+        ClassNames.NameCell,
+        `ProcessExplorerIndent-${process.depth}`,
+      ),
       process.name,
       index,
-      getPaddingLeft(process),
     ),
     ...getCellDom(
       ClassNames.Cell,

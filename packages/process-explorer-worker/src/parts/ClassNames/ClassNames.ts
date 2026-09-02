@@ -1,6 +1,7 @@
 export const Cell = 'ProcessExplorerCell'
 export const Error = 'ProcessExplorerError'
 export const HeaderCell = 'ProcessExplorerHeaderCell'
+export const NameHeaderCellWide = 'ProcessExplorerNameHeaderCellWide'
 export const NameCell = 'ProcessExplorerNameCell'
 export const Row = 'ProcessExplorerRow'
 export const RowFocused = 'ProcessExplorerRowFocused'
