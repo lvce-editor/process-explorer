@@ -7,6 +7,12 @@
   "workspaces": [
     "packages/*"
   ],
+  "allowScripts": {
+    "@parcel/watcher@2.6.0": true,
+    "@vscode/windows-process-tree@0.8.0": true,
+    "esbuild@0.28.2": true,
+    "unrs-resolver@1.12.2": true
+  },
   "scripts": {
     "build": "node packages/build/src/build.ts",
     "build:static": "node packages/build/src/build-static.ts",
