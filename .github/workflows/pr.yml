@@ -28,7 +28,8 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-cacheNodeModules-${{ steps.nodeModulesCacheKey.outputs.value }}
       - name: npm ci
-        run: npm ci --foreground-scripts --loglevel=verbose
+        run: npm ci --target="$(cat .nvmrc)" --foreground-scripts --loglevel=verbose
+        shell: bash
         if: steps.npm-cache.outputs.cache-hit != 'true'
       - name: Build
         run: npm run build
