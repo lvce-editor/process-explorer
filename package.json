@@ -23,6 +23,9 @@
     "test:watch": "cd packages/process-explorer && npm run test:watch",
     "type-check": "tsc -b"
   },
+  "allowScripts": {
+    "@vscode/windows-process-tree@0.8.0": true
+  },
   "keywords": [
     "Lvce Editor"
   ],
