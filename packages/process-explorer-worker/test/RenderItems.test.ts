@@ -71,6 +71,42 @@ test('renderItems - populated table', () => {
       title: 'node child.js',
     }),
   )
+  const nameHeader = result[2].find(
+    (node: VirtualDomNode) => node.className === 'ProcessExplorerHeaderCell',
+  )
+  expect(nameHeader).not.toHaveProperty('width')
+})
+
+test('renderItems - widens the name column for a webcontentsview process', () => {
+  const state = {
+    ...createDefaultState(),
+    initial: false,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(
+      [
+        ...processes,
+        {
+          cmd: 'renderer',
+          memory: 1,
+          name: 'renderer (webcontentsview, soundcloud.com)',
+          pid: 5,
+          ppid: 1,
+        },
+      ],
+      [],
+      1,
+    ),
+  }
+  const result = RenderItems.renderItems(createDefaultState(), state)
+  const headers = result[2].filter(
+    (node: VirtualDomNode) => node.className === 'ProcessExplorerHeaderCell',
+  )
+
+  expect(headers).toHaveLength(2)
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      className: 'ProcessExplorerHeaderCell ProcessExplorerNameHeaderCellWide',
+    }),
+  )
 })
 
 test('renderItems - collapsed row', () => {
@@ -139,25 +175,19 @@ test('renderItems - aligns leaf and expandable siblings', () => {
   const result = RenderItems.renderItems(createDefaultState(), state)
   const leafZygoteNameCell = result[2].find(
     (node: VirtualDomNode) =>
-      node.className === 'ProcessExplorerCell ProcessExplorerNameCell' &&
+      node.className ===
+        'ProcessExplorerCell ProcessExplorerNameCell ProcessExplorerIndent-2' &&
       node['data-index'] === 1,
   )
   const expandableZygoteNameCell = result[2].find(
     (node: VirtualDomNode) =>
-      node.className === 'ProcessExplorerCell ProcessExplorerNameCell' &&
+      node.className ===
+        'ProcessExplorerCell ProcessExplorerNameCell ProcessExplorerIndent-2' &&
       node['data-index'] === 2,
   )
 
-  expect(leafZygoteNameCell).toEqual(
-    expect.objectContaining({
-      paddingLeft: '1.5ch',
-    }),
-  )
-  expect(expandableZygoteNameCell).toEqual(
-    expect.objectContaining({
-      paddingLeft: '1.5ch',
-    }),
-  )
+  expect(leafZygoteNameCell).not.toHaveProperty('paddingLeft')
+  expect(expandableZygoteNameCell).not.toHaveProperty('paddingLeft')
 })
 
 test('renderItems - initial is empty', () => {
@@ -175,6 +205,7 @@ test('renderItems - initial is empty', () => {
 test('renderItems - error only', () => {
   const state = {
     ...createDefaultState(),
+    errorCode: 'E_PROCESS_EXPLORER_REFRESH_FAILED',
     errorCodeFrame: '1 | throw new Error()',
     errorMessage: 'Pretty no pid',
     errorStack: 'Pretty stack',
@@ -187,6 +218,12 @@ test('renderItems - error only', () => {
     expect.objectContaining({
       className: 'ProcessExplorerError',
       type: VirtualDomElements.Div,
+    }),
+  )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      text: 'E_PROCESS_EXPLORER_REFRESH_FAILED',
+      type: VirtualDomElements.Text,
     }),
   )
   expect(result[2]).toContainEqual(

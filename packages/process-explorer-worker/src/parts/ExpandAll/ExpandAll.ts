@@ -4,7 +4,7 @@ import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses
 export const expandAll = (
   state: ProcessExplorerState,
 ): ProcessExplorerState => {
-  const collapsedPids: readonly number[] = []
+  const collapsedPids: readonly (number | string)[] = []
   const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
     state.processes,
     collapsedPids,

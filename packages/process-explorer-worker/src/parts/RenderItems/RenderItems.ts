@@ -48,14 +48,6 @@ const getRowClassName = (focused: boolean): string => {
   return ClassNames.Row
 }
 
-const getPaddingLeft = (process: VisibleProcess): string => {
-  if (process.depth <= 1) {
-    return '0'
-  }
-  const depthCh = (process.depth - 1) * 1.5
-  return `${depthCh}ch`
-}
-
 const getAriaExpanded = (process: VisibleProcess): boolean | undefined => {
   switch (process.flags) {
     case ProcessFlag.Collapsed:
@@ -71,7 +63,6 @@ const getCellDom = (
   className: string,
   value: string,
   index: number,
-  paddingLeft?: string,
 ): readonly VirtualDomNode[] => {
   return [
     {
@@ -79,7 +70,6 @@ const getCellDom = (
       className,
       'data-index': index,
       name: String(index),
-      paddingLeft,
       role: AriaRoles.GridCell,
       tabIndex: -1,
       type: VirtualDomElements.Td,
@@ -88,12 +78,32 @@ const getCellDom = (
   ]
 }
 
-const getHeaderDom = (): readonly VirtualDomNode[] => {
+const shouldUseWideNameColumn = (
+  visibleProcesses: readonly VisibleProcess[],
+): boolean => {
+  return visibleProcesses.some((process) =>
+    process.name.toLowerCase().includes('webcontentsview'),
+  )
+}
+
+const getHeaderDom = (
+  visibleProcesses: readonly VisibleProcess[],
+): readonly VirtualDomNode[] => {
+  const useWideNameColumn = shouldUseWideNameColumn(visibleProcesses)
   return [
     tableHeadNode,
     headerRowNode,
-    ...['Name', 'PID', 'Memory'].flatMap((label) => [
-      headerCellNode,
+    ...['Name', 'PID', 'Memory'].flatMap((label, index) => [
+      {
+        ...headerCellNode,
+        ...(index === 0 &&
+          useWideNameColumn && {
+            className: mergeClassNames(
+              ClassNames.HeaderCell,
+              ClassNames.NameHeaderCellWide,
+            ),
+          }),
+      },
       text(label),
     ]),
   ]
@@ -118,15 +128,22 @@ const getRowDom = (
       type: VirtualDomElements.Tr,
     },
     ...getCellDom(
-      mergeClassNames(ClassNames.Cell, ClassNames.NameCell),
+      mergeClassNames(
+        ClassNames.Cell,
+        ClassNames.NameCell,
+        `ProcessExplorerIndent-${process.depth}`,
+      ),
       process.name,
       index,
-      getPaddingLeft(process),
     ),
-    ...getCellDom(ClassNames.Cell, String(process.pid), index),
     ...getCellDom(
       ClassNames.Cell,
-      FormatMemory.formatMemory(process.memory),
+      process.synthetic ? '' : String(process.pid),
+      index,
+    ),
+    ...getCellDom(
+      ClassNames.Cell,
+      process.synthetic ? '' : FormatMemory.formatMemory(process.memory),
       index,
     ),
   ]
@@ -164,14 +181,15 @@ const getErrorSectionDom = (
 }
 
 const hasError = (state: ProcessExplorerState): boolean => {
-  const { errorCodeFrame, errorMessage, errorStack } = state
-  return Boolean(errorMessage || errorCodeFrame || errorStack)
+  const { errorCode, errorCodeFrame, errorMessage, errorStack } = state
+  return Boolean(errorCode || errorMessage || errorCodeFrame || errorStack)
 }
 
 const getErrorDom = (
   state: ProcessExplorerState,
 ): readonly VirtualDomNode[] => {
-  const { errorCodeFrame, errorMessage, errorStack } = state
+  const { errorCode, errorCodeFrame, errorMessage, errorStack } = state
+  const errorCodeDom = getErrorSectionDom(errorCode, VirtualDomElements.Div)
   const messageDom = getErrorSectionDom(errorMessage, VirtualDomElements.Div)
   const codeFrameDom = getErrorSectionDom(
     errorCodeFrame,
@@ -179,7 +197,10 @@ const getErrorDom = (
   )
   const stackDom = getErrorSectionDom(errorStack, VirtualDomElements.Pre)
   const childCount =
-    messageDom.length / 2 + codeFrameDom.length / 2 + stackDom.length / 2
+    errorCodeDom.length / 2 +
+    messageDom.length / 2 +
+    codeFrameDom.length / 2 +
+    stackDom.length / 2
   return [
     processExplorer,
     {
@@ -187,6 +208,7 @@ const getErrorDom = (
       className: ClassNames.Error,
       type: VirtualDomElements.Div,
     },
+    ...errorCodeDom,
     ...messageDom,
     ...codeFrameDom,
     ...stackDom,
@@ -214,7 +236,7 @@ const getTableDom = (
       tabIndex: TabIndex.Focusable,
       type: VirtualDomElements.Table,
     },
-    ...getHeaderDom(),
+    ...getHeaderDom(visibleProcesses),
     ...getBodyDom(state),
   ]
 }

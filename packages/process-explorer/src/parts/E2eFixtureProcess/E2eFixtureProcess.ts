@@ -8,14 +8,18 @@ const fixtureScript =
 const fixtureProcesses = new Map<string, number>()
 
 export const createE2eFixtureProcess = (marker: string): number => {
-  const childProcess = spawn(process.execPath, ['-e', fixtureScript, marker], {
-    env: {
-      ...process.env,
-      ELECTRON_RUN_AS_NODE: '1',
+  const childProcess = spawn(
+    process.execPath,
+    ['--inspect=9000', '-e', fixtureScript, marker],
+    {
+      env: {
+        ...process.env,
+        ELECTRON_RUN_AS_NODE: '1',
+      },
+      shell: false,
+      stdio: 'ignore',
     },
-    shell: false,
-    stdio: 'ignore',
-  })
+  )
   childProcess.unref()
   if (!childProcess.pid) {
     throw new Error('Failed to create e2e fixture process')

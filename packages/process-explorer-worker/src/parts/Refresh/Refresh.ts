@@ -2,12 +2,23 @@ import { PlatformType } from '@lvce-editor/constants'
 import { MainProcess } from '@lvce-editor/rpc-registry'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
 import type { ProcessInfo } from '../ProcessInfo/ProcessInfo.ts'
+import * as ErrorCodes from '../ErrorCodes/ErrorCodes.ts'
+import * as GetErrorCode from '../GetErrorCode/GetErrorCode.ts'
 import * as GetFrontendMemoryUsage from '../GetFrontendMemoryUsage/GetFrontendMemoryUsage.ts'
 import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses.ts'
+import * as GroupProcesses from '../GroupProcesses/GroupProcesses.ts'
 import * as InitializeProcessExplorer from '../InitializeProcessExplorer/InitializeProcessExplorer.ts'
 import * as PrepareError from '../PrepareError/PrepareError.ts'
 import * as ProcessExplorerModule from '../ProcessExplorer/ProcessExplorer.ts'
+import * as RemoteProcessExplorer from '../RemoteProcessExplorer/RemoteProcessExplorer.ts'
 import * as ReparentSharedProcessChildren from '../ReparentSharedProcessChildren/ReparentSharedProcessChildren.ts'
+
+interface ProcessExplorerRpc {
+  readonly invoke: (
+    method: string,
+    ...params: readonly unknown[]
+  ) => Promise<any>
+}
 
 const getFocusedIndex = (
   oldFocusedIndex: number,
@@ -23,23 +34,36 @@ const getFocusedIndex = (
 }
 
 const listProcesses = async (
+  processExplorer: ProcessExplorerRpc,
   rootPid: number,
-  platform: number,
+  pidMap?: unknown,
 ): Promise<readonly ProcessInfo[]> => {
-  if (platform === PlatformType.Electron) {
-    const pidMap = await MainProcess.invoke('CreatePidMap.createPidMap')
-    return ProcessExplorerModule.invoke(
+  if (pidMap) {
+    return processExplorer.invoke(
       'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
       rootPid,
       false,
       pidMap,
     )
   }
-  return ProcessExplorerModule.invoke(
+  return processExplorer.invoke(
     'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage',
     rootPid,
     false,
   )
+}
+
+const getRootPid = async (
+  processExplorer: ProcessExplorerRpc,
+  rootPid: number,
+  includeElectronData: boolean,
+): Promise<number> => {
+  if (rootPid !== -1) {
+    return rootPid
+  }
+  return processExplorer.invoke('ProcessId.getMainProcessId', {
+    includeElectronData,
+  })
 }
 
 export const refresh = async (
@@ -48,23 +72,46 @@ export const refresh = async (
   try {
     await InitializeProcessExplorer.initializeProcessExplorer(state.platform)
     const includeElectronData = state.platform === PlatformType.Electron
-    const rootPid =
-      state.rootPid === -1
-        ? await ProcessExplorerModule.invoke('ProcessId.getMainProcessId', {
-            includeElectronData,
-          })
-        : state.rootPid
-    const processes = await listProcesses(rootPid, state.platform)
+    const rootPid = await getRootPid(
+      ProcessExplorerModule,
+      state.rootPid,
+      includeElectronData,
+    )
+    const pidMap = includeElectronData
+      ? await MainProcess.invoke('CreatePidMap.createPidMap')
+      : undefined
+    const processes = await listProcesses(
+      ProcessExplorerModule,
+      rootPid,
+      pidMap,
+    )
     const frontendMemoryProcesses = state.includeFrontendMemoryUsage
       ? await GetFrontendMemoryUsage.getFrontendMemoryUsage(rootPid)
       : []
     const allProcesses = [...processes, ...frontendMemoryProcesses]
-    const displayedProcesses =
+    const localProcesses =
       state.platform === PlatformType.Electron
         ? ReparentSharedProcessChildren.reparentSharedProcessChildren(
             allProcesses,
           )
         : allProcesses
+    let displayedProcesses = localProcesses
+    if (
+      state.platform === PlatformType.Electron &&
+      RemoteProcessExplorer.has()
+    ) {
+      const remoteRootPid = await getRootPid(RemoteProcessExplorer, -1, false)
+      const remoteProcesses = await listProcesses(
+        RemoteProcessExplorer,
+        remoteRootPid,
+      )
+      displayedProcesses = GroupProcesses.groupProcesses(
+        localProcesses,
+        rootPid,
+        remoteProcesses,
+        remoteRootPid,
+      )
+    }
     const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
       displayedProcesses,
       state.collapsedPids,
@@ -72,6 +119,7 @@ export const refresh = async (
     )
     return {
       ...state,
+      errorCode: '',
       errorCodeFrame: '',
       errorMessage: '',
       errorStack: '',
@@ -85,6 +133,10 @@ export const refresh = async (
     const prettyError = await PrepareError.prepareError(error)
     return {
       ...state,
+      errorCode: GetErrorCode.getErrorCode(
+        error,
+        ErrorCodes.ProcessExplorerRefreshFailed,
+      ),
       errorCodeFrame: prettyError.codeFrame || '',
       errorMessage: prettyError.message || PrepareError.getErrorMessage(error),
       errorStack: prettyError.stack || '',

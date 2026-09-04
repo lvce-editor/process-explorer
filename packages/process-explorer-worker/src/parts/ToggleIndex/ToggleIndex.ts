@@ -10,9 +10,10 @@ export const toggleIndex = (
   if (!process || process.flags === ProcessFlag.None) {
     return state
   }
-  const collapsedPids = state.collapsedPids.includes(process.pid)
-    ? state.collapsedPids.filter((pid) => pid !== process.pid)
-    : [...state.collapsedPids, process.pid]
+  const treeId = process.treeId ?? process.pid
+  const collapsedPids = state.collapsedPids.includes(treeId)
+    ? state.collapsedPids.filter((pid) => pid !== treeId)
+    : [...state.collapsedPids, treeId]
   const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
     state.processes,
     collapsedPids,

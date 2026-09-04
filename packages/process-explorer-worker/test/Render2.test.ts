@@ -47,8 +47,15 @@ test('render2', async () => {
     visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
   }
   ProcessExplorerStates.set(uid, oldState, newState)
-  expect(Diff2.diff2(uid)).toEqual([DiffType.RenderIncremental])
-  const commands = await Render2.render2(uid, [DiffType.RenderIncremental])
+  expect(Diff2.diff2(uid)).toEqual([
+    DiffType.RenderIncremental,
+    DiffType.RenderCss,
+  ])
+  const commands = await Render2.render2(uid, [
+    DiffType.RenderIncremental,
+    DiffType.RenderCss,
+  ])
   expect(commands[0][0]).toBe(ViewletCommand.SetPatches)
+  expect(commands[1][0]).toBe(ViewletCommand.SetCss)
   expect(ProcessExplorerStates.get(uid).oldState).toBe(newState)
 })

@@ -19,6 +19,8 @@ const { createDefaultState } =
   await import('../src/parts/CreateDefaultState/CreateDefaultState.ts')
 const ProcessExplorerModule =
   await import('../src/parts/ProcessExplorer/ProcessExplorer.ts')
+const RemoteProcessExplorer =
+  await import('../src/parts/RemoteProcessExplorer/RemoteProcessExplorer.ts')
 const Refresh = await import('../src/parts/Refresh/Refresh.ts')
 
 interface DisposableMockRpc {
@@ -63,6 +65,17 @@ const registerMainProcessMock = (
   return {
     [Symbol.dispose](): void {
       MainProcess.set(createMockRpc({ commandMap: {} }))
+    },
+  }
+}
+
+const registerRemoteProcessExplorerMock = (
+  commandMap: Record<string, unknown>,
+): DisposableMockRpc => {
+  RemoteProcessExplorer.set(createMockRpc({ commandMap }))
+  return {
+    [Symbol.dispose](): void {
+      RemoteProcessExplorer.clear()
     },
   }
 }
@@ -163,6 +176,49 @@ test('refresh - success - electron', async () => {
   expect(getMainProcessId).toHaveBeenCalledWith({ includeElectronData: true })
   expect(createPidMap).toHaveBeenCalledTimes(1)
   expect(listProcessesWithMemoryUsage).toHaveBeenCalledWith(1, false, pidMap)
+})
+
+test('refresh - electron with remote workspace', async () => {
+  const localProcesses = [processes[0], processes[1]]
+  const remoteProcesses = [
+    { cmd: 'remote main', memory: 3, name: 'remote-main', pid: 1, ppid: 0 },
+    { cmd: 'remote child', memory: 4, name: 'remote-child', pid: 2, ppid: 1 },
+  ]
+  using _mockRpc = registerProcessExplorerMock({
+    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage': jest.fn(
+      () => localProcesses,
+    ),
+    'ProcessId.getMainProcessId': jest.fn(() => 1),
+  })
+  using _mockRemoteRpc = registerRemoteProcessExplorerMock({
+    'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage': jest.fn(
+      () => remoteProcesses,
+    ),
+    'ProcessId.getMainProcessId': jest.fn(() => 1),
+  })
+  using _mockMainProcessRpc = registerMainProcessMock({
+    'CreatePidMap.createPidMap': jest.fn(() => ({})),
+  })
+
+  const result = await Refresh.refresh({
+    ...createDefaultState(),
+    platform: PlatformType.Electron,
+  })
+
+  expect(
+    result.visibleProcesses.map(({ depth, name, source }) => ({
+      depth,
+      name,
+      source,
+    })),
+  ).toEqual([
+    { depth: 1, name: 'Local', source: 'local' },
+    { depth: 2, name: 'main', source: 'local' },
+    { depth: 3, name: 'child', source: 'local' },
+    { depth: 1, name: 'Remote', source: 'remote' },
+    { depth: 2, name: 'remote-main', source: 'remote' },
+    { depth: 3, name: 'remote-child', source: 'remote' },
+  ])
 })
 
 test('refresh - groups conceptual processes below shared process on electron', async () => {
@@ -346,10 +402,31 @@ test('refresh - error', async () => {
   const result = await Refresh.refresh(createDefaultState())
   expect(prepare).toHaveBeenCalledTimes(1)
   expect(prepare.mock.calls[0][0]).toBeInstanceOf(Error)
+  expect(result.errorCode).toBe('E_PROCESS_EXPLORER_REFRESH_FAILED')
   expect(result.errorCodeFrame).toBe('1 | throw new Error()')
   expect(result.errorMessage).toBe('Pretty no pid')
   expect(result.errorStack).toBe('Pretty stack')
   expect(result.initial).toBe(false)
+})
+
+test('refresh - preserves error code', async () => {
+  using _mockRpc = registerProcessExplorerMock({
+    'ProcessId.getMainProcessId': jest.fn(() => {
+      throw Object.assign(new Error('no pid'), { code: 'ERR_NO_PID' })
+    }),
+  })
+  using _mockErrorRpc = registerErrorWorkerMock({
+    'Errors.prepare': jest.fn(() => ({
+      codeFrame: undefined,
+      message: 'Pretty no pid',
+      stack: undefined,
+    })),
+  })
+
+  const result = await Refresh.refresh(createDefaultState())
+
+  expect(result.errorCode).toBe('ERR_NO_PID')
+  expect(result.errorMessage).toBe('Pretty no pid')
 })
 
 test('refresh - error prepare fails', async () => {
@@ -364,6 +441,7 @@ test('refresh - error prepare fails', async () => {
     }),
   })
   const result = await Refresh.refresh(createDefaultState())
+  expect(result.errorCode).toBe('E_PROCESS_EXPLORER_REFRESH_FAILED')
   expect(result.errorCodeFrame).toBe('')
   expect(result.errorMessage).toBe('no pid')
   expect(result.errorStack).toBe('')
@@ -382,6 +460,7 @@ test('refresh - non error prepare fails', async () => {
     }),
   })
   const result = await Refresh.refresh(createDefaultState())
+  expect(result.errorCode).toBe('E_PROCESS_EXPLORER_REFRESH_FAILED')
   expect(result.errorCodeFrame).toBe('')
   expect(result.errorMessage).toBe('no pid')
   expect(result.errorStack).toBe('')

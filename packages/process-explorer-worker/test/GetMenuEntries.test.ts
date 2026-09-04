@@ -49,6 +49,13 @@ test('getMenuEntries - debuggable process', () => {
       id: 'debugProcess',
       label: 'Debug Process',
     },
+    {
+      args: [1],
+      command: 'ProcessExplorer.takeHeapSnapshot',
+      flags: MenuItemFlags.None,
+      id: 'takeHeapSnapshot',
+      label: 'Take Heap Snapshot',
+    },
   ])
 })
 
@@ -74,6 +81,26 @@ test('getMenuEntries - missing process', () => {
     ...createDefaultState(),
     focusedIndex: 99,
     visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
+  }
+  expect(GetMenuEntries.getMenuEntries(state)).toEqual([])
+})
+
+test('getMenuEntries - process group', () => {
+  const state = {
+    ...createDefaultState(),
+    focusedIndex: 0,
+    visibleProcesses: [
+      {
+        cmd: 'Local',
+        depth: 1,
+        flags: 1,
+        memory: 0,
+        name: 'Local',
+        pid: 0,
+        ppid: 0,
+        synthetic: true as const,
+      },
+    ],
   }
   expect(GetMenuEntries.getMenuEntries(state)).toEqual([])
 })

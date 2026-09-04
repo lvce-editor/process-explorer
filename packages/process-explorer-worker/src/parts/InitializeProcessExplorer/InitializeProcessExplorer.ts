@@ -1,16 +1,19 @@
 import { PlatformType } from '@lvce-editor/constants'
-import { MainProcess } from '@lvce-editor/rpc-registry'
+import { MainProcess, RendererWorker } from '@lvce-editor/rpc-registry'
 import * as HandleProcessExplorerRpcClose from '../HandleProcessExplorerRpcClose/HandleProcessExplorerRpcClose.ts'
 import * as LaunchProcessExplorerElectron from '../LaunchProcessExplorerElectron/LaunchProcessExplorerElectron.ts'
 import * as LaunchProcessExplorerNode from '../LaunchProcessExplorerNode/LaunchProcessExplorerNode.ts'
 import * as ProcessExplorerModule from '../ProcessExplorer/ProcessExplorer.ts'
+import * as RemoteProcessExplorer from '../RemoteProcessExplorer/RemoteProcessExplorer.ts'
 
 interface State {
   initializedPlatform: number
+  remoteInitialized: boolean
 }
 
 const state: State = {
   initializedPlatform: 0,
+  remoteInitialized: false,
 }
 
 const handleClose = async (): Promise<void> => {
@@ -19,10 +22,51 @@ const handleClose = async (): Promise<void> => {
   await HandleProcessExplorerRpcClose.handleProcessExplorerRpcClose()
 }
 
+const handleRemoteClose = (): void => {
+  state.remoteInitialized = false
+  RemoteProcessExplorer.clear()
+  void RendererWorker.invoke('ProcessExplorer.update').catch(() => {})
+}
+
+const isRemoteWorkspace = async (): Promise<boolean> => {
+  try {
+    return await RendererWorker.invoke('WebSocketCapability.isActive')
+  } catch {
+    return false
+  }
+}
+
+const initializeRemoteProcessExplorer = async (): Promise<void> => {
+  const remoteWorkspace = await isRemoteWorkspace()
+  if (!remoteWorkspace) {
+    if (state.remoteInitialized) {
+      state.remoteInitialized = false
+      await RemoteProcessExplorer.dispose()
+    }
+    return
+  }
+  if (state.remoteInitialized) {
+    return
+  }
+  try {
+    const remoteRpc =
+      await LaunchProcessExplorerNode.launchProcessExplorerNode(
+        handleRemoteClose,
+      )
+    RemoteProcessExplorer.set(remoteRpc)
+    state.remoteInitialized = true
+  } catch {
+    RemoteProcessExplorer.clear()
+  }
+}
+
 export const initializeProcessExplorer = async (
   platform: number,
 ): Promise<void> => {
   if (state.initializedPlatform === platform) {
+    if (platform === PlatformType.Electron) {
+      await initializeRemoteProcessExplorer()
+    }
     return
   }
   if (platform === PlatformType.Electron) {
@@ -31,6 +75,7 @@ export const initializeProcessExplorer = async (
     MainProcess.set(mainProcessRpc)
     ProcessExplorerModule.set(processExplorerRpc)
     state.initializedPlatform = platform
+    await initializeRemoteProcessExplorer()
     return
   }
   if (platform === PlatformType.Remote) {
@@ -46,14 +91,24 @@ export const initializeProcessExplorer = async (
 
 export const clear = (): void => {
   state.initializedPlatform = 0
+  state.remoteInitialized = false
+  RemoteProcessExplorer.clear()
 }
 
 export const dispose = async (): Promise<void> => {
   const { initializedPlatform } = state
   state.initializedPlatform = 0
+  state.remoteInitialized = false
   if (initializedPlatform === PlatformType.Electron) {
-    await Promise.all([MainProcess.dispose(), ProcessExplorerModule.dispose()])
+    await Promise.all([
+      MainProcess.dispose(),
+      ProcessExplorerModule.dispose(),
+      RemoteProcessExplorer.dispose(),
+    ])
     return
   }
-  await ProcessExplorerModule.dispose()
+  await Promise.all([
+    ProcessExplorerModule.dispose(),
+    RemoteProcessExplorer.dispose(),
+  ])
 }

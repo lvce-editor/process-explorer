@@ -17,8 +17,11 @@ export default defineConfig([
   },
   {
     files: [
+      'packages/process-explorer/test/ListProcessesWithMemoryUsageMacos.test.ts',
+      'packages/process-explorer/test/ListProcessesWithMemoryUsageLinux.test.ts',
       'packages/process-explorer/test/ListProcessesWithMemoryUsageUnix.test.ts',
       'packages/process-explorer/test/ListProcessesWithMemoryUsageWindows.test.ts',
+      'packages/process-explorer/test/ProcessId.test.ts',
       'packages/process-explorer/test/E2eFixtureProcess.test.ts',
       'packages/process-explorer/test/WindowsProcessTree.test.ts',
       'packages/process-explorer-worker/test/E2eFixtureProcess.test.ts',

@@ -8,7 +8,7 @@ export const getMenuEntries = (
   state: ProcessExplorerState,
 ): readonly MenuEntry[] => {
   const process = state.visibleProcesses[state.focusedIndex]
-  if (!process) {
+  if (!process || process.synthetic) {
     return []
   }
   const menuEntries: MenuEntry[] = [
@@ -27,6 +27,13 @@ export const getMenuEntries = (
       flags: MenuItemFlags.None,
       id: 'debugProcess',
       label: MenuItemLabels.DebugProcess,
+    })
+    menuEntries.push({
+      args: [state.focusedIndex],
+      command: 'ProcessExplorer.takeHeapSnapshot',
+      flags: MenuItemFlags.None,
+      id: 'takeHeapSnapshot',
+      label: MenuItemLabels.TakeHeapSnapshot,
     })
   }
   return menuEntries
