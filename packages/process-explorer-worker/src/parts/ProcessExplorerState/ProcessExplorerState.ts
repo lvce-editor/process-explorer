@@ -14,6 +14,7 @@ export interface ProcessExplorerState {
   readonly height: number
   readonly includeFrontendMemoryUsage: boolean
   readonly initial: boolean
+  readonly message: string
   readonly parentUid: number
   readonly platform: number
   readonly processes: readonly ProcessInfo[]

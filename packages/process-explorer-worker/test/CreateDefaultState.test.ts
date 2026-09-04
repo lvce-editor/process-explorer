@@ -10,6 +10,7 @@ test('createDefaultState', () => {
     errorMessage: '',
     errorStack: '',
     focusedIndex: -1,
+    message: '',
     platform: 0,
     processes: [],
     rootPid: -1,

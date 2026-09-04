@@ -119,6 +119,23 @@ afterEach(() => {
   setPerformance(originalPerformance)
 })
 
+test('refresh - web is unsupported', async () => {
+  const state = {
+    ...createDefaultState(),
+    initial: true,
+    platform: PlatformType.Web,
+  }
+
+  const result = await Refresh.refresh(state)
+
+  expect(result).toEqual({
+    ...state,
+    initial: false,
+    message: 'Process Explorer is not supported on web.',
+  })
+  expect(initializeProcessExplorer).not.toHaveBeenCalled()
+})
+
 test('refresh - success - remote', async () => {
   const listProcessesWithMemoryUsage = jest.fn(
     (..._args: readonly unknown[]) => processes,
