@@ -1,21 +1,16 @@
 import { spawn } from 'node:child_process'
-import * as GetInspectorWebSocketUrl from '../GetInspectorWebSocketUrl/GetInspectorWebSocketUrl.ts'
 import * as Process from '../Process/Process.ts'
 import * as Signal from '../Signal/Signal.ts'
-
-const inspectorArgument = '--inspect=9000'
 
 const fixtureScript =
   'setTimeout(() => process.exit(0), 120_000); setInterval(() => {}, 1000)'
 
 const fixtureProcesses = new Map<string, number>()
 
-export const createE2eFixtureProcess = async (
-  marker: string,
-): Promise<number> => {
+export const createE2eFixtureProcess = (marker: string): number => {
   const childProcess = spawn(
     process.execPath,
-    [inspectorArgument, '-e', fixtureScript, marker],
+    ['--inspect=9000', '-e', fixtureScript, marker],
     {
       env: {
         ...process.env,
@@ -30,16 +25,7 @@ export const createE2eFixtureProcess = async (
     throw new Error('Failed to create e2e fixture process')
   }
   fixtureProcesses.set(marker, childProcess.pid)
-  try {
-    await GetInspectorWebSocketUrl.getInspectorWebSocketUrl(
-      childProcess.pid,
-      inspectorArgument,
-    )
-    return childProcess.pid
-  } catch (error) {
-    disposeE2eFixtureProcess(marker)
-    throw error
-  }
+  return childProcess.pid
 }
 
 const getFixtureProcessId = (pidOrMarker: number | string): number => {
