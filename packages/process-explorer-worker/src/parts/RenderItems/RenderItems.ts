@@ -41,6 +41,12 @@ const processExplorer: VirtualDomNode = {
   type: VirtualDomElements.Div,
 }
 
+const messageNode: VirtualDomNode = {
+  childCount: 1,
+  className: ClassNames.Message,
+  type: VirtualDomElements.Div,
+}
+
 const getRowClassName = (focused: boolean): string => {
   if (focused) {
     return mergeClassNames(ClassNames.Row, ClassNames.RowFocused)
@@ -186,15 +192,7 @@ const hasError = (state: ProcessExplorerState): boolean => {
 }
 
 const getMessageDom = (message: string): readonly VirtualDomNode[] => {
-  return [
-    processExplorer,
-    {
-      childCount: 1,
-      className: ClassNames.Message,
-      type: VirtualDomElements.Div,
-    },
-    text(message),
-  ]
+  return [processExplorer, messageNode, text(message)]
 }
 
 const getErrorDom = (
