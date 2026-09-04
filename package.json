@@ -36,11 +36,11 @@
     "node": ">=18"
   },
   "devDependencies": {
-    "@lvce-editor/eslint-config": "^18.4.0",
+    "@lvce-editor/eslint-config": "^18.9.0",
     "@types/node": "^20.12.8",
     "eslint": "^10.8.1",
-    "knip": "^6.26.0",
-    "prettier": "^3.9.5",
+    "knip": "^6.34.0",
+    "prettier": "^3.9.6",
     "typescript": "^6.0.3"
   },
   "prettier": {
