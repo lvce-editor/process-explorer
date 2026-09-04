@@ -1,26 +1,20 @@
 declare module '@vscode/windows-process-tree' {
-  export enum ProcessDataFlag {
-    None = 0,
-    Memory = 1,
-    CommandLine = 2,
-  }
-
   export interface IProcessInfo {
-    readonly commandLine?: string
-    readonly memory?: number
-    readonly name: string
-    readonly pid: number
-    readonly ppid: number
+    commandLine?: string
+    memory?: number
+    name: string
+    pid: number
+    ppid: number
   }
 
   export interface IProcessCpuInfo extends IProcessInfo {
-    readonly cpu?: number
+    cpu?: number
   }
 
   export function getProcessList(
     rootPid: number,
     callback: (processList: IProcessInfo[] | undefined) => void,
-    flags?: ProcessDataFlag,
+    flags?: number,
   ): void
 
   export function getProcessCpuUsage(
