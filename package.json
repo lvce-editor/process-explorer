@@ -7,6 +7,11 @@
   "workspaces": [
     "packages/*"
   ],
+  "allowScripts": {
+    "@parcel/watcher@2.6.0": true,
+    "esbuild@0.28.2": true,
+    "unrs-resolver@1.12.2": true
+  },
   "scripts": {
     "build": "node packages/build/src/build.ts",
     "build:static": "node packages/build/src/build-static.ts",
@@ -36,11 +41,12 @@
     "node": ">=18"
   },
   "devDependencies": {
-    "@lvce-editor/eslint-config": "^18.4.0",
+    "@lvce-editor/eslint-config": "^18.9.0",
+    "@lvce-editor/server": "0.88.0",
     "@types/node": "^20.12.8",
     "eslint": "^10.8.1",
-    "knip": "^6.26.0",
-    "prettier": "^3.9.5",
+    "knip": "^6.34.0",
+    "prettier": "^3.9.6",
     "typescript": "^6.0.3"
   },
   "prettier": {

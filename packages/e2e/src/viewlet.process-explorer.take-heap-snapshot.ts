@@ -23,7 +23,6 @@ export const test: Test = async ({ Command, ContextMenu, expect, Locator }) => {
       }
     }
     await expect(row).toBeVisible()
-    await new Promise((resolve) => setTimeout(resolve, 500))
 
     // eslint-disable-next-line e2e/no-direct-click -- focuses the exact fixture process
     await row.click()

@@ -17,8 +17,8 @@
     "@rollup/plugin-commonjs": "^29.0.3",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@types/node": "^25.0.8",
-    "esbuild": "^0.28.1",
-    "execa": "^9.6.1",
+    "esbuild": "^0.28.2",
+    "execa": "^10.0.1",
     "rollup": "^4.55.1"
   }
 }

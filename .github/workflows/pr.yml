@@ -7,10 +7,11 @@ on:
 
 jobs:
   pr:
+    name: pr (${{ matrix.os == 'macos-15' && 'macos-14' || matrix.os }})
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-14, windows-2022]
+        os: [ubuntu-22.04, macos-15, windows-2022]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     steps:
@@ -28,8 +29,12 @@ jobs:
           path: '**/node_modules'
           key: ${{ runner.os }}-cacheNodeModules-${{ steps.nodeModulesCacheKey.outputs.value }}
       - name: npm ci
-        run: npm ci
+        run: npm ci --target="$(cat .nvmrc)"
+        shell: bash
         if: steps.npm-cache.outputs.cache-hit != 'true'
+        env:
+          npm_config_enable_lto: 'false'
+          npm_config_enable_thin_lto: 'false'
       - name: Patch dependencies
         run: npm run postinstall --workspace packages/server
       - name: Build
