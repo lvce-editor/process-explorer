@@ -106,7 +106,7 @@ await replace({
     return true;
   }
   const nextPatch = patches[patchIndex + 1];
-  if (nextPatch && nextPatch.type === Replace && patch.index === $Children.length) {
+  if (nextPatch && (nextPatch.type === Replace || nextPatch.type === SetReferenceNodeUid) && patch.index === $Children.length) {
     const $Placeholder = document.createComment('virtual-dom-placeholder');
     state.current.append($Placeholder);
     state.current = $Placeholder;
@@ -126,7 +126,7 @@ await replace({
     state.current = $Child;
     return true;
   }
-  if (nextPatchType === Replace && index === $Children.length) {
+  if ((nextPatchType === Replace || nextPatchType === SetReferenceNodeUid) && index === $Children.length) {
     const $Placeholder = document.createComment('virtual-dom-placeholder');
     state.current.append($Placeholder);
     state.current = $Placeholder;
