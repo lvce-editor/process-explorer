@@ -61,6 +61,8 @@ jobs:
         run: npm ci --target="$(cat .nvmrc)"
         shell: bash
         if: steps.npm-cache.outputs.cache-hit != 'true'
+      - name: Patch dependencies
+        run: npm run postinstall --workspace packages/server
       - run: npm run build
       - run: npm test
       - run: npm run type-check

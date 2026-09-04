@@ -38,6 +38,14 @@ const processExplorerPath = join(
   'processExplorerMain.ts',
 )
 
+const serverPath = join(
+  nodeModulesPath,
+  '@lvce-editor',
+  'server',
+  'src',
+  'server.js',
+)
+
 const serverStaticPath = join(
   nodeModulesPath,
   '@lvce-editor',
@@ -78,6 +86,20 @@ const processExplorerPathPath = join(
   'ProcessExplorerPath.js',
 )
 const workerRemoteUrl = getRemoteUrl(workerPath)
+
+await replace({
+  path: serverPath,
+  marker: `request.on('error', handleRequestError)
+  if (!socket) {`,
+  occurrence: `request.on('error', handleRequestError)
+  socket.on('error', handleSocketUpgradeError)`,
+  replacement: `request.on('error', handleRequestError)
+  if (!socket) {
+    return
+  }
+  socket.on('error', handleSocketUpgradeError)`,
+})
+
 await replace({
   path: rendererWorkerMainPath,
   marker: '// const processExplorerWorkerUrl = ',
