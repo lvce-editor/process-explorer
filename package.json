@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@lvce-editor/eslint-config": "^18.9.0",
+    "@lvce-editor/server": "0.88.0",
     "@types/node": "^20.12.8",
     "eslint": "^10.8.1",
     "knip": "^6.34.0",
