@@ -38,6 +38,14 @@ const processExplorerPath = join(
   'processExplorerMain.ts',
 )
 
+const serverPath = join(
+  nodeModulesPath,
+  '@lvce-editor',
+  'server',
+  'src',
+  'server.js',
+)
+
 const serverStaticPath = join(
   nodeModulesPath,
   '@lvce-editor',
@@ -78,6 +86,20 @@ const processExplorerPathPath = join(
   'ProcessExplorerPath.js',
 )
 const workerRemoteUrl = getRemoteUrl(workerPath)
+
+await replace({
+  path: serverPath,
+  marker: `request.on('error', handleRequestError)
+  if (!socket) {`,
+  occurrence: `request.on('error', handleRequestError)
+  socket.on('error', handleSocketUpgradeError)`,
+  replacement: `request.on('error', handleRequestError)
+  if (!socket) {
+    return
+  }
+  socket.on('error', handleSocketUpgradeError)`,
+})
+
 await replace({
   path: rendererWorkerMainPath,
   marker: '// const processExplorerWorkerUrl = ',
@@ -106,7 +128,7 @@ await replace({
     return true;
   }
   const nextPatch = patches[patchIndex + 1];
-  if (nextPatch && (nextPatch.type === Replace || nextPatch.type === SetReferenceNodeUid) && patch.index === $Children.length) {
+  if (nextPatch && nextPatch.type === Replace && patch.index === $Children.length) {
     const $Placeholder = document.createComment('virtual-dom-placeholder');
     state.current.append($Placeholder);
     state.current = $Placeholder;
@@ -126,7 +148,7 @@ await replace({
     state.current = $Child;
     return true;
   }
-  if ((nextPatchType === Replace || nextPatchType === SetReferenceNodeUid) && index === $Children.length) {
+  if (nextPatchType === Replace && index === $Children.length) {
     const $Placeholder = document.createComment('virtual-dom-placeholder');
     state.current.append($Placeholder);
     state.current = $Placeholder;

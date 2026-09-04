@@ -30,6 +30,8 @@ jobs:
       - name: npm ci
         run: npm ci
         if: steps.npm-cache.outputs.cache-hit != 'true'
+      - name: Patch dependencies
+        run: npm run postinstall --workspace packages/server
       - name: Build
         run: npm run build
       - name: Build static

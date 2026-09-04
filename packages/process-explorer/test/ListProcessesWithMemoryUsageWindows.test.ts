@@ -13,20 +13,16 @@ jest.unstable_mockModule('../src/parts/CreatePidMap/CreatePidMap.ts', () => ({
   createPidMap,
 }))
 
-jest.unstable_mockModule(
-  '@vscode/windows-process-tree',
-  () => {
-    return {
-      getProcessCpuUsage: jest.fn(),
-      getProcessList: jest.fn(),
-      ProcessDataFlag: {
-        CommandLine: 1,
-        Memory: 2,
-      },
-    }
-  },
-  { virtual: true },
-)
+jest.unstable_mockModule('@vscode/windows-process-tree', () => {
+  return {
+    getProcessCpuUsage: jest.fn(),
+    getProcessList: jest.fn(),
+    ProcessDataFlag: {
+      CommandLine: 1,
+      Memory: 2,
+    },
+  }
+})
 
 const WindowsProcessTree = await import('@vscode/windows-process-tree')
 const ListProcessesWithMemoryUsage =
