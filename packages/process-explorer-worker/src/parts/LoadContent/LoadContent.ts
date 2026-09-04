@@ -16,7 +16,7 @@ export const loadContent = async (
   state: ProcessExplorerState,
 ): Promise<LoadContentResult<ProcessExplorerState>> => {
   const newState = await Refresh.refresh(state)
-  if (!hasError(newState)) {
+  if (!hasError(newState) && !newState.message) {
     AutoRefresh.start(newState.uid, newState.updateInterval)
   }
   return {

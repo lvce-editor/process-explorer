@@ -69,6 +69,13 @@ const getRootPid = async (
 export const refresh = async (
   state: ProcessExplorerState,
 ): Promise<ProcessExplorerState> => {
+  if (state.platform === PlatformType.Web) {
+    return {
+      ...state,
+      initial: false,
+      message: 'Process Explorer is not supported on web.',
+    }
+  }
   try {
     await InitializeProcessExplorer.initializeProcessExplorer(state.platform)
     const includeElectronData = state.platform === PlatformType.Electron
@@ -125,6 +132,7 @@ export const refresh = async (
       errorStack: '',
       focusedIndex: getFocusedIndex(state.focusedIndex, visibleProcesses),
       initial: false,
+      message: '',
       processes: displayedProcesses,
       rootPid,
       visibleProcesses,
@@ -141,6 +149,7 @@ export const refresh = async (
       errorMessage: prettyError.message || PrepareError.getErrorMessage(error),
       errorStack: prettyError.stack || '',
       initial: false,
+      message: '',
     }
   }
 }
