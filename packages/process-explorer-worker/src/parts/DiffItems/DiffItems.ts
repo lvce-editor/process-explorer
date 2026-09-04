@@ -11,6 +11,7 @@ export const isEqual = (
     oldState.errorMessage === newState.errorMessage &&
     oldState.errorStack === newState.errorStack &&
     oldState.focusedIndex === newState.focusedIndex &&
+    oldState.message === newState.message &&
     oldState.visibleProcesses === newState.visibleProcesses
   )
 }

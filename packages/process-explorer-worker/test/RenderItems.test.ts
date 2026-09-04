@@ -279,3 +279,31 @@ test('renderItems - error message only', () => {
     }),
   )
 })
+
+test('renderItems - unsupported message', () => {
+  const state = {
+    ...createDefaultState(),
+    message: 'Process Explorer is not supported on web.',
+  }
+  const result = RenderItems.renderItems(createDefaultState(), state)
+
+  expect(result).toEqual([
+    ViewletCommand.SetDom2,
+    1,
+    [
+      expect.objectContaining({
+        className: 'Viewlet ProcessExplorer',
+      }),
+      {
+        childCount: 1,
+        className: 'ProcessExplorerMessage',
+        type: VirtualDomElements.Div,
+      },
+      {
+        childCount: 0,
+        text: 'Process Explorer is not supported on web.',
+        type: VirtualDomElements.Text,
+      },
+    ],
+  ])
+})
