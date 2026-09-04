@@ -7,6 +7,7 @@ on:
 
 jobs:
   pr:
+    name: pr (${{ matrix.os == 'macos-15' && 'macos-14' || matrix.os }})
     strategy:
       fail-fast: false
       matrix:
