@@ -51,6 +51,7 @@ export const create = (
     height,
     includeFrontendMemoryUsage: getIncludeFrontendMemoryUsage(args),
     initial: true,
+    message: '',
     parentUid,
     platform,
     processes: [],

@@ -14,6 +14,7 @@ export const createDefaultState = (): ProcessExplorerState => ({
   height: 100,
   includeFrontendMemoryUsage: false,
   initial: false,
+  message: '',
   parentUid: 0,
   platform: 0,
   processes: [],
