@@ -46,8 +46,10 @@ test('listProcessesWithMemoryUsage - reads command lines only for the selected t
   fs.readFileSync.mockImplementation((path: string) => {
     const files: Record<string, string> = {
       '/proc/10/cmdline': 'electron\0.\0',
+      '/proc/10/smaps_rollup': 'Rss: 100 kB\nPss: 50 kB\n',
       '/proc/10/stat': createStat(10, 'electron', 1, 100),
       '/proc/20/cmdline': 'node\0worker.js\0',
+      '/proc/20/smaps_rollup': 'Rss: 200 kB\nPss: 75 kB\n',
       '/proc/20/stat': createStat(20, 'node', 10, 200),
       '/proc/30/cmdline': 'unrelated\0',
       '/proc/30/stat': createStat(30, 'unrelated', 1, 300),
@@ -63,7 +65,7 @@ test('listProcessesWithMemoryUsage - reads command lines only for the selected t
     {
       cmd: 'electron .',
       depth: 1,
-      memory: 409_600,
+      memory: 51_200,
       name: 'main',
       pid: 10,
       ppid: 1,
@@ -71,13 +73,17 @@ test('listProcessesWithMemoryUsage - reads command lines only for the selected t
     {
       cmd: 'node worker.js',
       depth: 2,
-      memory: 819_200,
+      memory: 76_800,
       name: 'shared-process',
       pid: 20,
       ppid: 10,
     },
   ])
   expect(fs.readFileSync).not.toHaveBeenCalledWith('/proc/30/cmdline', 'utf8')
+  expect(fs.readFileSync).not.toHaveBeenCalledWith(
+    '/proc/30/smaps_rollup',
+    'utf8',
+  )
 })
 
 test('listProcessesWithMemoryUsage - uses the process name when cmdline is empty', async () => {
@@ -101,6 +107,34 @@ test('listProcessesWithMemoryUsage - uses the process name when cmdline is empty
       name: 'kernel worker',
       pid: 20,
       ppid: 10,
+    },
+  ])
+})
+
+test('listProcessesWithMemoryUsage - falls back to RSS when PSS is unavailable', async () => {
+  // @ts-ignore
+  fs.readdirSync.mockReturnValue(['10'])
+  // @ts-ignore
+  fs.readFileSync.mockImplementation((path: string) => {
+    if (path.endsWith('/stat')) {
+      return createStat(10, 'main', 1, 100)
+    }
+    if (path.endsWith('/cmdline')) {
+      return 'main\0'
+    }
+    throw new NodeError('EACCES')
+  })
+
+  await expect(
+    ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(10, {}),
+  ).resolves.toEqual([
+    {
+      cmd: 'main',
+      depth: 1,
+      memory: 409_600,
+      name: 'main',
+      pid: 10,
+      ppid: 1,
     },
   ])
 })
