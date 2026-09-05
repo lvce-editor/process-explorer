@@ -10,6 +10,7 @@ import * as FocusFirst from '../FocusFirst/FocusFirst.ts'
 import * as FocusLast from '../FocusLast/FocusLast.ts'
 import * as FocusNext from '../FocusNext/FocusNext.ts'
 import * as FocusPrevious from '../FocusPrevious/FocusPrevious.ts'
+import * as GetComponentState from '../GetComponentState/GetComponentState.ts'
 import * as GetKeyBindings from '../GetKeyBindings/GetKeyBindings.ts'
 import * as GetMenuEntries from '../GetMenuEntries/GetMenuEntries.ts'
 import * as GetMenuEntryIds from '../GetMenuEntryIds/GetMenuEntryIds.ts'
@@ -28,6 +29,7 @@ import * as Refresh from '../Refresh/Refresh.ts'
 import * as Render2 from '../Render2/Render2.ts'
 import * as RenderEventListeners from '../RenderEventListeners/RenderEventListeners.ts'
 import * as Rerender from '../Rerender/Rerender.ts'
+import * as SetComponentState from '../SetComponentState/SetComponentState.ts'
 import * as SetError from '../SetError/SetError.ts'
 import * as SetRootProcessId from '../SetRootProcessId/SetRootProcessId.ts'
 import * as SetUpdateInterval from '../SetUpdateInterval/SetUpdateInterval.ts'
@@ -69,6 +71,7 @@ export const commandMap = {
     FocusPrevious.focusPrevious,
   ),
   'ProcessExplorer.getCommandIds': ProcessExplorerStates.getCommandIds,
+  'ProcessExplorer.getComponentState': GetComponentState.getComponentState,
   'ProcessExplorer.getKeyBindings': GetKeyBindings.getKeyBindings,
   'ProcessExplorer.getMenuEntries': ProcessExplorerStates.wrapGetter(
     GetMenuEntries.getMenuEntries,
@@ -109,6 +112,7 @@ export const commandMap = {
   'ProcessExplorer.rerender': ProcessExplorerStates.wrapCommand(
     Rerender.rerender,
   ),
+  'ProcessExplorer.setComponentState': SetComponentState.setComponentState,
   'ProcessExplorer.setError': ProcessExplorerStates.wrapCommand(
     SetError.setError,
   ),
