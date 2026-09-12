@@ -4,12 +4,8 @@ import * as AutoRefresh from '../AutoRefresh/AutoRefresh.ts'
 import * as Refresh from '../Refresh/Refresh.ts'
 
 const hasError = (state: ProcessExplorerState): boolean => {
-  return Boolean(
-    state.errorCode ||
-    state.errorMessage ||
-    state.errorCodeFrame ||
-    state.errorStack,
-  )
+  const { errorCode, errorCodeFrame, errorMessage, errorStack } = state
+  return Boolean(errorCode || errorMessage || errorCodeFrame || errorStack)
 }
 
 export const loadContent = async (

@@ -5,7 +5,8 @@ export const setUpdateInterval = (
   state: ProcessExplorerState,
   updateInterval: number,
 ): ProcessExplorerState => {
-  AutoRefresh.restart(state.uid, updateInterval)
+  const { uid } = state
+  AutoRefresh.restart(uid, updateInterval)
   return {
     ...state,
     updateInterval,

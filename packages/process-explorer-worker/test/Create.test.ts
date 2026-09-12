@@ -44,11 +44,13 @@ test('create - defaults and include frontend memory usage', () => {
 test('create - update interval', () => {
   ProcessExplorerStates.clear()
   const state = create(10, '', 1, 2, 300, 400, { updateInterval: -1 }, 5)
-  expect(state.updateInterval).toBe(-1)
+  const { updateInterval } = state
+  expect(updateInterval).toBe(-1)
 })
 
 test('create - missing args', () => {
   ProcessExplorerStates.clear()
   const state = create(9, '', 1, 2, 300, 400, undefined, 5)
-  expect(state.includeFrontendMemoryUsage).toBe(false)
+  const { includeFrontendMemoryUsage } = state
+  expect(includeFrontendMemoryUsage).toBe(false)
 })

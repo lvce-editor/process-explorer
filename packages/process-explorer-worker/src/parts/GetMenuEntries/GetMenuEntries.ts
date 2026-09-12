@@ -7,13 +7,14 @@ import * as MenuItemLabels from '../MenuItemLabels/MenuItemLabels.ts'
 export const getMenuEntries = (
   state: ProcessExplorerState,
 ): readonly MenuEntry[] => {
-  const process = state.visibleProcesses[state.focusedIndex]
+  const { focusedIndex, visibleProcesses } = state
+  const process = visibleProcesses[focusedIndex]
   if (!process || process.synthetic) {
     return []
   }
   const menuEntries: MenuEntry[] = [
     {
-      args: [state.focusedIndex],
+      args: [focusedIndex],
       command: 'ProcessExplorer.killProcess',
       flags: MenuItemFlags.None,
       id: 'killProcess',
@@ -22,14 +23,14 @@ export const getMenuEntries = (
   ]
   if (IsDebuggable.isDebuggable(process.cmd)) {
     menuEntries.push({
-      args: [state.focusedIndex],
+      args: [focusedIndex],
       command: 'ProcessExplorer.debugProcess',
       flags: MenuItemFlags.None,
       id: 'debugProcess',
       label: MenuItemLabels.DebugProcess,
     })
     menuEntries.push({
-      args: [state.focusedIndex],
+      args: [focusedIndex],
       command: 'ProcessExplorer.takeHeapSnapshot',
       flags: MenuItemFlags.None,
       id: 'takeHeapSnapshot',

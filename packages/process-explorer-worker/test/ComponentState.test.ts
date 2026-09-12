@@ -33,27 +33,27 @@ test.each([null, [], 'invalid', 42])(
   'rejects invalid live component state %p without changing the state',
   async (invalidState) => {
     const state = createDefaultState()
-    ProcessExplorerStates.set(state.uid, state, state)
+    const { uid } = state
+    ProcessExplorerStates.set(uid, state, state)
 
     await expect(
-      commandMap['ProcessExplorer.setComponentState'](state.uid, invalidState),
+      commandMap['ProcessExplorer.setComponentState'](uid, invalidState),
     ).rejects.toThrow('Process Explorer state must be an object')
-    expect(commandMap['ProcessExplorer.getComponentState'](state.uid)).toBe(
-      state,
-    )
+    expect(commandMap['ProcessExplorer.getComponentState'](uid)).toBe(state)
   },
 )
 
 test('rejects changing the component uid without changing either component', async () => {
   const state = createDefaultState()
+  const { uid } = state
   const otherState = { ...state, uid: 2 }
-  ProcessExplorerStates.set(state.uid, state, state)
+  ProcessExplorerStates.set(uid, state, state)
   ProcessExplorerStates.set(otherState.uid, otherState, otherState)
 
   await expect(
-    commandMap['ProcessExplorer.setComponentState'](state.uid, otherState),
+    commandMap['ProcessExplorer.setComponentState'](uid, otherState),
   ).rejects.toThrow('Process Explorer state uid must remain 1')
-  expect(commandMap['ProcessExplorer.getComponentState'](state.uid)).toBe(state)
+  expect(commandMap['ProcessExplorer.getComponentState'](uid)).toBe(state)
   expect(commandMap['ProcessExplorer.getComponentState'](otherState.uid)).toBe(
     otherState,
   )

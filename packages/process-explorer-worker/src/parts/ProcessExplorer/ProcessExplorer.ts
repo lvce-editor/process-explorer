@@ -12,10 +12,11 @@ export const invoke = async (
   method: string,
   ...params: readonly unknown[]
 ): Promise<any> => {
-  if (!state.rpc) {
+  const { rpc } = state
+  if (!rpc) {
     throw new Error('ProcessExplorerModule is not initialized')
   }
-  return state.rpc.invoke(method, ...params)
+  return rpc.invoke(method, ...params)
 }
 
 export const set = (newRpc: Rpc): void => {

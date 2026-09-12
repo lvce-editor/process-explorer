@@ -44,6 +44,7 @@ test('handleContextMenu', async () => {
     ...createDefaultState(),
     visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
   }
+  const { uid } = state
   const result = await HandleContextMenu.handleContextMenu(state, 0, 10, 20)
   expect(result).toEqual({
     ...state,
@@ -53,7 +54,7 @@ test('handleContextMenu', async () => {
   expect(mockRpc.invocations).toEqual([
     [
       'ContextMenu.show2',
-      state.uid,
+      uid,
       MenuEntryId.ProcessExplorer,
       10,
       20,
@@ -87,6 +88,7 @@ test('handleContextMenu - string index', async () => {
     ...createDefaultState(),
     visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
   }
+  const { uid } = state
   const result = await HandleContextMenu.handleContextMenu(state, '1', 10, 20)
   expect(result).toEqual({
     ...state,
@@ -96,7 +98,7 @@ test('handleContextMenu - string index', async () => {
   expect(mockRpc.invocations).toEqual([
     [
       'ContextMenu.show2',
-      state.uid,
+      uid,
       MenuEntryId.ProcessExplorer,
       10,
       20,
@@ -117,6 +119,7 @@ test('handleContextMenu - defaults', async () => {
     focusedIndex: 1,
     visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
   }
+  const { uid } = state
   const result = await HandleContextMenu.handleContextMenu(state)
 
   expect(result).toEqual({
@@ -127,7 +130,7 @@ test('handleContextMenu - defaults', async () => {
   expect(mockRpc.invocations).toEqual([
     [
       'ContextMenu.show2',
-      state.uid,
+      uid,
       MenuEntryId.ProcessExplorer,
       0,
       0,
