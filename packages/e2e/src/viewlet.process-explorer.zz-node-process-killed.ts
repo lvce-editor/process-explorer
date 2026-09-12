@@ -12,7 +12,11 @@ export const test: Test = async ({ Command, ContextMenu, expect, Locator }) => {
 
   // act
   // eslint-disable-next-line e2e/no-direct-click -- focuses the exact process explorer node process
-  await processExplorerProcess.click()
+  await processExplorerProcess.locator('.ProcessExplorerNameCell').click()
+  const focusedProcessExplorerProcess = Locator(
+    '.ProcessExplorerRowFocused[title*="processExplorerMain.ts"]',
+  )
+  await expect(focusedProcessExplorerProcess).toBeVisible()
   try {
     await Command.execute('ProcessExplorer.handleContextMenu')
     const killProcess = Locator('.MenuItem', { hasText: 'Kill Process' })

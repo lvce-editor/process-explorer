@@ -307,3 +307,23 @@ test('renderItems - unsupported message', () => {
     ],
   ])
 })
+
+test('renderItems - ssh name keeps the full command as its hover title', () => {
+  const cmd = '/usr/bin/ssh -T -D 54321 user@remote-host'
+  const state = {
+    ...createDefaultState(),
+    initial: false,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(
+      [...processes, { cmd, memory: 1, name: 'ssh', pid: 5, ppid: 1 }],
+      [],
+      1,
+    ),
+  }
+  const result = RenderItems.renderItems(createDefaultState(), state)
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({ className: 'ProcessExplorerRow', title: cmd }),
+  )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({ text: 'ssh', type: VirtualDomElements.Text }),
+  )
+})

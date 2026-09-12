@@ -227,3 +227,27 @@ test('getName - fallback to command', () => {
   const pidMap = {}
   expect(ListProcessGetName.getName(pid, cmd, rootPid, pidMap)).toBe(cmd)
 })
+
+test.each([
+  'ssh',
+  'ssh user@host',
+  '/usr/bin/ssh -T -D 54321 user@host',
+  '/opt/custom/bin/ssh user@host node sharedProcessMain.js',
+  'ssh.exe user@host',
+  String.raw`C:\Windows\System32\OpenSSH\ssh.exe user@host`,
+  String.raw`"C:\Program Files\OpenSSH\ssh.exe" user@host`,
+  '"/usr/local/bin/ssh" user@host',
+])('getName - ssh command %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe('ssh')
+})
+
+test.each([
+  '/usr/sbin/sshd -D',
+  'ssh-agent -s',
+  '/usr/bin/ssh-keygen -t ed25519',
+  'custom-process /usr/bin/ssh user@host',
+  '/usr/bin/ssh-wrapper user@host',
+  '/usr/bin/ssh/somethinglong',
+])('getName - does not rename other commands %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(cmd)
+})

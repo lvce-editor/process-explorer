@@ -7,7 +7,14 @@ const includesPackagePath = (cmd: string, packageName: string): boolean => {
   )
 }
 
+const sshCommandPattern =
+  /^(?:"(?:[^"\n]*[/\\])?ssh(?:\.exe)?"|(?:[^\s"]*[/\\])?ssh(?:\.exe)?)(?:\s|$)/i
+
 export const processNamePatterns: readonly ProcessNamePattern[] = [
+  {
+    matches: (cmd) => sshCommandPattern.test(cmd),
+    name: 'ssh',
+  },
   {
     matches: (cmd) => cmd.includes('--type=zygote'),
     name: 'zygote',
