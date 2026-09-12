@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals'
-import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibleProcesses.ts'
 import type { ProcessInfo } from '../src/parts/ProcessInfo/ProcessInfo.ts'
+import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as ReparentSharedProcessChildren from '../src/parts/ReparentSharedProcessChildren/ReparentSharedProcessChildren.ts'
 
 const createProcess = (
@@ -58,11 +58,11 @@ test('search process is nested and collapses with shared process', () => {
     ReparentSharedProcessChildren.reparentSharedProcessChildren(processes)
 
   const visible = GetVisibleProcesses.getVisibleProcesses(reparented, [], 1)
-  expect(visible.map(({ name, depth }) => ({ name, depth }))).toEqual([
-    { name: 'main', depth: 1 },
-    { name: 'shared-process', depth: 2 },
-    { name: 'search-process', depth: 3 },
-    { name: 'rg', depth: 4 },
+  expect(visible.map(({ depth, name }) => ({ depth, name }))).toEqual([
+    { depth: 1, name: 'main' },
+    { depth: 2, name: 'shared-process' },
+    { depth: 3, name: 'search-process' },
+    { depth: 4, name: 'rg' },
   ])
   expect(
     GetVisibleProcesses.getVisibleProcesses(reparented, [2], 1).map(
