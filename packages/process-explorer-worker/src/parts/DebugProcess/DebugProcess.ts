@@ -3,9 +3,11 @@ import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplor
 
 export const debugProcess = async (
   state: ProcessExplorerState,
-  index: number = state.focusedIndex,
+  index: number | undefined = undefined,
 ): Promise<ProcessExplorerState> => {
-  const process = state.visibleProcesses[index]
+  const { focusedIndex, visibleProcesses } = state
+  const resolvedIndex = index === undefined ? focusedIndex : index
+  const process = visibleProcesses[resolvedIndex]
   if (!process) {
     return state
   }

@@ -38,14 +38,15 @@ const isRemoteWorkspace = async (): Promise<boolean> => {
 
 const initializeRemoteProcessExplorer = async (): Promise<void> => {
   const remoteWorkspace = await isRemoteWorkspace()
+  const { remoteInitialized } = state
   if (!remoteWorkspace) {
-    if (state.remoteInitialized) {
+    if (remoteInitialized) {
       state.remoteInitialized = false
       await RemoteProcessExplorer.dispose()
     }
     return
   }
-  if (state.remoteInitialized) {
+  if (remoteInitialized) {
     return
   }
   try {
@@ -63,7 +64,8 @@ const initializeRemoteProcessExplorer = async (): Promise<void> => {
 export const initializeProcessExplorer = async (
   platform: number,
 ): Promise<void> => {
-  if (state.initializedPlatform === platform) {
+  const { initializedPlatform } = state
+  if (initializedPlatform === platform) {
     if (platform === PlatformType.Electron) {
       await initializeRemoteProcessExplorer()
     }
