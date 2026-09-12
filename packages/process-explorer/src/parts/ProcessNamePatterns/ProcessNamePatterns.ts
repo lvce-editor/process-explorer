@@ -7,12 +7,12 @@ const includesPackagePath = (cmd: string, packageName: string): boolean => {
   )
 }
 
+const sshCommandPattern =
+  /^(?:"(?:[^"\n]*[/\\])?ssh(?:\.exe)?"|(?:[^\s"]*[/\\])?ssh(?:\.exe)?)(?:\s|$)/i
+
 export const processNamePatterns: readonly ProcessNamePattern[] = [
   {
-    matches: (cmd) =>
-      /^(?:"(?:[^"\n]*[/\\])?ssh(?:\.exe)?"|(?:[^\s"]*[/\\])?ssh(?:\.exe)?)(?:\s|$)/i.test(
-        cmd,
-      ),
+    matches: (cmd) => sshCommandPattern.test(cmd),
     name: 'ssh',
   },
   {

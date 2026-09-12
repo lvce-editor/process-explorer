@@ -324,6 +324,6 @@ test('renderItems - ssh name keeps the full command as its hover title', () => {
     expect.objectContaining({ className: 'ProcessExplorerRow', title: cmd }),
   )
   expect(result[2]).toContainEqual(
-    expect.objectContaining({ type: VirtualDomElements.Text, text: 'ssh' }),
+    expect.objectContaining({ text: 'ssh', type: VirtualDomElements.Text }),
   )
 })
