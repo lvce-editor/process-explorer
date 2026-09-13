@@ -251,3 +251,25 @@ test.each([
 ])('getName - does not rename other commands %s', (cmd) => {
   expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(cmd)
 })
+
+test.each([
+  'electron --type=utility --utility-sub-type=network.mojom.NetworkService',
+  'electron --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en',
+])('getName - network service %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(
+    'utility-network-service',
+  )
+  expect(ListProcessGetName.getName(123, cmd, 123, {})).toBe('main')
+  expect(ListProcessGetName.getName(123, cmd, 1, { 123: 'custom-name' })).toBe(
+    'custom-name',
+  )
+})
+
+test.each([
+  'electron --type=utility',
+  'electron --type=utility --utility-sub-type=node.mojom.NodeService',
+  'electron --type=utility --utility-sub-type=unknown',
+  'electron --type=utility --utility-sub-type=network.mojom.NetworkServiceOther',
+])('getName - preserve other utilities %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe('utility')
+})
