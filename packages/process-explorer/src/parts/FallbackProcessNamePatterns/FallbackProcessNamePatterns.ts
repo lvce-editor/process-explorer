@@ -1,5 +1,8 @@
 import type { ProcessNamePattern } from '../ProcessNamePattern/ProcessNamePattern.ts'
 
+const networkServiceRE =
+  /(?:^|\s)--utility-sub-type=network\.mojom\.NetworkService(?:\s|$)/
+
 export const fallbackProcessNamePatterns: readonly ProcessNamePattern[] = [
   {
     matches: (cmd) => cmd.includes('--type=renderer'),
@@ -7,10 +10,7 @@ export const fallbackProcessNamePatterns: readonly ProcessNamePattern[] = [
   },
   {
     matches: (cmd) =>
-      cmd.includes('--type=utility') &&
-      /(?:^|\s)--utility-sub-type=network\.mojom\.NetworkService(?:\s|$)/.test(
-        cmd,
-      ),
+      cmd.includes('--type=utility') && networkServiceRE.test(cmd),
     name: 'utility-network-service',
   },
   {
