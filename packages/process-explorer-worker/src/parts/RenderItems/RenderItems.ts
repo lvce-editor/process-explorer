@@ -214,8 +214,17 @@ const getErrorDom = (
   return [
     processExplorer,
     {
-      childCount,
+      childCount: childCount + 1,
       className: ClassNames.Error,
+      type: VirtualDomElements.Div,
+    },
+    {
+      childCount: 0,
+      className: mergeClassNames(
+        ClassNames.ErrorIcon,
+        ClassNames.MaskIcon,
+        ClassNames.MaskIconError,
+      ),
       type: VirtualDomElements.Div,
     },
     ...errorCodeDom,
