@@ -6,6 +6,14 @@ export const fallbackProcessNamePatterns: readonly ProcessNamePattern[] = [
     name: 'renderer',
   },
   {
+    matches: (cmd) =>
+      cmd.includes('--type=utility') &&
+      /(?:^|\s)--utility-sub-type=network\.mojom\.NetworkService(?:\s|$)/.test(
+        cmd,
+      ),
+    name: 'utility-network-service',
+  },
+  {
     matches: (cmd) => cmd.includes('--type=utility'),
     name: 'utility',
   },
