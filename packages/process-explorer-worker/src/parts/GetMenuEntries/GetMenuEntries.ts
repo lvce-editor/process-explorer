@@ -1,6 +1,7 @@
 import { MenuItemFlags } from '@lvce-editor/constants'
 import type { MenuEntry } from '../MenuEntry/MenuEntry.ts'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
+import * as IsRendererProcess from '../IsRendererProcess/IsRendererProcess.ts'
 import * as IsDebuggable from '../IsDebuggable/IsDebuggable.ts'
 import * as MenuItemLabels from '../MenuItemLabels/MenuItemLabels.ts'
 
@@ -21,7 +22,8 @@ export const getMenuEntries = (
       label: MenuItemLabels.KillProcess,
     },
   ]
-  if (IsDebuggable.isDebuggable(process.cmd)) {
+  const isDebuggable = IsDebuggable.isDebuggable(process.cmd)
+  if (isDebuggable) {
     menuEntries.push({
       args: [focusedIndex],
       command: 'ProcessExplorer.debugProcess',
@@ -29,6 +31,8 @@ export const getMenuEntries = (
       id: 'debugProcess',
       label: MenuItemLabels.DebugProcess,
     })
+  }
+  if (isDebuggable || IsRendererProcess.isRendererProcess(process)) {
     menuEntries.push({
       args: [focusedIndex],
       command: 'ProcessExplorer.takeHeapSnapshot',
