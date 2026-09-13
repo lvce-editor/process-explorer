@@ -15,10 +15,18 @@ export const takeHeapSnapshot = async (
   }
   let path: string
   if (IsRendererProcess.isRendererProcess(process)) {
-    path = await MainProcess.invoke('ElectronDeveloper.takeRendererHeapSnapshot', process.pid)
+    path = await MainProcess.invoke(
+      'ElectronDeveloper.takeRendererHeapSnapshot',
+      process.pid,
+    )
   } else {
-    const processExplorer = process.source === 'remote' ? RemoteProcessExplorer : ProcessExplorer
-    path = await processExplorer.invoke('Process.takeHeapSnapshot', process.pid, process.cmd)
+    const processExplorer =
+      process.source === 'remote' ? RemoteProcessExplorer : ProcessExplorer
+    path = await processExplorer.invoke(
+      'Process.takeHeapSnapshot',
+      process.pid,
+      process.cmd,
+    )
   }
   await RendererWorker.invoke('Main.openUri', path)
   return state

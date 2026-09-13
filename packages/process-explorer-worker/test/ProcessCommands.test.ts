@@ -227,7 +227,9 @@ test('takeHeapSnapshot - remote process', async () => {
 })
 
 test('takeHeapSnapshot - local renderer process', async () => {
-  const takeRendererHeapSnapshot = jest.fn<(pid: number) => Promise<string>>(async () => 'file:///tmp/renderer.heapsnapshot')
+  const takeRendererHeapSnapshot = jest.fn<(pid: number) => Promise<string>>(
+    async () => 'file:///tmp/renderer.heapsnapshot',
+  )
   const openUri = jest.fn()
   using _mainProcessRpc = MainProcess.registerMockRpc({
     'ElectronDeveloper.takeRendererHeapSnapshot': takeRendererHeapSnapshot,

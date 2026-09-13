@@ -4,5 +4,7 @@ export const isRendererProcess = (process: ProcessInfo): boolean => {
   if (process.source === 'remote') {
     return false
   }
-  return process.name === 'renderer' || process.name.startsWith('webcontentsview')
+  return (
+    process.name === 'renderer' || process.name.startsWith('webcontentsview')
+  )
 }
