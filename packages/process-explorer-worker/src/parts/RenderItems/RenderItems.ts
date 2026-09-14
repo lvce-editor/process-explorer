@@ -251,7 +251,9 @@ const getTableDom = (
   ]
 }
 
-const getDom = (state: ProcessExplorerState): readonly VirtualDomNode[] => {
+export const getDom = (
+  state: ProcessExplorerState,
+): readonly VirtualDomNode[] => {
   const { initial, message } = state
   if (initial) {
     return []
