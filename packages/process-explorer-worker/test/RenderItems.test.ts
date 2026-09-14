@@ -77,7 +77,7 @@ test('renderItems - populated table', () => {
   expect(nameHeader).not.toHaveProperty('width')
 })
 
-test('renderItems - widens the name column for a webcontentsview process', () => {
+test('renderItems - widens the name column for a web contents view process', () => {
   const state = {
     ...createDefaultState(),
     initial: false,
@@ -87,7 +87,7 @@ test('renderItems - widens the name column for a webcontentsview process', () =>
         {
           cmd: 'renderer',
           memory: 1,
-          name: 'renderer (webcontentsview, soundcloud.com)',
+          name: 'webcontents-view / soundcloud.com',
           pid: 5,
           ppid: 1,
         },

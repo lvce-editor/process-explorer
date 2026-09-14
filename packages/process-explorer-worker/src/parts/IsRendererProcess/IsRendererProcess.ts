@@ -5,6 +5,8 @@ export const isRendererProcess = (process: ProcessInfo): boolean => {
     return false
   }
   return (
-    process.name === 'renderer' || process.name.startsWith('webcontentsview')
+    process.name === 'renderer' ||
+    process.name.startsWith('webcontentsview') ||
+    process.name.startsWith('webcontents-view')
   )
 }
