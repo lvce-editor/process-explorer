@@ -87,9 +87,10 @@ const getCellDom = (
 const shouldUseWideNameColumn = (
   visibleProcesses: readonly VisibleProcess[],
 ): boolean => {
-  return visibleProcesses.some((process) =>
-    process.name.toLowerCase().includes('webcontentsview'),
-  )
+  return visibleProcesses.some((process) => {
+    const name = process.name.toLowerCase()
+    return name.includes('webcontentsview') || name.includes('webcontents-view')
+  })
 }
 
 const getHeaderDom = (
