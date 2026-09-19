@@ -253,6 +253,28 @@ test.each([
 })
 
 test.each([
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioService',
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioService --lang=en',
+  String.raw`"C:\\Program Files\\LVCE\\lvce.exe" --type=utility --utility-sub-type=audio.mojom.AudioService --lang=en-US`,
+])('getName - audio service %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(
+    'audio utility process',
+  )
+  expect(ListProcessGetName.getName(123, cmd, 123, {})).toBe('main')
+  expect(ListProcessGetName.getName(123, cmd, 1, { 123: 'custom-name' })).toBe(
+    'custom-name',
+  )
+})
+
+test.each([
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioServiceOther',
+  'electron --type=utility --utility-sub-type=not-audio.mojom.AudioService',
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioServiceOther --lang=en',
+])('getName - preserve other utilities near audio service %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe('utility')
+})
+
+test.each([
   'electron --type=utility --utility-sub-type=network.mojom.NetworkService',
   'electron --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en',
 ])('getName - network service %s', (cmd) => {
