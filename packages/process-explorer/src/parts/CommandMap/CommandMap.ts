@@ -1,3 +1,4 @@
+import * as DebugProcess from '../DebugProcess/DebugProcess.ts'
 import * as E2eFixtureProcess from '../E2eFixtureProcess/E2eFixtureProcess.ts'
 import * as HandleElectronMessagePort from '../HandleElectronMessagePort/HandleElectronMessagePort.ts'
 import * as HandleMessagePort from '../HandleMessagePort/HandleMessagePort.ts'
@@ -17,6 +18,7 @@ export const commandMap = {
   'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage':
     ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage,
   'Process.createE2eFixtureProcess': E2eFixtureProcess.createE2eFixtureProcess,
+  'Process.debugProcess': DebugProcess.debugProcess,
   'Process.disposeE2eFixtureProcess':
     E2eFixtureProcess.disposeE2eFixtureProcess,
   'Process.kill': KillProcess.killProcess,

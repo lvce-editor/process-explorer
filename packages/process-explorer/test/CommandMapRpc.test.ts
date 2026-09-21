@@ -1,5 +1,6 @@
 import { expect, test } from '@jest/globals'
 import * as CommandMap from '../src/parts/CommandMap/CommandMap.ts'
+import * as DebugProcess from '../src/parts/DebugProcess/DebugProcess.ts'
 import * as E2eFixtureProcess from '../src/parts/E2eFixtureProcess/E2eFixtureProcess.ts'
 import * as HandleElectronMessagePort from '../src/parts/HandleElectronMessagePort/HandleElectronMessagePort.ts'
 import * as HandleMessagePort from '../src/parts/HandleMessagePort/HandleMessagePort.ts'
@@ -32,5 +33,8 @@ test('commandMap exposes rpc handoff commands', () => {
   expect(CommandMap.commandMap['Process.kill']).toBe(KillProcess.killProcess)
   expect(CommandMap.commandMap['Process.takeHeapSnapshot']).toBe(
     TakeHeapSnapshot.takeHeapSnapshot,
+  )
+  expect(CommandMap.commandMap['Process.debugProcess']).toBe(
+    DebugProcess.debugProcess,
   )
 })
