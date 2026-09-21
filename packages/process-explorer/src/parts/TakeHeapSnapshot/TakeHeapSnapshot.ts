@@ -2,11 +2,16 @@ import { createWriteStream } from 'node:fs'
 import { rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { WebSocket } from 'ws'
 import * as GetInspectorWebSocketUrl from '../GetInspectorWebSocketUrl/GetInspectorWebSocketUrl.ts'
 import * as Process from '../Process/Process.ts'
 import * as Signal from '../Signal/Signal.ts'
 import * as TakeHeapSnapshotWithCdp from '../TakeHeapSnapshotWithCdp/TakeHeapSnapshotWithCdp.ts'
+
+export const getHeapSnapshotUri = (path: string): string => {
+  return pathToFileURL(path).href
+}
 
 export const takeHeapSnapshot = async (
   pid: number,
@@ -22,7 +27,7 @@ export const takeHeapSnapshot = async (
   const output = createWriteStream(path)
   try {
     await TakeHeapSnapshotWithCdp.takeHeapSnapshotWithCdp(webSocket, output)
-    return path
+    return getHeapSnapshotUri(path)
   } catch (error) {
     await rm(path, { force: true })
     throw error

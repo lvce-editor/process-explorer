@@ -215,7 +215,7 @@ test('debugProcess - missing process', async () => {
 test('takeHeapSnapshot', async () => {
   const takeHeapSnapshot = jest.fn<
     (_pid: number, _command: string) => Promise<string>
-  >(async () => '/tmp/snapshot.heapsnapshot')
+  >(async () => 'file:///tmp/snapshot%20with%20space.heapsnapshot')
   const openUri = jest.fn()
   using _processExplorerRpc = registerProcessExplorerMock({
     'Process.takeHeapSnapshot': takeHeapSnapshot,
@@ -230,13 +230,15 @@ test('takeHeapSnapshot', async () => {
 
   await expect(TakeHeapSnapshot.takeHeapSnapshot(state, 1)).resolves.toBe(state)
   expect(takeHeapSnapshot).toHaveBeenCalledWith(2, 'node child.js')
-  expect(openUri).toHaveBeenCalledWith('/tmp/snapshot.heapsnapshot')
+  expect(openUri).toHaveBeenCalledWith(
+    'file:///tmp/snapshot%20with%20space.heapsnapshot',
+  )
 })
 
 test('takeHeapSnapshot - remote process', async () => {
   const takeHeapSnapshot = jest.fn<
     (_pid: number, _command: string) => Promise<string>
-  >(async () => '/tmp/remote.heapsnapshot')
+  >(async () => 'file:///remote/tmp/remote.heapsnapshot')
   const openUri = jest.fn()
   using _remoteProcessExplorerRpc = registerRemoteProcessExplorerMock({
     'Process.takeHeapSnapshot': takeHeapSnapshot,
@@ -262,7 +264,7 @@ test('takeHeapSnapshot - remote process', async () => {
 
   await expect(TakeHeapSnapshot.takeHeapSnapshot(state, 0)).resolves.toBe(state)
   expect(takeHeapSnapshot).toHaveBeenCalledWith(4, 'node remote.js')
-  expect(openUri).toHaveBeenCalledWith('/tmp/remote.heapsnapshot')
+  expect(openUri).toHaveBeenCalledWith('file:///remote/tmp/remote.heapsnapshot')
 })
 
 test('takeHeapSnapshot - local renderer process', async () => {
