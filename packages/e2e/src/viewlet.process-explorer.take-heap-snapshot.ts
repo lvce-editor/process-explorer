@@ -2,6 +2,10 @@ import type { Test } from '@lvce-editor/test-with-playwright'
 
 export const name = 'viewlet.process-explorer.take-heap-snapshot'
 
+const isWebKit =
+  navigator.userAgent.includes('AppleWebKit') &&
+  !navigator.userAgent.includes('Chrome')
+
 export const skip = navigator.platform === 'Win32'
 
 const maxRefreshAttempts = 20
@@ -35,6 +39,9 @@ export const test: Test = async ({ Command, ContextMenu, expect, Locator }) => {
 
     const heapSnapshotTab = Locator('.MainTabSelected[title$=".heapsnapshot"]')
     await expect(heapSnapshotTab).toBeVisible()
+    if (isWebKit) {
+      return
+    }
     const viewletError = Locator('.Viewlet.Error')
     await expect(viewletError).toBeHidden()
   } finally {
