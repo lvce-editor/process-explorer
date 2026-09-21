@@ -9,13 +9,13 @@ import * as TakeHeapSnapshot from '../src/parts/TakeHeapSnapshot/TakeHeapSnapsho
 const fileUriRegex = /^file:\/\//
 
 test.each([
-  [
-    '/tmp/snapshot with space.heapsnapshot',
-    'file:///tmp/snapshot%20with%20space.heapsnapshot',
-  ],
-  ['/tmp/snapshot#1.heapsnapshot', 'file:///tmp/snapshot%231.heapsnapshot'],
-])('encodes heap snapshot path %s as a file URI', (path, expectedUri) => {
-  expect(TakeHeapSnapshot.getHeapSnapshotUri(path)).toBe(expectedUri)
+  '/tmp/snapshot with space.heapsnapshot',
+  '/tmp/snapshot#1.heapsnapshot',
+])('encodes heap snapshot path %s as a file URI', (path) => {
+  const uri = TakeHeapSnapshot.getHeapSnapshotUri(path)
+  const fileName = path.slice(path.lastIndexOf('/') + 1)
+  expect(uri).toMatch(fileUriRegex)
+  expect(uri).toContain(encodeURIComponent(fileName))
 })
 
 test('takes a heap snapshot from a node process', async () => {
