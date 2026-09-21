@@ -35,6 +35,11 @@ export const test: Test = async ({ Command, ContextMenu, expect, Locator }) => {
 
     const heapSnapshotTab = Locator('.MainTabSelected[title$=".heapsnapshot"]')
     await expect(heapSnapshotTab).toBeVisible()
+    const heapSnapshotTable = Locator('.Table')
+    await expect(heapSnapshotTable).toBeVisible()
+    await expect(heapSnapshotTable.locator('.TableHeaderCell')).toHaveText(
+      'Constructor',
+    )
   } finally {
     await Command.execute('ProcessExplorer.disposeE2eFixtureProcess', marker)
     await Command.execute('ProcessExplorer.setRootProcessId', -1)
