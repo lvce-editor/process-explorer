@@ -151,16 +151,55 @@ test('killProcess - does not wait for process explorer rpc response', async () =
 })
 
 test('debugProcess', async () => {
+  const debugProcess = jest.fn<
+    (pid: number, command: string) => Promise<string>
+  >(async () => 'ws://127.0.0.1:9230/target')
   const attachDebugger = jest.fn()
   using _mockRpc = RendererWorker.registerMockRpc({
     'AttachDebugger.attachDebugger': attachDebugger,
+  })
+  using _processExplorerRpc = registerProcessExplorerMock({
+    'Process.debugProcess': debugProcess,
   })
   const state = {
     ...createDefaultState(),
     visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
   }
   await expect(DebugProcess.debugProcess(state, 1)).resolves.toBe(state)
-  expect(attachDebugger).toHaveBeenCalledWith(2)
+  expect(debugProcess).toHaveBeenCalledWith(2, 'node child.js')
+  expect(attachDebugger).toHaveBeenCalledWith('ws://127.0.0.1:9230/target')
+})
+
+test('debugProcess - remote process', async () => {
+  const debugProcess = jest.fn<
+    (pid: number, command: string) => Promise<string>
+  >(async () => 'ws://127.0.0.1:9231/target')
+  const attachDebugger = jest.fn()
+  using _remoteProcessExplorerRpc = registerRemoteProcessExplorerMock({
+    'Process.debugProcess': debugProcess,
+  })
+  using _rendererWorkerRpc = RendererWorker.registerMockRpc({
+    'AttachDebugger.attachDebugger': attachDebugger,
+  })
+  const state = {
+    ...createDefaultState(),
+    visibleProcesses: [
+      {
+        cmd: 'node remote.js',
+        depth: 2,
+        flags: 0,
+        memory: 1,
+        name: 'remote-child',
+        pid: 4,
+        ppid: 1,
+        source: 'remote' as const,
+      },
+    ],
+  }
+
+  await expect(DebugProcess.debugProcess(state, 0)).resolves.toBe(state)
+  expect(debugProcess).toHaveBeenCalledWith(4, 'node remote.js')
+  expect(attachDebugger).toHaveBeenCalledWith('ws://127.0.0.1:9231/target')
 })
 
 test('debugProcess - missing process', async () => {
