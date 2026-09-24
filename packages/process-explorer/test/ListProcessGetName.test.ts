@@ -42,6 +42,28 @@ test('getName - detect pty host', () => {
   expect(ListProcessGetName.getName(pid, cmd, rootPid, pidMap)).toBe('pty-host')
 })
 
+test.each([
+  'C:\\nvm4w\\nodejs\\node.exe C:\\Users\\simon\\Documents\\levivilet\\wsl\\.tmp\\dist\\dist\\node\\wslNodeMain.js --ipc-type=node-forked-process',
+  String.raw`node .tmp/dist/dist/node/wslNodeMain.js --ipc-type=node-forked-process`,
+  String.raw`node /tmp/dist/node/wslNodeMain.js --ipc-type=node-forked-process`,
+  String.raw`"C:\Program Files\nodejs\node.exe" "C:\Users\simon\Documents\LVCE Editor\wsl\dist\wslNodeMain.js" --ipc-type=node-forked-process`,
+])('getName - detect WSL node helper %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe('wsl')
+})
+
+test('getName - preserve unrelated commands mentioning wslNodeMain.js', () => {
+  const cmd = 'node --description=wslNodeMain.js --ipc-type=node-forked-process'
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(cmd)
+  expect(
+    ListProcessGetName.getName(123, 'node dist/wslNodeMain.jsx', 1, {}),
+  ).toBe('node dist/wslNodeMain.jsx')
+})
+
+test('getName - root process keeps main name for WSL node helper', () => {
+  const cmd = 'node dist/wslNodeMain.js --ipc-type=node-forked-process'
+  expect(ListProcessGetName.getName(123, cmd, 123, {})).toBe('main')
+})
+
 test('getName - detect extension host helper process', () => {
   const pid = 123
   const cmd = 'node dist/extensionHostHelperProcessMain.js'
