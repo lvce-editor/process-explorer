@@ -51,19 +51,27 @@ test('handleFocus', () => {
 test('handleClickAt', () => {
   const state = {
     ...createDefaultState(),
+    focused: false,
     visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
   }
 
-  expect(HandleClickAt.handleClickAt(state, 1).focusedIndex).toBe(1)
+  expect(HandleClickAt.handleClickAt(state, 1)).toMatchObject({
+    focused: true,
+    focusedIndex: 1,
+  })
 })
 
 test('handleClickAt - string index', () => {
   const state = {
     ...createDefaultState(),
+    focused: false,
     visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
   }
 
-  expect(HandleClickAt.handleClickAt(state, '1').focusedIndex).toBe(1)
+  expect(HandleClickAt.handleClickAt(state, '1')).toMatchObject({
+    focused: true,
+    focusedIndex: 1,
+  })
 })
 
 test('getMenuEntryIds', () => {
