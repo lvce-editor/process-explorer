@@ -5,7 +5,10 @@ export const renderFocus = (
   oldState: ProcessExplorerState,
   newState: ProcessExplorerState,
 ): readonly any[] => {
-  if (!newState.focused || oldState.focusedIndex === newState.focusedIndex) {
+  if (
+    !newState.focused ||
+    (oldState.focused && oldState.focusedIndex === newState.focusedIndex)
+  ) {
     return []
   }
   if (newState.focusedIndex < 0) {

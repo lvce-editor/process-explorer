@@ -27,6 +27,23 @@ test('renderFocus - focused index unchanged', () => {
   expect(RenderFocus.renderFocus(oldState, newState)).toEqual([])
 })
 
+test('renderFocus - focus selected row when entering focus context', () => {
+  const oldState = {
+    ...createDefaultState(),
+    focused: false,
+    focusedIndex: 1,
+  }
+  const newState = {
+    ...oldState,
+    focused: true,
+  }
+
+  expect(RenderFocus.renderFocus(oldState, newState)).toEqual([
+    ViewletCommand.FocusSelector,
+    '[data-index="1"]',
+  ])
+})
+
 test('renderFocus - focus table', () => {
   const oldState = {
     ...createDefaultState(),
