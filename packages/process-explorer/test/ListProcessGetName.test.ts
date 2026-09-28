@@ -42,6 +42,28 @@ test('getName - detect pty host', () => {
   expect(ListProcessGetName.getName(pid, cmd, rootPid, pidMap)).toBe('pty-host')
 })
 
+test.each([
+  'C:\\nvm4w\\nodejs\\node.exe C:\\Users\\simon\\Documents\\levivilet\\wsl\\.tmp\\dist\\dist\\node\\wslNodeMain.js --ipc-type=node-forked-process',
+  String.raw`node .tmp/dist/dist/node/wslNodeMain.js --ipc-type=node-forked-process`,
+  String.raw`node /tmp/dist/node/wslNodeMain.js --ipc-type=node-forked-process`,
+  String.raw`"C:\Program Files\nodejs\node.exe" "C:\Users\simon\Documents\LVCE Editor\wsl\dist\wslNodeMain.js" --ipc-type=node-forked-process`,
+])('getName - detect WSL node helper %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe('wsl')
+})
+
+test('getName - preserve unrelated commands mentioning wslNodeMain.js', () => {
+  const cmd = 'node --description=wslNodeMain.js --ipc-type=node-forked-process'
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(cmd)
+  expect(
+    ListProcessGetName.getName(123, 'node dist/wslNodeMain.jsx', 1, {}),
+  ).toBe('node dist/wslNodeMain.jsx')
+})
+
+test('getName - root process keeps main name for WSL node helper', () => {
+  const cmd = 'node dist/wslNodeMain.js --ipc-type=node-forked-process'
+  expect(ListProcessGetName.getName(123, cmd, 123, {})).toBe('main')
+})
+
 test('getName - detect extension host helper process', () => {
   const pid = 123
   const cmd = 'node dist/extensionHostHelperProcessMain.js'
@@ -250,6 +272,28 @@ test.each([
   '/usr/bin/ssh/somethinglong',
 ])('getName - does not rename other commands %s', (cmd) => {
   expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(cmd)
+})
+
+test.each([
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioService',
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioService --lang=en',
+  String.raw`"C:\\Program Files\\LVCE\\lvce.exe" --type=utility --utility-sub-type=audio.mojom.AudioService --lang=en-US`,
+])('getName - audio service %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(
+    'audio utility process',
+  )
+  expect(ListProcessGetName.getName(123, cmd, 123, {})).toBe('main')
+  expect(ListProcessGetName.getName(123, cmd, 1, { 123: 'custom-name' })).toBe(
+    'custom-name',
+  )
+})
+
+test.each([
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioServiceOther',
+  'electron --type=utility --utility-sub-type=not-audio.mojom.AudioService',
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioServiceOther --lang=en',
+])('getName - preserve other utilities near audio service %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe('utility')
 })
 
 test.each([

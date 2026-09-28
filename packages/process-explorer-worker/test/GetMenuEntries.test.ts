@@ -76,6 +76,65 @@ test('getMenuEntries - normal process', () => {
   ])
 })
 
+test('getMenuEntries - local renderer process', () => {
+  const state = {
+    ...createDefaultState(),
+    focusedIndex: 1,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(
+      [
+        processes[0],
+        { ...processes[1], cmd: 'electron --type=renderer', name: 'renderer' },
+      ],
+      [],
+      1,
+    ),
+  }
+  expect(GetMenuEntries.getMenuEntries(state)).toEqual([
+    {
+      args: [1],
+      command: 'ProcessExplorer.killProcess',
+      flags: MenuItemFlags.None,
+      id: 'killProcess',
+      label: 'Kill Process',
+    },
+    {
+      args: [1],
+      command: 'ProcessExplorer.takeHeapSnapshot',
+      flags: MenuItemFlags.None,
+      id: 'takeHeapSnapshot',
+      label: 'Take Heap Snapshot',
+    },
+  ])
+})
+
+test('getMenuEntries - remote renderer process', () => {
+  const state = {
+    ...createDefaultState(),
+    focusedIndex: 0,
+    visibleProcesses: [
+      {
+        cmd: 'electron --type=renderer',
+        depth: 1,
+        flags: 0,
+        memory: 1,
+        name: 'renderer',
+        pid: 2,
+        ppid: 1,
+        source: 'remote' as const,
+      },
+    ],
+  }
+  expect(GetMenuEntries.getMenuEntries(state)).toEqual([
+    {
+      args: [0],
+      command: 'ProcessExplorer.killProcess',
+      flags: MenuItemFlags.None,
+      id: 'killProcess',
+      label: 'Kill Process',
+    },
+  ])
+})
+
 test('getMenuEntries - missing process', () => {
   const state = {
     ...createDefaultState(),

@@ -10,6 +10,8 @@ const includesPackagePath = (cmd: string, packageName: string): boolean => {
 const sshCommandPattern =
   /^(?:"(?:[^"\n]*[/\\])?ssh(?:\.exe)?"|(?:[^\s"]*[/\\])?ssh(?:\.exe)?)(?:\s|$)/i
 
+const wslNodeMainPattern = /(?:^|[/\\])wslNodeMain\.js(?:"|(?=\s|$))/i
+
 export const processNamePatterns: readonly ProcessNamePattern[] = [
   {
     matches: (cmd) => sshCommandPattern.test(cmd),
@@ -42,6 +44,10 @@ export const processNamePatterns: readonly ProcessNamePattern[] = [
   {
     matches: (cmd) => cmd.includes('ptyHostMain.js'),
     name: 'pty-host',
+  },
+  {
+    matches: (cmd) => wslNodeMainPattern.test(cmd),
+    name: 'wsl',
   },
   {
     matches: (cmd) =>

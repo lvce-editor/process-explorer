@@ -29,6 +29,16 @@ test('gets and sets the live component state through worker commands', async () 
   expect(ProcessExplorerStates.get(uid).oldState).toEqual(newState)
 })
 
+test('gets the current virtual DOM from the component state', () => {
+  const uid = 102
+  const state = { ...createDefaultState(), initial: false, uid }
+  ProcessExplorerStates.set(uid, state, state)
+
+  expect(commandMap['ProcessExplorer.getComponentDom'](uid)).toContainEqual(
+    expect.objectContaining({ className: 'Viewlet ProcessExplorer' }),
+  )
+})
+
 test.each([null, [], 'invalid', 42])(
   'rejects invalid live component state %p without changing the state',
   async (invalidState) => {

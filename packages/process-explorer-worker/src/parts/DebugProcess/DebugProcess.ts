@@ -1,5 +1,7 @@
 import { RendererWorker } from '@lvce-editor/rpc-registry'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
+import * as ProcessExplorer from '../ProcessExplorer/ProcessExplorer.ts'
+import * as RemoteProcessExplorer from '../RemoteProcessExplorer/RemoteProcessExplorer.ts'
 
 export const debugProcess = async (
   state: ProcessExplorerState,
@@ -8,9 +10,19 @@ export const debugProcess = async (
   const { focusedIndex, visibleProcesses } = state
   const resolvedIndex = index === undefined ? focusedIndex : index
   const process = visibleProcesses[resolvedIndex]
-  if (!process) {
+  if (!process || process.synthetic) {
     return state
   }
-  await RendererWorker.invoke('AttachDebugger.attachDebugger', process.pid)
+  const processExplorer =
+    process.source === 'remote' ? RemoteProcessExplorer : ProcessExplorer
+  const webSocketDebuggerUrl = await processExplorer.invoke(
+    'Process.debugProcess',
+    process.pid,
+    process.cmd,
+  )
+  await RendererWorker.invoke(
+    'AttachDebugger.attachDebugger',
+    webSocketDebuggerUrl,
+  )
   return state
 }
