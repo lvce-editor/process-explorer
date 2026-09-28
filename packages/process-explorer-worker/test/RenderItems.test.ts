@@ -216,6 +216,7 @@ test('renderItems - error only', () => {
   expect(result[0]).toBe(ViewletCommand.SetDom2)
   expect(result[2]).toContainEqual(
     expect.objectContaining({
+      childCount: 5,
       className: 'ProcessExplorerError',
       type: VirtualDomElements.Div,
     }),
@@ -226,6 +227,11 @@ test('renderItems - error only', () => {
       type: VirtualDomElements.Text,
     }),
   )
+  expect(result[2]).toContainEqual({
+    childCount: 0,
+    className: 'ProcessExplorerErrorIcon MaskIcon MaskIconError',
+    type: VirtualDomElements.Div,
+  })
   expect(result[2]).toContainEqual(
     expect.objectContaining({
       text: 'Pretty no pid',
@@ -267,11 +273,16 @@ test('renderItems - error message only', () => {
 
   expect(result[2]).toContainEqual(
     expect.objectContaining({
-      childCount: 1,
+      childCount: 2,
       className: 'ProcessExplorerError',
       type: VirtualDomElements.Div,
     }),
   )
+  expect(result[2]).toContainEqual({
+    childCount: 0,
+    className: 'ProcessExplorerErrorIcon MaskIcon MaskIconError',
+    type: VirtualDomElements.Div,
+  })
   expect(result[2]).toContainEqual(
     expect.objectContaining({
       text: 'Pretty no pid',
