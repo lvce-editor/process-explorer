@@ -13,3 +13,5 @@ npm run e2e:headless --
 ```
 
 Preparation replaces the disposable application's scenarios and fixtures and overlays local build artifacts. See `config.json` for artifact and script destinations, and `.github/workflows/integration.yml` for static export, Electron, and settings requirements. Update the pinned application commit when its runtime needs updating.
+
+On Linux, the workflow also runs `xvfb-run -a node scripts/test-process-explorer-network-service.mjs` from the prepared application checkout. This Electron regression checks the network service label, verifies its PID against `/proc`, and confirms the label and PID survive a Process Explorer refresh.
