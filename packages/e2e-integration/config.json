@@ -1,0 +1,13 @@
+{
+  "artifacts": [
+    [
+      ".tmp/dist-process-explorer-worker",
+      "packages/renderer-worker/node_modules/@lvce-editor/process-explorer-worker"
+    ],
+    [
+      "dist",
+      "packages/shared-process/node_modules/@lvce-editor/process-explorer"
+    ]
+  ],
+  "scripts": []
+}
