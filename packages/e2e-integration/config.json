@@ -9,5 +9,8 @@
       "packages/shared-process/node_modules/@lvce-editor/process-explorer"
     ]
   ],
-  "scripts": ["scripts/test-process-explorer-renderer-heap-snapshot.mjs"]
+  "scripts": [
+    "scripts/test-process-explorer-renderer-heap-snapshot.mjs",
+    "scripts/test-process-explorer-network-service.mjs"
+  ]
 }
