@@ -1,15 +1,15 @@
 # Application integration tests
 
-These tests moved from `lvce-editor` and run in this repository's `Integration` workflow. The workflow builds this repository, checks out a pinned LVCE application, and installs the local build into that disposable checkout before running the tests. Existing standalone e2e coverage stays in `packages/e2e`.
+These scenarios and fixtures moved from `lvce-editor` to `lvce-editor/process-explorer`. The Integration workflow overlays this repository's build in a pinned, disposable LVCE checkout and runs the application's existing test runner.
 
-The application checkout supplies the renderer, extensions, CSS, Electron launcher, and test runner required by these scenarios. Update its commit in `.github/workflows/integration.yml` when a newer application runtime is needed.
+The workflow preserves the original CI commands, settings, and platform restrictions. Scenarios that were outside the application's CI selection remain available for local runs; their existing skip declarations are unchanged. Repositories with no previously selected CI scenarios expose a manual Integration workflow.
 
-To run locally, build this repository and install the pinned application checkout's dependencies, then run:
+Build this repository, install the pinned application's dependencies and Chromium, then run:
 
 ```sh
 node packages/e2e-integration/prepare.mjs /path/to/disposable/lvce-editor
 cd /path/to/disposable/lvce-editor/packages/extension-host-worker-tests
-npm run e2e:headless
+npm run e2e:headless --
 ```
 
-Use a disposable checkout: preparation replaces its test inventory and overlays the local build. See the workflow for initial settings and additional script commands.
+Preparation replaces the disposable application's scenarios and fixtures and overlays local build artifacts. See `config.json` for artifact and script destinations, and `.github/workflows/integration.yml` for static export, Electron, and settings requirements. Update the pinned application commit when its runtime needs updating.
