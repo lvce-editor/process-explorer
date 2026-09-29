@@ -39,6 +39,10 @@ jobs:
         shell: bash
         working-directory: .tmp/lvce-integration/packages/extension-host-worker-tests
         run: npm run e2e:headless --
+      - name: Install Electron
+        if: runner.os == 'Linux'
+        working-directory: .tmp/lvce-integration
+        run: node node_modules/electron/install.js
       - name: Test Process Explorer network service naming
         if: runner.os == 'Linux'
         working-directory: .tmp/lvce-integration
