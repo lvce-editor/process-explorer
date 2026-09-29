@@ -70,13 +70,11 @@ try {
   await expect(page.getByRole('tree', { name: 'Files Explorer' })).toBeVisible()
   await page.keyboard.press('Control+Alt+1')
   await expect(page.locator('.ProcessExplorerTable')).toBeVisible()
-  const networkRow = page
-    .locator('.ProcessExplorerRow')
-    .filter({
-      has: page.locator('.ProcessExplorerNameCell', {
-        hasText: /^utility-network-service$/,
-      }),
-    })
+  const networkRow = page.locator('.ProcessExplorerRow').filter({
+    has: page.locator('.ProcessExplorerNameCell', {
+      hasText: /^utility-network-service$/,
+    }),
+  })
   await expect(networkRow).toHaveCount(1)
   const cells = networkRow.locator('.ProcessExplorerCell')
   const pid = Number(await cells.nth(1).textContent())
