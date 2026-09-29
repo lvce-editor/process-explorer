@@ -1,4 +1,4 @@
-import { cp, readdir, readFile, realpath, rm } from 'node:fs/promises'
+import { cp, mkdir, readdir, readFile, realpath, rm } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -20,6 +20,8 @@ for (const name of await readdir(join(tests, 'src'))) {
     await rm(join(tests, 'src', name), { recursive: true })
 }
 await cp(join(here, 'src'), join(tests, 'src'), { recursive: true })
+await rm(join(tests, 'fixtures'), { recursive: true, force: true })
+await mkdir(join(tests, 'fixtures'), { recursive: true })
 try {
   await cp(join(here, 'fixtures'), join(tests, 'fixtures'), { recursive: true })
 } catch (error) {
@@ -33,7 +35,9 @@ for (const path of config.scripts) {
 }
 // Exercise this repository's build in the pinned application runtime.
 for (const [from, to] of config.artifacts) {
-  await cp(join(owner, from), await realpath(join(application, to)), {
-    recursive: true,
+  const target = await realpath(join(application, to)).catch((error) => {
+    if (error.code !== 'ENOENT') throw error
+    return join(application, to)
   })
+  await cp(join(owner, from), target, { recursive: true })
 }
