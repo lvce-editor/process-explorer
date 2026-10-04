@@ -28,14 +28,25 @@ export const test: Test = async ({ Command, expect, Locator }) => {
   // assert
   const error = Locator('.ProcessExplorerError')
   const table = Locator('.ProcessExplorerTable')
+  const icon = Locator('.ProcessExplorerError .MaskIconError')
   try {
     await expect(error).toBeVisible()
+    await expect(icon).toHaveCount(1)
     await expect(table).toBeHidden()
     await expect(error).toContainText('ERR_PROCESS_EXPLORER_E2E')
     await expect(error).toContainText(fixtureMessage)
     await expect(error).toContainText(fixtureThrowLine)
     await expect(error).toContainText(stackLine)
+
+    await Command.execute('ProcessExplorer.setError', {
+      message: fixtureMessage.repeat(30),
+    })
+    await expect(icon).toHaveCount(1)
+    await expect(error).toContainText(fixtureMessage.repeat(30))
   } finally {
     await Command.execute('ProcessExplorer.refresh')
   }
+  await expect(error).toBeHidden()
+  await expect(icon).toBeHidden()
+  await expect(table).toBeVisible()
 }

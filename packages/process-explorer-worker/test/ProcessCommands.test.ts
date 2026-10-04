@@ -1,6 +1,6 @@
 import { expect, jest, test } from '@jest/globals'
 import { createMockRpc } from '@lvce-editor/rpc'
-import { RendererWorker } from '@lvce-editor/rpc-registry'
+import { MainProcess, RendererWorker } from '@lvce-editor/rpc-registry'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as DebugProcess from '../src/parts/DebugProcess/DebugProcess.ts'
 import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibleProcesses.ts'
@@ -151,16 +151,55 @@ test('killProcess - does not wait for process explorer rpc response', async () =
 })
 
 test('debugProcess', async () => {
+  const debugProcess = jest.fn<
+    (pid: number, command: string) => Promise<string>
+  >(async () => 'ws://127.0.0.1:9230/target')
   const attachDebugger = jest.fn()
   using _mockRpc = RendererWorker.registerMockRpc({
     'AttachDebugger.attachDebugger': attachDebugger,
+  })
+  using _processExplorerRpc = registerProcessExplorerMock({
+    'Process.debugProcess': debugProcess,
   })
   const state = {
     ...createDefaultState(),
     visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
   }
   await expect(DebugProcess.debugProcess(state, 1)).resolves.toBe(state)
-  expect(attachDebugger).toHaveBeenCalledWith(2)
+  expect(debugProcess).toHaveBeenCalledWith(2, 'node child.js')
+  expect(attachDebugger).toHaveBeenCalledWith('ws://127.0.0.1:9230/target')
+})
+
+test('debugProcess - remote process', async () => {
+  const debugProcess = jest.fn<
+    (pid: number, command: string) => Promise<string>
+  >(async () => 'ws://127.0.0.1:9231/target')
+  const attachDebugger = jest.fn()
+  using _remoteProcessExplorerRpc = registerRemoteProcessExplorerMock({
+    'Process.debugProcess': debugProcess,
+  })
+  using _rendererWorkerRpc = RendererWorker.registerMockRpc({
+    'AttachDebugger.attachDebugger': attachDebugger,
+  })
+  const state = {
+    ...createDefaultState(),
+    visibleProcesses: [
+      {
+        cmd: 'node remote.js',
+        depth: 2,
+        flags: 0,
+        memory: 1,
+        name: 'remote-child',
+        pid: 4,
+        ppid: 1,
+        source: 'remote' as const,
+      },
+    ],
+  }
+
+  await expect(DebugProcess.debugProcess(state, 0)).resolves.toBe(state)
+  expect(debugProcess).toHaveBeenCalledWith(4, 'node remote.js')
+  expect(attachDebugger).toHaveBeenCalledWith('ws://127.0.0.1:9231/target')
 })
 
 test('debugProcess - missing process', async () => {
@@ -176,7 +215,7 @@ test('debugProcess - missing process', async () => {
 test('takeHeapSnapshot', async () => {
   const takeHeapSnapshot = jest.fn<
     (_pid: number, _command: string) => Promise<string>
-  >(async () => '/tmp/snapshot.heapsnapshot')
+  >(async () => 'file:///tmp/snapshot%20with%20space.heapsnapshot')
   const openUri = jest.fn()
   using _processExplorerRpc = registerProcessExplorerMock({
     'Process.takeHeapSnapshot': takeHeapSnapshot,
@@ -191,13 +230,15 @@ test('takeHeapSnapshot', async () => {
 
   await expect(TakeHeapSnapshot.takeHeapSnapshot(state, 1)).resolves.toBe(state)
   expect(takeHeapSnapshot).toHaveBeenCalledWith(2, 'node child.js')
-  expect(openUri).toHaveBeenCalledWith('/tmp/snapshot.heapsnapshot')
+  expect(openUri).toHaveBeenCalledWith(
+    'file:///tmp/snapshot%20with%20space.heapsnapshot',
+  )
 })
 
 test('takeHeapSnapshot - remote process', async () => {
   const takeHeapSnapshot = jest.fn<
     (_pid: number, _command: string) => Promise<string>
-  >(async () => '/tmp/remote.heapsnapshot')
+  >(async () => 'file:///remote/tmp/remote.heapsnapshot')
   const openUri = jest.fn()
   using _remoteProcessExplorerRpc = registerRemoteProcessExplorerMock({
     'Process.takeHeapSnapshot': takeHeapSnapshot,
@@ -223,7 +264,38 @@ test('takeHeapSnapshot - remote process', async () => {
 
   await expect(TakeHeapSnapshot.takeHeapSnapshot(state, 0)).resolves.toBe(state)
   expect(takeHeapSnapshot).toHaveBeenCalledWith(4, 'node remote.js')
-  expect(openUri).toHaveBeenCalledWith('/tmp/remote.heapsnapshot')
+  expect(openUri).toHaveBeenCalledWith('file:///remote/tmp/remote.heapsnapshot')
+})
+
+test('takeHeapSnapshot - local renderer process', async () => {
+  const takeRendererHeapSnapshot = jest.fn<(pid: number) => Promise<string>>(
+    async () => 'file:///tmp/renderer.heapsnapshot',
+  )
+  const openUri = jest.fn()
+  using _mainProcessRpc = MainProcess.registerMockRpc({
+    'ElectronDeveloper.takeRendererHeapSnapshot': takeRendererHeapSnapshot,
+  })
+  using _rendererWorkerRpc = RendererWorker.registerMockRpc({
+    'Main.openUri': openUri,
+  })
+  const state = {
+    ...createDefaultState(),
+    visibleProcesses: [
+      {
+        cmd: 'electron --type=renderer',
+        depth: 1,
+        flags: 0,
+        memory: 1,
+        name: 'renderer',
+        pid: 5,
+        ppid: 1,
+      },
+    ],
+  }
+
+  await expect(TakeHeapSnapshot.takeHeapSnapshot(state, 0)).resolves.toBe(state)
+  expect(takeRendererHeapSnapshot).toHaveBeenCalledWith(5)
+  expect(openUri).toHaveBeenCalledWith('file:///tmp/renderer.heapsnapshot')
 })
 
 test('takeHeapSnapshot - missing process', async () => {

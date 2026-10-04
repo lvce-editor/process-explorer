@@ -101,7 +101,7 @@ test('parsePsOutput - macos', () => {
     {
       cmd: '/Users/m1/Documents/lvce-editor/packages/main-process/node_modules/electron/dist/Electron.app/Contents/Frameworks/Electron Helper.app/Contents/MacOS/Electron Helper --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en --service-sandbox-type=network --user-data-dir=/Users/m1/Library/Application Support/@lvce-editor/main-process --standard-schemes=lvce-oss --secure-schemes=lvce-oss --fetch-schemes=lvce-oss --streaming-schemes=lvce-oss --code-cache-schemes=lvce-oss --shared-files --field-trial-handle=1718379636,r,13753902317798746766,14167880203702055354,262144 --enable-features=kWebSQLAccess --disable-features=SpareRendererForSitePerProcess --variations-seed-version --seatbelt-client=37',
       depth: 3,
-      name: 'utility',
+      name: 'utility-network-service',
       pid: 6345,
       ppid: 6343,
     },

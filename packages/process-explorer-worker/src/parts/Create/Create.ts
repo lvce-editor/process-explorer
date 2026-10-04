@@ -63,6 +63,7 @@ export const create = (
     x,
     y,
   }
-  ProcessExplorerStates.set(state.uid, state, state)
+  const { uid } = state
+  ProcessExplorerStates.set(uid, state, state)
   return state
 }

@@ -10,6 +10,7 @@ import * as FocusFirst from '../FocusFirst/FocusFirst.ts'
 import * as FocusLast from '../FocusLast/FocusLast.ts'
 import * as FocusNext from '../FocusNext/FocusNext.ts'
 import * as FocusPrevious from '../FocusPrevious/FocusPrevious.ts'
+import * as GetComponentDom from '../GetComponentDom/GetComponentDom.ts'
 import * as GetComponentState from '../GetComponentState/GetComponentState.ts'
 import * as GetKeyBindings from '../GetKeyBindings/GetKeyBindings.ts'
 import * as GetMenuEntries from '../GetMenuEntries/GetMenuEntries.ts'
@@ -71,6 +72,7 @@ export const commandMap = {
     FocusPrevious.focusPrevious,
   ),
   'ProcessExplorer.getCommandIds': ProcessExplorerStates.getCommandIds,
+  'ProcessExplorer.getComponentDom': GetComponentDom.getComponentDom,
   'ProcessExplorer.getComponentState': GetComponentState.getComponentState,
   'ProcessExplorer.getKeyBindings': GetKeyBindings.getKeyBindings,
   'ProcessExplorer.getMenuEntries': ProcessExplorerStates.wrapGetter(

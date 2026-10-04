@@ -42,6 +42,28 @@ test('getName - detect pty host', () => {
   expect(ListProcessGetName.getName(pid, cmd, rootPid, pidMap)).toBe('pty-host')
 })
 
+test.each([
+  'C:\\nvm4w\\nodejs\\node.exe C:\\Users\\simon\\Documents\\levivilet\\wsl\\.tmp\\dist\\dist\\node\\wslNodeMain.js --ipc-type=node-forked-process',
+  String.raw`node .tmp/dist/dist/node/wslNodeMain.js --ipc-type=node-forked-process`,
+  String.raw`node /tmp/dist/node/wslNodeMain.js --ipc-type=node-forked-process`,
+  String.raw`"C:\Program Files\nodejs\node.exe" "C:\Users\simon\Documents\LVCE Editor\wsl\dist\wslNodeMain.js" --ipc-type=node-forked-process`,
+])('getName - detect WSL node helper %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe('wsl')
+})
+
+test('getName - preserve unrelated commands mentioning wslNodeMain.js', () => {
+  const cmd = 'node --description=wslNodeMain.js --ipc-type=node-forked-process'
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(cmd)
+  expect(
+    ListProcessGetName.getName(123, 'node dist/wslNodeMain.jsx', 1, {}),
+  ).toBe('node dist/wslNodeMain.jsx')
+})
+
+test('getName - root process keeps main name for WSL node helper', () => {
+  const cmd = 'node dist/wslNodeMain.js --ipc-type=node-forked-process'
+  expect(ListProcessGetName.getName(123, cmd, 123, {})).toBe('main')
+})
+
 test('getName - detect extension host helper process', () => {
   const pid = 123
   const cmd = 'node dist/extensionHostHelperProcessMain.js'
@@ -226,4 +248,72 @@ test('getName - fallback to command', () => {
   const rootPid = 1
   const pidMap = {}
   expect(ListProcessGetName.getName(pid, cmd, rootPid, pidMap)).toBe(cmd)
+})
+
+test.each([
+  'ssh',
+  'ssh user@host',
+  '/usr/bin/ssh -T -D 54321 user@host',
+  '/opt/custom/bin/ssh user@host node sharedProcessMain.js',
+  'ssh.exe user@host',
+  String.raw`C:\Windows\System32\OpenSSH\ssh.exe user@host`,
+  String.raw`"C:\Program Files\OpenSSH\ssh.exe" user@host`,
+  '"/usr/local/bin/ssh" user@host',
+])('getName - ssh command %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe('ssh')
+})
+
+test.each([
+  '/usr/sbin/sshd -D',
+  'ssh-agent -s',
+  '/usr/bin/ssh-keygen -t ed25519',
+  'custom-process /usr/bin/ssh user@host',
+  '/usr/bin/ssh-wrapper user@host',
+  '/usr/bin/ssh/somethinglong',
+])('getName - does not rename other commands %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(cmd)
+})
+
+test.each([
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioService',
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioService --lang=en',
+  String.raw`"C:\\Program Files\\LVCE\\lvce.exe" --type=utility --utility-sub-type=audio.mojom.AudioService --lang=en-US`,
+])('getName - audio service %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(
+    'audio utility process',
+  )
+  expect(ListProcessGetName.getName(123, cmd, 123, {})).toBe('main')
+  expect(ListProcessGetName.getName(123, cmd, 1, { 123: 'custom-name' })).toBe(
+    'custom-name',
+  )
+})
+
+test.each([
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioServiceOther',
+  'electron --type=utility --utility-sub-type=not-audio.mojom.AudioService',
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioServiceOther --lang=en',
+])('getName - preserve other utilities near audio service %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe('utility')
+})
+
+test.each([
+  'electron --type=utility --utility-sub-type=network.mojom.NetworkService',
+  'electron --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en',
+])('getName - network service %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(
+    'utility-network-service',
+  )
+  expect(ListProcessGetName.getName(123, cmd, 123, {})).toBe('main')
+  expect(ListProcessGetName.getName(123, cmd, 1, { 123: 'custom-name' })).toBe(
+    'custom-name',
+  )
+})
+
+test.each([
+  'electron --type=utility',
+  'electron --type=utility --utility-sub-type=node.mojom.NodeService',
+  'electron --type=utility --utility-sub-type=unknown',
+  'electron --type=utility --utility-sub-type=network.mojom.NetworkServiceOther',
+])('getName - preserve other utilities %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe('utility')
 })

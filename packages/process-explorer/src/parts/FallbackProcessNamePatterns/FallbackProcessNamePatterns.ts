@@ -1,9 +1,24 @@
 import type { ProcessNamePattern } from '../ProcessNamePattern/ProcessNamePattern.ts'
 
+const networkServiceRE =
+  /(?:^|\s)--utility-sub-type=network\.mojom\.NetworkService(?:\s|$)/
+const audioServiceRE =
+  /(?:^|\s)--utility-sub-type=audio\.mojom\.AudioService(?:\s|$)/
+
 export const fallbackProcessNamePatterns: readonly ProcessNamePattern[] = [
   {
     matches: (cmd) => cmd.includes('--type=renderer'),
     name: 'renderer',
+  },
+  {
+    matches: (cmd) =>
+      cmd.includes('--type=utility') && audioServiceRE.test(cmd),
+    name: 'audio utility process',
+  },
+  {
+    matches: (cmd) =>
+      cmd.includes('--type=utility') && networkServiceRE.test(cmd),
+    name: 'utility-network-service',
   },
   {
     matches: (cmd) => cmd.includes('--type=utility'),

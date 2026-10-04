@@ -1,5 +1,6 @@
 import { expect, test } from '@jest/globals'
 import type { ProcessInfo } from '../src/parts/ProcessInfo/ProcessInfo.ts'
+import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as ReparentSharedProcessChildren from '../src/parts/ReparentSharedProcessChildren/ReparentSharedProcessChildren.ts'
 
 const createProcess = (
@@ -44,4 +45,29 @@ test('returns the processes unchanged when there is no shared process', () => {
   expect(
     ReparentSharedProcessChildren.reparentSharedProcessChildren(processes),
   ).toBe(processes)
+})
+
+test('search process is nested and collapses with shared process', () => {
+  const processes = [
+    createProcess('main', 1, 0),
+    createProcess('shared-process', 2, 1),
+    createProcess('search-process', 3, 1),
+    createProcess('rg', 4, 3),
+  ]
+  const reparented =
+    ReparentSharedProcessChildren.reparentSharedProcessChildren(processes)
+
+  const visible = GetVisibleProcesses.getVisibleProcesses(reparented, [], 1)
+  expect(visible.map(({ depth, name }) => ({ depth, name }))).toEqual([
+    { depth: 1, name: 'main' },
+    { depth: 2, name: 'shared-process' },
+    { depth: 3, name: 'search-process' },
+    { depth: 4, name: 'rg' },
+  ])
+  expect(
+    GetVisibleProcesses.getVisibleProcesses(reparented, [2], 1).map(
+      (process) => process.name,
+    ),
+  ).toEqual(['main', 'shared-process'])
+  expect(processes[2].ppid).toBe(1)
 })

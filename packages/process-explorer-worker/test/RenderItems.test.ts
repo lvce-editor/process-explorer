@@ -77,7 +77,7 @@ test('renderItems - populated table', () => {
   expect(nameHeader).not.toHaveProperty('width')
 })
 
-test('renderItems - widens the name column for a webcontentsview process', () => {
+test('renderItems - widens the name column for a web contents view process', () => {
   const state = {
     ...createDefaultState(),
     initial: false,
@@ -87,7 +87,7 @@ test('renderItems - widens the name column for a webcontentsview process', () =>
         {
           cmd: 'renderer',
           memory: 1,
-          name: 'renderer (webcontentsview, soundcloud.com)',
+          name: 'webcontents-view / soundcloud.com',
           pid: 5,
           ppid: 1,
         },
@@ -216,6 +216,7 @@ test('renderItems - error only', () => {
   expect(result[0]).toBe(ViewletCommand.SetDom2)
   expect(result[2]).toContainEqual(
     expect.objectContaining({
+      childCount: 5,
       className: 'ProcessExplorerError',
       type: VirtualDomElements.Div,
     }),
@@ -226,6 +227,11 @@ test('renderItems - error only', () => {
       type: VirtualDomElements.Text,
     }),
   )
+  expect(result[2]).toContainEqual({
+    childCount: 0,
+    className: 'ProcessExplorerErrorIcon MaskIcon MaskIconError',
+    type: VirtualDomElements.Div,
+  })
   expect(result[2]).toContainEqual(
     expect.objectContaining({
       text: 'Pretty no pid',
@@ -267,11 +273,16 @@ test('renderItems - error message only', () => {
 
   expect(result[2]).toContainEqual(
     expect.objectContaining({
-      childCount: 1,
+      childCount: 2,
       className: 'ProcessExplorerError',
       type: VirtualDomElements.Div,
     }),
   )
+  expect(result[2]).toContainEqual({
+    childCount: 0,
+    className: 'ProcessExplorerErrorIcon MaskIcon MaskIconError',
+    type: VirtualDomElements.Div,
+  })
   expect(result[2]).toContainEqual(
     expect.objectContaining({
       text: 'Pretty no pid',
@@ -306,4 +317,24 @@ test('renderItems - unsupported message', () => {
       },
     ],
   ])
+})
+
+test('renderItems - ssh name keeps the full command as its hover title', () => {
+  const cmd = '/usr/bin/ssh -T -D 54321 user@remote-host'
+  const state = {
+    ...createDefaultState(),
+    initial: false,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(
+      [...processes, { cmd, memory: 1, name: 'ssh', pid: 5, ppid: 1 }],
+      [],
+      1,
+    ),
+  }
+  const result = RenderItems.renderItems(createDefaultState(), state)
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({ className: 'ProcessExplorerRow', title: cmd }),
+  )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({ text: 'ssh', type: VirtualDomElements.Text }),
+  )
 })

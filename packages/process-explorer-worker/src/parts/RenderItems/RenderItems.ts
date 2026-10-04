@@ -47,6 +47,16 @@ const messageNode: VirtualDomNode = {
   type: VirtualDomElements.Div,
 }
 
+const errorIconNode: VirtualDomNode = {
+  childCount: 0,
+  className: mergeClassNames(
+    ClassNames.ErrorIcon,
+    ClassNames.MaskIcon,
+    ClassNames.MaskIconError,
+  ),
+  type: VirtualDomElements.Div,
+}
+
 const getRowClassName = (focused: boolean): string => {
   if (focused) {
     return mergeClassNames(ClassNames.Row, ClassNames.RowFocused)
@@ -87,9 +97,10 @@ const getCellDom = (
 const shouldUseWideNameColumn = (
   visibleProcesses: readonly VisibleProcess[],
 ): boolean => {
-  return visibleProcesses.some((process) =>
-    process.name.toLowerCase().includes('webcontentsview'),
-  )
+  return visibleProcesses.some((process) => {
+    const name = process.name.toLowerCase()
+    return name.includes('webcontentsview') || name.includes('webcontents-view')
+  })
 }
 
 const getHeaderDom = (
@@ -214,10 +225,11 @@ const getErrorDom = (
   return [
     processExplorer,
     {
-      childCount,
+      childCount: childCount + 1,
       className: ClassNames.Error,
       type: VirtualDomElements.Div,
     },
+    errorIconNode,
     ...errorCodeDom,
     ...messageDom,
     ...codeFrameDom,
@@ -251,7 +263,9 @@ const getTableDom = (
   ]
 }
 
-const getDom = (state: ProcessExplorerState): readonly VirtualDomNode[] => {
+export const getDom = (
+  state: ProcessExplorerState,
+): readonly VirtualDomNode[] => {
   const { initial, message } = state
   if (initial) {
     return []

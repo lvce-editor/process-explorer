@@ -4,7 +4,8 @@ export const focusIndex = (
   state: ProcessExplorerState,
   index: number,
 ): ProcessExplorerState => {
-  if (index < -1 || index >= state.visibleProcesses.length) {
+  const { visibleProcesses } = state
+  if (index < -1 || index >= visibleProcesses.length) {
     return state
   }
   return {

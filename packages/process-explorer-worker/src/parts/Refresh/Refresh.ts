@@ -69,7 +69,14 @@ const getRootPid = async (
 export const refresh = async (
   state: ProcessExplorerState,
 ): Promise<ProcessExplorerState> => {
-  if (state.platform === PlatformType.Web) {
+  const {
+    collapsedPids,
+    focusedIndex,
+    includeFrontendMemoryUsage,
+    platform,
+    rootPid: stateRootPid,
+  } = state
+  if (platform === PlatformType.Web) {
     return {
       ...state,
       initial: false,
@@ -77,11 +84,11 @@ export const refresh = async (
     }
   }
   try {
-    await InitializeProcessExplorer.initializeProcessExplorer(state.platform)
-    const includeElectronData = state.platform === PlatformType.Electron
+    await InitializeProcessExplorer.initializeProcessExplorer(platform)
+    const includeElectronData = platform === PlatformType.Electron
     const rootPid = await getRootPid(
       ProcessExplorerModule,
-      state.rootPid,
+      stateRootPid,
       includeElectronData,
     )
     const pidMap = includeElectronData
@@ -92,21 +99,18 @@ export const refresh = async (
       rootPid,
       pidMap,
     )
-    const frontendMemoryProcesses = state.includeFrontendMemoryUsage
+    const frontendMemoryProcesses = includeFrontendMemoryUsage
       ? await GetFrontendMemoryUsage.getFrontendMemoryUsage(rootPid)
       : []
     const allProcesses = [...processes, ...frontendMemoryProcesses]
     const localProcesses =
-      state.platform === PlatformType.Electron
+      platform === PlatformType.Electron
         ? ReparentSharedProcessChildren.reparentSharedProcessChildren(
             allProcesses,
           )
         : allProcesses
     let displayedProcesses = localProcesses
-    if (
-      state.platform === PlatformType.Electron &&
-      RemoteProcessExplorer.has()
-    ) {
+    if (platform === PlatformType.Electron && RemoteProcessExplorer.has()) {
       const remoteRootPid = await getRootPid(RemoteProcessExplorer, -1, false)
       const remoteProcesses = await listProcesses(
         RemoteProcessExplorer,
@@ -121,7 +125,7 @@ export const refresh = async (
     }
     const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
       displayedProcesses,
-      state.collapsedPids,
+      collapsedPids,
       rootPid,
     )
     return {
@@ -130,7 +134,7 @@ export const refresh = async (
       errorCodeFrame: '',
       errorMessage: '',
       errorStack: '',
-      focusedIndex: getFocusedIndex(state.focusedIndex, visibleProcesses),
+      focusedIndex: getFocusedIndex(focusedIndex, visibleProcesses),
       initial: false,
       message: '',
       processes: displayedProcesses,
