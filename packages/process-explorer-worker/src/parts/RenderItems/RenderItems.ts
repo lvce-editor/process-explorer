@@ -57,9 +57,19 @@ const errorIconNode: VirtualDomNode = {
   type: VirtualDomElements.Div,
 }
 
+const rowFocusedClassName = mergeClassNames(
+  ClassNames.Row,
+  ClassNames.RowFocused,
+)
+
+const wideNameHeaderCellClassName = mergeClassNames(
+  ClassNames.HeaderCell,
+  ClassNames.NameHeaderCellWide,
+)
+
 const getRowClassName = (focused: boolean): string => {
   if (focused) {
-    return mergeClassNames(ClassNames.Row, ClassNames.RowFocused)
+    return rowFocusedClassName
   }
   return ClassNames.Row
 }
@@ -115,10 +125,7 @@ const getHeaderDom = (
         ...headerCellNode,
         ...(index === 0 &&
           useWideNameColumn && {
-            className: mergeClassNames(
-              ClassNames.HeaderCell,
-              ClassNames.NameHeaderCellWide,
-            ),
+            className: wideNameHeaderCellClassName,
           }),
       },
       text(label),
