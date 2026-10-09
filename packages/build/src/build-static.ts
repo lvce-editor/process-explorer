@@ -54,9 +54,8 @@ const workerPath = join(
 )
 const remoteUrl = getRemoteUrl(workerPath)
 
-const occurrence = `// const processExplorerWorkerUrl = \`\${assetDir}/packages/process-explorer-worker/index.js\`
-const processExplorerWorkerUrl = \`${remoteUrl}\``
-const replacement = `const processExplorerWorkerUrl = \`\${assetDir}/packages/process-explorer-worker/index.js\``
+const occurrence = `\`${remoteUrl}\``
+const replacement = '\`${assetDir}/packages/process-explorer-worker/index.js\`'
 
 const content = await readFile(rendererWorkerPath, 'utf8')
 if (!content.includes(occurrence)) {
@@ -64,6 +63,20 @@ if (!content.includes(occurrence)) {
 }
 const newContent = content.replace(occurrence, replacement)
 await writeFile(rendererWorkerPath, newContent)
+
+const indexHtmlPath = join(root, 'dist', 'index.html')
+const indexHtml = await readFile(indexHtmlPath, 'utf8')
+const configOccurrence = `"develop.processExplorerWorkerPath": "${remoteUrl}"`
+if (!indexHtml.includes(configOccurrence)) {
+  throw new Error('process explorer runtime worker URL not found')
+}
+await writeFile(
+  indexHtmlPath,
+  indexHtml.replace(
+    configOccurrence,
+    `"develop.processExplorerWorkerPath": "/${commitHash}/packages/process-explorer-worker/index.js"`,
+  ),
+)
 
 const staticDist = join(root, '.tmp', 'static')
 await rm(staticDist, { recursive: true, force: true })

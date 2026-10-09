@@ -101,11 +101,18 @@ await replace({
 })
 
 await replace({
+  path: join(serverStaticPath, 'index.html'),
+  marker: `"develop.processExplorerWorkerPath": "${workerRemoteUrl}"`,
+  occurrence: `"develop.processExplorerWorkerPath": "/${commitHash}/packages/process-explorer-worker/index.js"`,
+  replacement: `"develop.processExplorerWorkerPath": "${workerRemoteUrl}"`,
+})
+
+await replace({
   path: rendererWorkerMainPath,
-  marker: '// const processExplorerWorkerUrl = ',
-  occurrence: `const processExplorerWorkerUrl = \`\${assetDir}/packages/process-explorer-worker/index.js\``,
-  replacement: `// const processExplorerWorkerUrl = \`\${assetDir}/packages/process-explorer-worker/index.js\`
-const processExplorerWorkerUrl = \`${workerRemoteUrl}\``,
+  marker: `\`${workerRemoteUrl}\``,
+  occurrence:
+    '\`${assetDir}/packages/renderer-worker/node_modules/@lvce-editor/process-explorer-worker/index.js\`',
+  replacement: `\`${workerRemoteUrl}\``,
 })
 
 await replace({

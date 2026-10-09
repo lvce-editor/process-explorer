@@ -12,10 +12,11 @@ export const renderFocus = (
     return []
   }
   if (newState.focusedIndex < 0) {
-    return [ViewletCommand.FocusSelector, '.ProcessExplorerTable']
+    return [ViewletCommand.FocusSelector, newState.uid, '.ProcessExplorerTable']
   }
   return [
     ViewletCommand.FocusSelector,
+    newState.uid,
     `[data-index="${newState.focusedIndex}"]`,
   ]
 }
