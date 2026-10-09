@@ -20,14 +20,24 @@ const launchProcessExplorerNode = jest.fn(
 const handleProcessExplorerRpcClose = jest.fn(async () => {})
 const disposeMainProcess = jest.fn(async () => {})
 const disposeProcessExplorer = jest.fn(async () => {})
+const disposeRemoteProcessExplorer = jest.fn(async () => {})
 const setMainProcess = jest.fn()
 const clear = jest.fn()
+const clearRemoteProcessExplorer = jest.fn()
+const hasRemoteProcessExplorer = jest.fn(() => false)
+const setRemoteProcessExplorer = jest.fn()
 const setProcessExplorer = jest.fn()
+const rendererInvoke = jest.fn<(method: string) => Promise<boolean>>(
+  async (_method: string) => false,
+)
 
 jest.unstable_mockModule('@lvce-editor/rpc-registry', () => ({
   MainProcess: {
     dispose: disposeMainProcess,
     set: setMainProcess,
+  },
+  RendererWorker: {
+    invoke: rendererInvoke,
   },
 }))
 
@@ -58,6 +68,16 @@ jest.unstable_mockModule(
     clear,
     dispose: disposeProcessExplorer,
     set: setProcessExplorer,
+  }),
+)
+
+jest.unstable_mockModule(
+  '../src/parts/RemoteProcessExplorer/RemoteProcessExplorer.ts',
+  () => ({
+    clear: clearRemoteProcessExplorer,
+    dispose: disposeRemoteProcessExplorer,
+    has: hasRemoteProcessExplorer,
+    set: setRemoteProcessExplorer,
   }),
 )
 
@@ -104,6 +124,32 @@ test('initializeProcessExplorer - remote', async () => {
   expect(setProcessExplorer).toHaveBeenCalledWith(nodeRpc)
 })
 
+test('initializeProcessExplorer - electron with remote workspace', async () => {
+  rendererInvoke.mockResolvedValueOnce(true)
+
+  await InitializeProcessExplorer.initializeProcessExplorer(
+    PlatformType.Electron,
+  )
+
+  expect(launchProcessExplorerElectron).toHaveBeenCalledTimes(1)
+  expect(launchProcessExplorerNode).toHaveBeenCalledTimes(1)
+  expect(setProcessExplorer).toHaveBeenCalledWith(processExplorerRpc)
+  expect(setRemoteProcessExplorer).toHaveBeenCalledWith(nodeRpc)
+})
+
+test('initializeProcessExplorer - disposes remote rpc after workspace disconnects', async () => {
+  rendererInvoke.mockResolvedValueOnce(true).mockResolvedValueOnce(false)
+  await InitializeProcessExplorer.initializeProcessExplorer(
+    PlatformType.Electron,
+  )
+
+  await InitializeProcessExplorer.initializeProcessExplorer(
+    PlatformType.Electron,
+  )
+
+  expect(disposeRemoteProcessExplorer).toHaveBeenCalledTimes(1)
+})
+
 test('initializeProcessExplorer - remote connection closes', async () => {
   await InitializeProcessExplorer.initializeProcessExplorer(PlatformType.Remote)
   const onClose = launchProcessExplorerNode.mock.calls[0][0]
@@ -135,6 +181,7 @@ test('dispose - electron rpcs', async () => {
 
   expect(disposeMainProcess).toHaveBeenCalledTimes(1)
   expect(disposeProcessExplorer).toHaveBeenCalledTimes(1)
+  expect(disposeRemoteProcessExplorer).toHaveBeenCalledTimes(1)
 })
 
 test('dispose - remote rpc', async () => {

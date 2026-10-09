@@ -41,6 +41,7 @@ export const create = (
   const state: ProcessExplorerState = {
     assetDir,
     collapsedPids: [],
+    errorCode: '',
     errorCodeFrame: '',
     errorMessage: '',
     errorStack: '',
@@ -50,6 +51,7 @@ export const create = (
     height,
     includeFrontendMemoryUsage: getIncludeFrontendMemoryUsage(args),
     initial: true,
+    message: '',
     parentUid,
     platform,
     processes: [],
@@ -61,6 +63,7 @@ export const create = (
     x,
     y,
   }
-  ProcessExplorerStates.set(state.uid, state, state)
+  const { uid } = state
+  ProcessExplorerStates.set(uid, state, state)
   return state
 }

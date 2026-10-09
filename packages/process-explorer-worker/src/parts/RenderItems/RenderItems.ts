@@ -41,19 +41,37 @@ const processExplorer: VirtualDomNode = {
   type: VirtualDomElements.Div,
 }
 
-const getRowClassName = (focused: boolean): string => {
-  if (focused) {
-    return mergeClassNames(ClassNames.Row, ClassNames.RowFocused)
-  }
-  return ClassNames.Row
+const messageNode: VirtualDomNode = {
+  childCount: 1,
+  className: ClassNames.Message,
+  type: VirtualDomElements.Div,
 }
 
-const getPaddingLeft = (process: VisibleProcess): string => {
-  if (process.depth <= 1) {
-    return '0'
+const errorIconNode: VirtualDomNode = {
+  childCount: 0,
+  className: mergeClassNames(
+    ClassNames.ErrorIcon,
+    ClassNames.MaskIcon,
+    ClassNames.MaskIconError,
+  ),
+  type: VirtualDomElements.Div,
+}
+
+const rowFocusedClassName = mergeClassNames(
+  ClassNames.Row,
+  ClassNames.RowFocused,
+)
+
+const wideNameHeaderCellClassName = mergeClassNames(
+  ClassNames.HeaderCell,
+  ClassNames.NameHeaderCellWide,
+)
+
+const getRowClassName = (focused: boolean): string => {
+  if (focused) {
+    return rowFocusedClassName
   }
-  const depthCh = (process.depth - 1) * 1.5
-  return `${depthCh}ch`
+  return ClassNames.Row
 }
 
 const getAriaExpanded = (process: VisibleProcess): boolean | undefined => {
@@ -71,7 +89,6 @@ const getCellDom = (
   className: string,
   value: string,
   index: number,
-  paddingLeft?: string,
 ): readonly VirtualDomNode[] => {
   return [
     {
@@ -79,7 +96,6 @@ const getCellDom = (
       className,
       'data-index': index,
       name: String(index),
-      paddingLeft,
       role: AriaRoles.GridCell,
       tabIndex: -1,
       type: VirtualDomElements.Td,
@@ -88,12 +104,30 @@ const getCellDom = (
   ]
 }
 
-const getHeaderDom = (): readonly VirtualDomNode[] => {
+const shouldUseWideNameColumn = (
+  visibleProcesses: readonly VisibleProcess[],
+): boolean => {
+  return visibleProcesses.some((process) => {
+    const name = process.name.toLowerCase()
+    return name.includes('webcontentsview') || name.includes('webcontents-view')
+  })
+}
+
+const getHeaderDom = (
+  visibleProcesses: readonly VisibleProcess[],
+): readonly VirtualDomNode[] => {
+  const useWideNameColumn = shouldUseWideNameColumn(visibleProcesses)
   return [
     tableHeadNode,
     headerRowNode,
-    ...['Name', 'PID', 'Memory'].flatMap((label) => [
-      headerCellNode,
+    ...['Name', 'PID', 'Memory'].flatMap((label, index) => [
+      {
+        ...headerCellNode,
+        ...(index === 0 &&
+          useWideNameColumn && {
+            className: wideNameHeaderCellClassName,
+          }),
+      },
       text(label),
     ]),
   ]
@@ -118,15 +152,22 @@ const getRowDom = (
       type: VirtualDomElements.Tr,
     },
     ...getCellDom(
-      mergeClassNames(ClassNames.Cell, ClassNames.NameCell),
+      mergeClassNames(
+        ClassNames.Cell,
+        ClassNames.NameCell,
+        `ProcessExplorerIndent-${process.depth}`,
+      ),
       process.name,
       index,
-      getPaddingLeft(process),
     ),
-    ...getCellDom(ClassNames.Cell, String(process.pid), index),
     ...getCellDom(
       ClassNames.Cell,
-      FormatMemory.formatMemory(process.memory),
+      process.synthetic ? '' : String(process.pid),
+      index,
+    ),
+    ...getCellDom(
+      ClassNames.Cell,
+      process.synthetic ? '' : FormatMemory.formatMemory(process.memory),
       index,
     ),
   ]
@@ -164,14 +205,19 @@ const getErrorSectionDom = (
 }
 
 const hasError = (state: ProcessExplorerState): boolean => {
-  const { errorCodeFrame, errorMessage, errorStack } = state
-  return Boolean(errorMessage || errorCodeFrame || errorStack)
+  const { errorCode, errorCodeFrame, errorMessage, errorStack } = state
+  return Boolean(errorCode || errorMessage || errorCodeFrame || errorStack)
+}
+
+const getMessageDom = (message: string): readonly VirtualDomNode[] => {
+  return [processExplorer, messageNode, text(message)]
 }
 
 const getErrorDom = (
   state: ProcessExplorerState,
 ): readonly VirtualDomNode[] => {
-  const { errorCodeFrame, errorMessage, errorStack } = state
+  const { errorCode, errorCodeFrame, errorMessage, errorStack } = state
+  const errorCodeDom = getErrorSectionDom(errorCode, VirtualDomElements.Div)
   const messageDom = getErrorSectionDom(errorMessage, VirtualDomElements.Div)
   const codeFrameDom = getErrorSectionDom(
     errorCodeFrame,
@@ -179,14 +225,19 @@ const getErrorDom = (
   )
   const stackDom = getErrorSectionDom(errorStack, VirtualDomElements.Pre)
   const childCount =
-    messageDom.length / 2 + codeFrameDom.length / 2 + stackDom.length / 2
+    errorCodeDom.length / 2 +
+    messageDom.length / 2 +
+    codeFrameDom.length / 2 +
+    stackDom.length / 2
   return [
     processExplorer,
     {
-      childCount,
+      childCount: childCount + 1,
       className: ClassNames.Error,
       type: VirtualDomElements.Div,
     },
+    errorIconNode,
+    ...errorCodeDom,
     ...messageDom,
     ...codeFrameDom,
     ...stackDom,
@@ -214,15 +265,20 @@ const getTableDom = (
       tabIndex: TabIndex.Focusable,
       type: VirtualDomElements.Table,
     },
-    ...getHeaderDom(),
+    ...getHeaderDom(visibleProcesses),
     ...getBodyDom(state),
   ]
 }
 
-const getDom = (state: ProcessExplorerState): readonly VirtualDomNode[] => {
-  const { initial } = state
+export const getDom = (
+  state: ProcessExplorerState,
+): readonly VirtualDomNode[] => {
+  const { initial, message } = state
   if (initial) {
     return []
+  }
+  if (message) {
+    return getMessageDom(message)
   }
   if (hasError(state)) {
     return getErrorDom(state)

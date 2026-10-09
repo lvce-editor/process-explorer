@@ -10,7 +10,7 @@ export const getPsOutput = async (): Promise<string> => {
     const { stdout } = await execFile('ps', [
       '-ax',
       '-o',
-      'pid=,ppid=,pcpu=,pmem=,command=',
+      'pid=,ppid=,pcpu=,rss=,command=',
     ])
     return stdout.trim()
   } catch (error) {

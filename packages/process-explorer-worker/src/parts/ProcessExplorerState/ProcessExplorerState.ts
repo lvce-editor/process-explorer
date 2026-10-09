@@ -3,7 +3,8 @@ import type { VisibleProcess } from '../VisibleProcess/VisibleProcess.ts'
 
 export interface ProcessExplorerState {
   readonly assetDir: string
-  readonly collapsedPids: readonly number[]
+  readonly collapsedPids: readonly (number | string)[]
+  readonly errorCode: string
   readonly errorCodeFrame: string
   readonly errorMessage: string
   readonly errorStack: string
@@ -13,6 +14,7 @@ export interface ProcessExplorerState {
   readonly height: number
   readonly includeFrontendMemoryUsage: boolean
   readonly initial: boolean
+  readonly message: string
   readonly parentUid: number
   readonly platform: number
   readonly processes: readonly ProcessInfo[]

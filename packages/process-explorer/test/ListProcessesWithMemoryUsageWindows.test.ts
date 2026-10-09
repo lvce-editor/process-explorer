@@ -13,16 +13,20 @@ jest.unstable_mockModule('../src/parts/CreatePidMap/CreatePidMap.ts', () => ({
   createPidMap,
 }))
 
-jest.unstable_mockModule('@vscode/windows-process-tree', () => {
-  return {
-    getProcessCpuUsage: jest.fn(),
-    getProcessList: jest.fn(),
-    ProcessDataFlag: {
-      CommandLine: 1,
-      Memory: 2,
-    },
-  }
-})
+jest.unstable_mockModule(
+  '@vscode/windows-process-tree',
+  () => {
+    return {
+      getProcessCpuUsage: jest.fn(),
+      getProcessList: jest.fn(),
+      ProcessDataFlag: {
+        CommandLine: 1,
+        Memory: 2,
+      },
+    }
+  },
+  { virtual: true },
+)
 
 const WindowsProcessTree = await import('@vscode/windows-process-tree')
 const ListProcessesWithMemoryUsage =
@@ -167,7 +171,7 @@ test('listProcessesWithMemoryUsage', async () => {
     {
       cmd: '"C:\\Users\\test-user\\Documents\\app\\packages\\main-process\\node_modules\\electron\\dist\\electron.exe" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --user-data-dir="C:\\Users\\test-user\\AppData\\Roaming\\main-process" --standard-schemes=lvce-oss --secure-schemes=lvce-oss --bypasscsp-schemes --cors-schemes --fetch-schemes=lvce-oss --service-worker-schemes --streaming-schemes=lvce-oss --mojo-platform-channel-handle=1832 --field-trial-handle=1380,i,10773524994372501887,514931115338394725,131072 --disable-features=SpareRendererForSitePerProcess,WinRetrieveSuggestionsOnlyOnDemand /prefetch:8',
       memory: 43_425_792,
-      name: 'utility',
+      name: 'utility-network-service',
       pid: 5892,
       ppid: 9176,
     },

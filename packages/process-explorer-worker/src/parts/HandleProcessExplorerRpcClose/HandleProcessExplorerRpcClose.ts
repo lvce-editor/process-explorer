@@ -1,6 +1,7 @@
 import { RendererWorker } from '@lvce-editor/rpc-registry'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
 import * as AutoRefresh from '../AutoRefresh/AutoRefresh.ts'
+import * as ErrorCodes from '../ErrorCodes/ErrorCodes.ts'
 import * as ProcessExplorerStates from '../ProcessExplorerStates/ProcessExplorerStates.ts'
 
 export const processExplorerRpcClosedMessage =
@@ -11,6 +12,7 @@ export const toProcessExplorerRpcClosedState = (
 ): ProcessExplorerState => {
   return {
     ...state,
+    errorCode: ErrorCodes.ProcessExplorerRpcConnectionClosed,
     errorCodeFrame: '',
     errorMessage: processExplorerRpcClosedMessage,
     errorStack: '',

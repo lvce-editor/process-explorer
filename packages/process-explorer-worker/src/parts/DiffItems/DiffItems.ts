@@ -6,10 +6,12 @@ export const isEqual = (
 ): boolean => {
   return (
     oldState.initial === newState.initial &&
+    oldState.errorCode === newState.errorCode &&
     oldState.errorCodeFrame === newState.errorCodeFrame &&
     oldState.errorMessage === newState.errorMessage &&
     oldState.errorStack === newState.errorStack &&
     oldState.focusedIndex === newState.focusedIndex &&
+    oldState.message === newState.message &&
     oldState.visibleProcesses === newState.visibleProcesses
   )
 }

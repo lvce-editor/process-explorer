@@ -2,36 +2,51 @@ import type { ProcessInfo } from '../ProcessInfo/ProcessInfo.ts'
 import type { VisibleProcess } from '../VisibleProcess/VisibleProcess.ts'
 import * as ProcessFlag from '../ProcessFlag/ProcessFlag.ts'
 
-const getRootProcess = (
+const getTreeId = (process: ProcessInfo): number | string => {
+  return process.treeId ?? process.pid
+}
+
+const getParentTreeId = (process: ProcessInfo): number | string => {
+  return process.parentTreeId ?? process.ppid
+}
+
+const getRootProcesses = (
   processes: readonly ProcessInfo[],
   rootPid: number,
-): ProcessInfo | undefined => {
-  if (rootPid) {
-    return processes.find((process) => process.pid === rootPid)
+): readonly ProcessInfo[] => {
+  const groupedProcesses = processes.filter(
+    (process) => process.parentTreeId === '',
+  )
+  if (groupedProcesses.length > 0) {
+    return groupedProcesses
   }
-  return processes[0]
+  if (rootPid) {
+    const rootProcess = processes.find((process) => process.pid === rootPid)
+    return rootProcess ? [rootProcess] : []
+  }
+  return processes.length > 0 ? [processes[0]] : []
 }
 
 const hasChildren = (
   processes: readonly ProcessInfo[],
-  pid: number,
+  pid: number | string,
 ): boolean => {
-  return processes.some((process) => process.ppid === pid)
+  return processes.some((process) => getParentTreeId(process) === pid)
 }
 
 const getChildren = (
   processes: readonly ProcessInfo[],
-  collapsedPids: readonly number[],
+  collapsedPids: readonly (number | string)[],
   process: ProcessInfo,
   depth: number,
 ): readonly VisibleProcess[] => {
   const children = processes.filter(
-    (otherProcess) => otherProcess.ppid === process.pid,
+    (otherProcess) => getParentTreeId(otherProcess) === getTreeId(process),
   )
   if (children.length === 0) {
     return []
   }
-  if (collapsedPids.includes(process.pid)) {
+  if (collapsedPids.includes(getTreeId(process))) {
     return []
   }
   return children.flatMap((child) =>
@@ -41,13 +56,14 @@ const getChildren = (
 
 const withChildren = (
   processes: readonly ProcessInfo[],
-  collapsedPids: readonly number[],
+  collapsedPids: readonly (number | string)[],
   process: ProcessInfo,
   depth: number,
 ): readonly VisibleProcess[] => {
-  const processHasChildren = hasChildren(processes, process.pid)
+  const treeId = getTreeId(process)
+  const processHasChildren = hasChildren(processes, treeId)
   let flags = ProcessFlag.None
-  if (processHasChildren && collapsedPids.includes(process.pid)) {
+  if (processHasChildren && collapsedPids.includes(treeId)) {
     flags = ProcessFlag.Collapsed
   } else if (processHasChildren) {
     flags = ProcessFlag.Expanded
@@ -65,12 +81,11 @@ const withChildren = (
 
 export const getVisibleProcesses = (
   processes: readonly ProcessInfo[],
-  collapsedPids: readonly number[],
+  collapsedPids: readonly (number | string)[],
   rootPid: number,
 ): readonly VisibleProcess[] => {
-  const rootProcess = getRootProcess(processes, rootPid)
-  if (!rootProcess) {
-    return []
-  }
-  return withChildren(processes, collapsedPids, rootProcess, 1)
+  const rootProcesses = getRootProcesses(processes, rootPid)
+  return rootProcesses.flatMap((rootProcess) =>
+    withChildren(processes, collapsedPids, rootProcess, 1),
+  )
 }

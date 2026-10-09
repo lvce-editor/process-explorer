@@ -54,6 +54,10 @@ test('renderIncremental - returns patches for focused row change', () => {
   const result = renderIncremental(oldState, newState)
   expect(result[0]).toBe(ViewletCommand.SetPatches)
   expect(result[1]).toBe(123)
+  expect(result[2]).toContainEqual({
+    navigations: expect.any(Array),
+    type: 18,
+  })
   expect(JSON.stringify(result[2])).toContain(
     'ProcessExplorerRow ProcessExplorerRowFocused',
   )

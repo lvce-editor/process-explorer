@@ -38,6 +38,14 @@ const processExplorerPath = join(
   'processExplorerMain.ts',
 )
 
+const serverPath = join(
+  nodeModulesPath,
+  '@lvce-editor',
+  'server',
+  'src',
+  'server.js',
+)
+
 const serverStaticPath = join(
   nodeModulesPath,
   '@lvce-editor',
@@ -60,6 +68,14 @@ const rendererWorkerMainPath = join(
   'dist',
   'rendererWorkerMain.js',
 )
+const rendererProcessMainPath = join(
+  serverStaticPath,
+  commitHash,
+  'packages',
+  'renderer-process',
+  'dist',
+  'rendererProcessMain.js',
+)
 const processExplorerPathPath = join(
   nodeModulesPath,
   '@lvce-editor',
@@ -70,12 +86,136 @@ const processExplorerPathPath = join(
   'ProcessExplorerPath.js',
 )
 const workerRemoteUrl = getRemoteUrl(workerPath)
+
+await replace({
+  path: serverPath,
+  marker: `request.on('error', handleRequestError)
+  if (!socket) {`,
+  occurrence: `request.on('error', handleRequestError)
+  socket.on('error', handleSocketUpgradeError)`,
+  replacement: `request.on('error', handleRequestError)
+  if (!socket) {
+    return
+  }
+  socket.on('error', handleSocketUpgradeError)`,
+})
+
 await replace({
   path: rendererWorkerMainPath,
-  marker: '// const processExplorerWorkerUrl = ',
-  occurrence: `const processExplorerWorkerUrl = \`\${assetDir}/packages/process-explorer-worker/index.js\``,
-  replacement: `// const processExplorerWorkerUrl = \`\${assetDir}/packages/process-explorer-worker/index.js\`
-const processExplorerWorkerUrl = \`${workerRemoteUrl}\``,
+  marker: `\`${workerRemoteUrl}\``,
+  occurrence:
+    '\`${assetDir}/packages/renderer-worker/node_modules/@lvce-editor/process-explorer-worker/index.js\`',
+  replacement: `\`${workerRemoteUrl}\``,
+})
+
+await replace({
+  path: rendererProcessMainPath,
+  marker: 'const MultiNavigation = 18;',
+  occurrence: 'const SetReferenceNodeUid = 11;',
+  replacement: `const SetReferenceNodeUid = 11;
+const MultiNavigation = 18;`,
+})
+
+await replace({
+  path: rendererProcessMainPath,
+  marker: 'const handleNavigateChild = (state, index, nextPatchType) => {',
+  occurrence: `const handleNavigateChild = (state, patches, patchIndex) => {
+  const patch = patches[patchIndex];
+  const $Children = state.current.childNodes;
+  const $Child = $Children[patch.index];
+  if ($Child) {
+    state.current = $Child;
+    return true;
+  }
+  const nextPatch = patches[patchIndex + 1];
+  if (nextPatch && nextPatch.type === Replace && patch.index === $Children.length) {
+    const $Placeholder = document.createComment('virtual-dom-placeholder');
+    state.current.append($Placeholder);
+    state.current = $Placeholder;
+    return true;
+  }
+  console.error('Cannot navigate to child: child not found at index', {
+    $Current: state.current,
+    index: patch.index,
+    childCount: $Children.length
+  });
+  return false;
+};`,
+  replacement: `const handleNavigateChild = (state, index, nextPatchType) => {
+  const $Children = state.current.childNodes;
+  const $Child = $Children[index];
+  if ($Child) {
+    state.current = $Child;
+    return true;
+  }
+  if (nextPatchType === Replace && index === $Children.length) {
+    const $Placeholder = document.createComment('virtual-dom-placeholder');
+    state.current.append($Placeholder);
+    state.current = $Placeholder;
+    return true;
+  }
+  console.error('Cannot navigate to child: child not found at index', {
+    $Current: state.current,
+    index,
+    childCount: $Children.length
+  });
+  return false;
+};`,
+})
+
+await replace({
+  path: rendererProcessMainPath,
+  marker: 'const handleSingleNavigation = (',
+  occurrence: `const handleNavigationPatch = (state, patch, patches, patchIndex, $Element) => {
+  switch (patch.type) {
+    case NavigateChild:
+      return handleNavigateChild(state, patches, patchIndex);
+    case NavigateParent:
+      return handleNavigateParent(state);
+    case NavigateSibling:
+      return handleNavigateSibling(state, patch, $Element, patchIndex);
+    default:
+      return true;
+  }
+};`,
+  replacement: `const handleSingleNavigation = (state, type, index, nextPatchType, $Element, patchIndex) => {
+  switch (type) {
+    case NavigateChild:
+      return handleNavigateChild(state, index, nextPatchType);
+    case NavigateParent:
+      return handleNavigateParent(state);
+    case NavigateSibling:
+      return handleNavigateSibling(state, { index }, $Element, patchIndex);
+    default:
+      console.error('Unknown navigation type', { type });
+      return false;
+  }
+};
+const handleMultiNavigation = (state, navigations, nextPatchType, $Element, patchIndex) => {
+  for (let i = 0; i < navigations.length; i += 2) {
+    const type = navigations[i];
+    const index = navigations[i + 1];
+    const nextType = navigations[i + 2] ?? nextPatchType;
+    if (!handleSingleNavigation(state, type, index, nextType, $Element, patchIndex)) {
+      return false;
+    }
+  }
+  return true;
+};
+const handleNavigationPatch = (state, patch, patches, patchIndex, $Element) => {
+  switch (patch.type) {
+    case MultiNavigation:
+      return handleMultiNavigation(state, patch.navigations, patches[patchIndex + 1]?.type, $Element, patchIndex);
+    case NavigateChild:
+      return handleNavigateChild(state, patch.index, patches[patchIndex + 1]?.type);
+    case NavigateParent:
+      return handleNavigateParent(state);
+    case NavigateSibling:
+      return handleNavigateSibling(state, patch, $Element, patchIndex);
+    default:
+      return true;
+  }
+};`,
 })
 
 await replace({

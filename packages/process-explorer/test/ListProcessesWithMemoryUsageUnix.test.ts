@@ -1,5 +1,4 @@
 import { beforeEach, expect, jest, test } from '@jest/globals'
-import * as ErrorCodes from '../src/parts/ErrorCodes/ErrorCodes.ts'
 
 beforeEach(() => {
   jest.clearAllMocks()
@@ -12,7 +11,7 @@ jest.unstable_mockModule('node:child_process', () => ({
 }))
 
 jest.unstable_mockModule('../src/parts/IsMacos/IsMacos.ts', () => ({
-  isMacos: true,
+  isMacOs: true,
 }))
 
 jest.unstable_mockModule('node:path', () => ({
@@ -22,6 +21,7 @@ jest.unstable_mockModule('node:path', () => ({
 }))
 
 jest.unstable_mockModule('node:fs/promises', () => ({
+  readdir: jest.fn(() => []),
   readFile: jest.fn(() => {
     throw new Error('not implemented')
   }),
@@ -40,26 +40,18 @@ const fsPromises = await import('node:fs/promises')
 const ListProcessesWithMemoryUsage =
   await import('../src/parts/ListProcessesWithMemoryUsageUnix/ListProcessesWithMemoryUsageUnix.js')
 
-class NodeError extends Error {
-  code: any
-  constructor(code: any, message = code) {
-    super(code + ':' + message)
-    this.code = code
-  }
-}
-
 test('listProcessesWithMemoryUsage', async () => {
   // @ts-ignore
   childProcess.execFile.mockImplementation((command, args, callback) => {
     callback(null, {
-      stdout: `1       0  0.0  0.1 /sbin/init splash
-2127    1442  0.0  0.2 /usr/libexec/gsd-keyboard
-2130    1442  0.0  0.2 /usr/libexec/gsd-media-keys
-2133    1442  0.0  0.2 /usr/libexec/gsd-power
-2134    1442  0.0  0.1 /usr/libexec/gsd-print-notifications
-2135    1442  0.0  0.0 /usr/libexec/gsd-rfkill
-2136    1442  0.0  0.0 /usr/libexec/gsd-screensaver-proxy
-2138    1442  0.0  0.0 /usr/libexec/gsd-sharing
+      stdout: `1       0  0.0  4096 /sbin/init splash
+2127    1442  0.0  8092 /usr/libexec/gsd-keyboard
+2130    1442  0.0  8092 /usr/libexec/gsd-media-keys
+2133    1442  0.0  8092 /usr/libexec/gsd-power
+2134    1442  0.0  8092 /usr/libexec/gsd-print-notifications
+2135    1442  0.0  8092 /usr/libexec/gsd-rfkill
+2136    1442  0.0  8092 /usr/libexec/gsd-screensaver-proxy
+2138    1442  0.0  8092 /usr/libexec/gsd-sharing
 `,
     })
   })
@@ -133,8 +125,8 @@ test('listProcessesWithMemoryUsage - without electron data', async () => {
   // @ts-ignore
   childProcess.execFile.mockImplementation((command, args, callback) => {
     callback(null, {
-      stdout: `1       0  0.0  0.1 /sbin/init splash
-2127    1442  0.0  0.2 /usr/libexec/gsd-keyboard
+      stdout: `1       0  0.0  4096 /sbin/init splash
+2127    1442  0.0  8092 /usr/libexec/gsd-keyboard
 `,
     })
   })
@@ -156,12 +148,39 @@ test('listProcessesWithMemoryUsage - without electron data', async () => {
   expect(createPidMap).not.toHaveBeenCalled()
 })
 
+test('listProcessesWithMemoryUsage - uses memory reported by ps', async () => {
+  // @ts-ignore
+  childProcess.execFile.mockImplementation((command, args, callback) => {
+    callback(null, {
+      stdout: '2127    1442  0.0  8092 /usr/libexec/gsd-keyboard',
+    })
+  })
+  // @ts-ignore
+  fsPromises.readFile.mockImplementation(() => {
+    throw new Error('statm should not be read')
+  })
+
+  await expect(
+    ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(2127, false),
+  ).resolves.toEqual([
+    {
+      cmd: '/usr/libexec/gsd-keyboard',
+      depth: 1,
+      memory: 8_286_208,
+      name: 'main',
+      pid: 2127,
+      ppid: 1442,
+    },
+  ])
+  expect(fsPromises.readFile).not.toHaveBeenCalled()
+})
+
 test('listProcessesWithMemoryUsage - with provided electron pid map', async () => {
   // @ts-ignore
   childProcess.execFile.mockImplementation((command, args, callback) => {
     callback(null, {
-      stdout: `1442       1  0.0  0.2 electron
-2127    1442  0.0  0.2 electron --type=utility
+      stdout: `1442       1  0.0  8092 electron
+2127    1442  0.0  8092 electron --type=utility
 `,
     })
   })
@@ -198,7 +217,7 @@ test('listProcessesWithMemoryUsage - bug with parsing this specific line', async
   childProcess.execFile.mockImplementation((command, args, callback) => {
     callback(null, {
       stdout:
-        ' 25666   24775  131  1.4 /snap/code/97/usr/share/code/code --ms-enable-electron-run-as-node --max-old-space-size=3072 /snap/code/97/usr/share/code/resources/app/extensions/node_modules/typescript/lib/tsserver.js --useInferredProjectPerProjectRoot --disableAutomaticTypingAcquisition --enableTelemetry --cancellationPipeName /tmp/vscode-typescript1000/25df66cb1c287c2f519c/tscancellation-9462d6e60479e4eb5d2f.tmp* --locale en --noGetErrOnBackgroundUpdate --validateDefaultNpmLocation --useNodeIpc',
+        ' 25666   24775  131  8092 /snap/code/97/usr/share/code/code --ms-enable-electron-run-as-node --max-old-space-size=3072 /snap/code/97/usr/share/code/resources/app/extensions/node_modules/typescript/lib/tsserver.js --useInferredProjectPerProjectRoot --disableAutomaticTypingAcquisition --enableTelemetry --cancellationPipeName /tmp/vscode-typescript1000/25df66cb1c287c2f519c/tscancellation-9462d6e60479e4eb5d2f.tmp* --locale en --noGetErrOnBackgroundUpdate --validateDefaultNpmLocation --useNodeIpc',
     })
   })
   // @ts-ignore
@@ -233,7 +252,7 @@ test('listProcessesWithMemoryUsage - detect chrome devtools', async () => {
   childProcess.execFile.mockImplementation((command, args, callback) => {
     callback(null, {
       stdout:
-        ' 25666   24775  131  1.4 /snap/code/97/usr/share/code/code --ms-enable-electron-run-as-node --max-old-space-size=3072 /snap/code/97/usr/share/code/resources/app/extensions/node_modules/typescript/lib/tsserver.js --useInferredProjectPerProjectRoot --disableAutomaticTypingAcquisition --enableTelemetry --cancellationPipeName /tmp/vscode-typescript1000/25df66cb1c287c2f519c/tscancellation-9462d6e60479e4eb5d2f.tmp* --locale en --noGetErrOnBackgroundUpdate --validateDefaultNpmLocation --useNodeIpc',
+        ' 25666   24775  131  8092 /snap/code/97/usr/share/code/code --ms-enable-electron-run-as-node --max-old-space-size=3072 /snap/code/97/usr/share/code/resources/app/extensions/node_modules/typescript/lib/tsserver.js --useInferredProjectPerProjectRoot --disableAutomaticTypingAcquisition --enableTelemetry --cancellationPipeName /tmp/vscode-typescript1000/25df66cb1c287c2f519c/tscancellation-9462d6e60479e4eb5d2f.tmp* --locale en --noGetErrOnBackgroundUpdate --validateDefaultNpmLocation --useNodeIpc',
     })
   })
   // @ts-ignore
@@ -249,39 +268,6 @@ test('listProcessesWithMemoryUsage - detect chrome devtools', async () => {
       name: 'main',
       pid: 25_666,
       ppid: 24_775,
-    },
-  ])
-})
-
-test('listProcessesWithMemoryUsage - error - ESRCH', async () => {
-  // @ts-ignore
-  childProcess.execFile.mockImplementation((command, args, callback) => {
-    callback(null, {
-      stdout: `1       0  0.0  0.1 /sbin/init splash
-2127    1442  0.0  0.2 /usr/libexec/gsd-keyboard
-2130    1442  0.0  0.2 /usr/libexec/gsd-media-keys
-`,
-    })
-  })
-  // @ts-ignore
-  fsPromises.readFile.mockImplementation((path) => {
-    switch (path) {
-      case '/proc/2127/statm':
-        throw new NodeError(ErrorCodes.ESRCH, 'no such process, read')
-      default:
-        return '41700 2023 1199 224 0 5027 0'
-    }
-  })
-  expect(
-    await ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage(1442),
-  ).toEqual([
-    {
-      cmd: '/usr/libexec/gsd-media-keys',
-      depth: 1,
-      memory: 8_286_208,
-      name: '/usr/libexec/gsd-media-keys',
-      pid: 2130,
-      ppid: 1442,
     },
   ])
 })

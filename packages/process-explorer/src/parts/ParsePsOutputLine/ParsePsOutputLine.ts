@@ -19,6 +19,7 @@ export const parsePsOutputLine = (line: string): ParsedPsLine => {
   ) {
     return {
       cmd,
+      memory: Number.parseInt(memoryField.value) * 1024,
       pid: Number.parseInt(pidField.value),
       ppid: Number.parseInt(ppidField.value),
     }

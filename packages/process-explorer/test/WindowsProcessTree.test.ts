@@ -4,9 +4,13 @@ beforeEach(() => {
   jest.resetAllMocks()
 })
 
-jest.unstable_mockModule('@vscode/windows-process-tree', () => ({
-  getProcessList: jest.fn(),
-}))
+jest.unstable_mockModule(
+  '@vscode/windows-process-tree',
+  () => ({
+    getProcessList: jest.fn(),
+  }),
+  { virtual: true },
+)
 
 const WindowsProcessTree =
   await import('../src/parts/WindowsProcessTree/WindowsProcessTree.ts')

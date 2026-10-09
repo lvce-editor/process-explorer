@@ -5,10 +5,12 @@ test('createDefaultState', () => {
   expect(createDefaultState()).toMatchObject({
     assetDir: '',
     collapsedPids: [],
+    errorCode: '',
     errorCodeFrame: '',
     errorMessage: '',
     errorStack: '',
     focusedIndex: -1,
+    message: '',
     platform: 0,
     processes: [],
     rootPid: -1,

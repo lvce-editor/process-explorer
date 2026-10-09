@@ -71,6 +71,42 @@ test('renderItems - populated table', () => {
       title: 'node child.js',
     }),
   )
+  const nameHeader = result[2].find(
+    (node: VirtualDomNode) => node.className === 'ProcessExplorerHeaderCell',
+  )
+  expect(nameHeader).not.toHaveProperty('width')
+})
+
+test('renderItems - widens the name column for a web contents view process', () => {
+  const state = {
+    ...createDefaultState(),
+    initial: false,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(
+      [
+        ...processes,
+        {
+          cmd: 'renderer',
+          memory: 1,
+          name: 'webcontents-view / soundcloud.com',
+          pid: 5,
+          ppid: 1,
+        },
+      ],
+      [],
+      1,
+    ),
+  }
+  const result = RenderItems.renderItems(createDefaultState(), state)
+  const headers = result[2].filter(
+    (node: VirtualDomNode) => node.className === 'ProcessExplorerHeaderCell',
+  )
+
+  expect(headers).toHaveLength(2)
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      className: 'ProcessExplorerHeaderCell ProcessExplorerNameHeaderCellWide',
+    }),
+  )
 })
 
 test('renderItems - collapsed row', () => {
@@ -139,25 +175,19 @@ test('renderItems - aligns leaf and expandable siblings', () => {
   const result = RenderItems.renderItems(createDefaultState(), state)
   const leafZygoteNameCell = result[2].find(
     (node: VirtualDomNode) =>
-      node.className === 'ProcessExplorerCell ProcessExplorerNameCell' &&
+      node.className ===
+        'ProcessExplorerCell ProcessExplorerNameCell ProcessExplorerIndent-2' &&
       node['data-index'] === 1,
   )
   const expandableZygoteNameCell = result[2].find(
     (node: VirtualDomNode) =>
-      node.className === 'ProcessExplorerCell ProcessExplorerNameCell' &&
+      node.className ===
+        'ProcessExplorerCell ProcessExplorerNameCell ProcessExplorerIndent-2' &&
       node['data-index'] === 2,
   )
 
-  expect(leafZygoteNameCell).toEqual(
-    expect.objectContaining({
-      paddingLeft: '1.5ch',
-    }),
-  )
-  expect(expandableZygoteNameCell).toEqual(
-    expect.objectContaining({
-      paddingLeft: '1.5ch',
-    }),
-  )
+  expect(leafZygoteNameCell).not.toHaveProperty('paddingLeft')
+  expect(expandableZygoteNameCell).not.toHaveProperty('paddingLeft')
 })
 
 test('renderItems - initial is empty', () => {
@@ -175,6 +205,7 @@ test('renderItems - initial is empty', () => {
 test('renderItems - error only', () => {
   const state = {
     ...createDefaultState(),
+    errorCode: 'E_PROCESS_EXPLORER_REFRESH_FAILED',
     errorCodeFrame: '1 | throw new Error()',
     errorMessage: 'Pretty no pid',
     errorStack: 'Pretty stack',
@@ -185,10 +216,22 @@ test('renderItems - error only', () => {
   expect(result[0]).toBe(ViewletCommand.SetDom2)
   expect(result[2]).toContainEqual(
     expect.objectContaining({
+      childCount: 5,
       className: 'ProcessExplorerError',
       type: VirtualDomElements.Div,
     }),
   )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({
+      text: 'E_PROCESS_EXPLORER_REFRESH_FAILED',
+      type: VirtualDomElements.Text,
+    }),
+  )
+  expect(result[2]).toContainEqual({
+    childCount: 0,
+    className: 'ProcessExplorerErrorIcon MaskIcon MaskIconError',
+    type: VirtualDomElements.Div,
+  })
   expect(result[2]).toContainEqual(
     expect.objectContaining({
       text: 'Pretty no pid',
@@ -230,15 +273,68 @@ test('renderItems - error message only', () => {
 
   expect(result[2]).toContainEqual(
     expect.objectContaining({
-      childCount: 1,
+      childCount: 2,
       className: 'ProcessExplorerError',
       type: VirtualDomElements.Div,
     }),
   )
+  expect(result[2]).toContainEqual({
+    childCount: 0,
+    className: 'ProcessExplorerErrorIcon MaskIcon MaskIconError',
+    type: VirtualDomElements.Div,
+  })
   expect(result[2]).toContainEqual(
     expect.objectContaining({
       text: 'Pretty no pid',
       type: VirtualDomElements.Text,
     }),
+  )
+})
+
+test('renderItems - unsupported message', () => {
+  const state = {
+    ...createDefaultState(),
+    message: 'Process Explorer is not supported on web.',
+  }
+  const result = RenderItems.renderItems(createDefaultState(), state)
+
+  expect(result).toEqual([
+    ViewletCommand.SetDom2,
+    1,
+    [
+      expect.objectContaining({
+        className: 'Viewlet ProcessExplorer',
+      }),
+      {
+        childCount: 1,
+        className: 'ProcessExplorerMessage',
+        type: VirtualDomElements.Div,
+      },
+      {
+        childCount: 0,
+        text: 'Process Explorer is not supported on web.',
+        type: VirtualDomElements.Text,
+      },
+    ],
+  ])
+})
+
+test('renderItems - ssh name keeps the full command as its hover title', () => {
+  const cmd = '/usr/bin/ssh -T -D 54321 user@remote-host'
+  const state = {
+    ...createDefaultState(),
+    initial: false,
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(
+      [...processes, { cmd, memory: 1, name: 'ssh', pid: 5, ppid: 1 }],
+      [],
+      1,
+    ),
+  }
+  const result = RenderItems.renderItems(createDefaultState(), state)
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({ className: 'ProcessExplorerRow', title: cmd }),
+  )
+  expect(result[2]).toContainEqual(
+    expect.objectContaining({ text: 'ssh', type: VirtualDomElements.Text }),
   )
 })

@@ -2,31 +2,43 @@ import { MenuItemFlags } from '@lvce-editor/constants'
 import type { MenuEntry } from '../MenuEntry/MenuEntry.ts'
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
 import * as IsDebuggable from '../IsDebuggable/IsDebuggable.ts'
+import * as IsRendererProcess from '../IsRendererProcess/IsRendererProcess.ts'
 import * as MenuItemLabels from '../MenuItemLabels/MenuItemLabels.ts'
 
 export const getMenuEntries = (
   state: ProcessExplorerState,
 ): readonly MenuEntry[] => {
-  const process = state.visibleProcesses[state.focusedIndex]
-  if (!process) {
+  const { focusedIndex, visibleProcesses } = state
+  const process = visibleProcesses[focusedIndex]
+  if (!process || process.synthetic) {
     return []
   }
   const menuEntries: MenuEntry[] = [
     {
-      args: [state.focusedIndex],
+      args: [focusedIndex],
       command: 'ProcessExplorer.killProcess',
       flags: MenuItemFlags.None,
       id: 'killProcess',
       label: MenuItemLabels.KillProcess,
     },
   ]
-  if (IsDebuggable.isDebuggable(process.cmd)) {
+  const isDebuggable = IsDebuggable.isDebuggable(process.cmd)
+  if (isDebuggable) {
     menuEntries.push({
-      args: [state.focusedIndex],
+      args: [focusedIndex],
       command: 'ProcessExplorer.debugProcess',
       flags: MenuItemFlags.None,
       id: 'debugProcess',
       label: MenuItemLabels.DebugProcess,
+    })
+  }
+  if (isDebuggable || IsRendererProcess.isRendererProcess(process)) {
+    menuEntries.push({
+      args: [focusedIndex],
+      command: 'ProcessExplorer.takeHeapSnapshot',
+      flags: MenuItemFlags.None,
+      id: 'takeHeapSnapshot',
+      label: MenuItemLabels.TakeHeapSnapshot,
     })
   }
   return menuEntries

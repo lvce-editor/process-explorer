@@ -6,17 +6,24 @@ export const toggleIndex = (
   state: ProcessExplorerState,
   index: number,
 ): ProcessExplorerState => {
-  const process = state.visibleProcesses[index]
+  const {
+    collapsedPids: stateCollapsedPids,
+    processes,
+    rootPid,
+    visibleProcesses: stateVisibleProcesses,
+  } = state
+  const process = stateVisibleProcesses[index]
   if (!process || process.flags === ProcessFlag.None) {
     return state
   }
-  const collapsedPids = state.collapsedPids.includes(process.pid)
-    ? state.collapsedPids.filter((pid) => pid !== process.pid)
-    : [...state.collapsedPids, process.pid]
+  const treeId = process.treeId ?? process.pid
+  const collapsedPids = stateCollapsedPids.includes(treeId)
+    ? stateCollapsedPids.filter((pid) => pid !== treeId)
+    : [...stateCollapsedPids, treeId]
   const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
-    state.processes,
+    processes,
     collapsedPids,
-    state.rootPid,
+    rootPid,
   )
   return {
     ...state,

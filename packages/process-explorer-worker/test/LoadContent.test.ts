@@ -1,4 +1,5 @@
 import { afterEach, expect, jest, test } from '@jest/globals'
+import { PlatformType } from '@lvce-editor/constants'
 import { createMockRpc } from '@lvce-editor/rpc'
 import { ErrorWorker, RendererWorker } from '@lvce-editor/rpc-registry'
 import * as AutoRefresh from '../src/parts/AutoRefresh/AutoRefresh.ts'
@@ -13,6 +14,34 @@ afterEach(() => {
   ProcessExplorerModule.clear()
   ProcessExplorerStates.clear()
   jest.useRealTimers()
+})
+
+test('loadContent - shows unsupported message on web', async () => {
+  jest.useFakeTimers()
+  const update = jest.fn()
+  using _mockRendererRpc = RendererWorker.registerMockRpc({
+    'ProcessExplorer.update': update,
+  })
+  const state = {
+    ...createDefaultState(),
+    initial: true,
+    platform: PlatformType.Web,
+    uid: 7,
+  }
+  ProcessExplorerStates.set(7, state, state)
+
+  const result = await LoadContent.loadContent(state)
+  await jest.advanceTimersByTimeAsync(1000)
+
+  expect(result).toEqual({
+    error: undefined,
+    state: {
+      ...state,
+      initial: false,
+      message: 'Process Explorer is not supported on web.',
+    },
+  })
+  expect(update).not.toHaveBeenCalled()
 })
 
 test('loadContent - refreshes and starts auto refresh', async () => {

@@ -54,9 +54,8 @@ const workerPath = join(
 )
 const remoteUrl = getRemoteUrl(workerPath)
 
-const occurrence = `// const processExplorerWorkerUrl = \`\${assetDir}/packages/process-explorer-worker/index.js\`
-const processExplorerWorkerUrl = \`${remoteUrl}\``
-const replacement = `const processExplorerWorkerUrl = \`\${assetDir}/packages/process-explorer-worker/index.js\``
+const occurrence = `\`${remoteUrl}\``
+const replacement = '\`${assetDir}/packages/process-explorer-worker/index.js\`'
 
 const content = await readFile(rendererWorkerPath, 'utf8')
 if (!content.includes(occurrence)) {

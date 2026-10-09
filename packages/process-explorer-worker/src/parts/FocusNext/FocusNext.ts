@@ -4,8 +4,9 @@ import * as FocusIndex from '../FocusIndex/FocusIndex.ts'
 export const focusNext = (
   state: ProcessExplorerState,
 ): ProcessExplorerState => {
-  if (state.focusedIndex >= state.visibleProcesses.length - 1) {
+  const { focusedIndex, visibleProcesses } = state
+  if (focusedIndex >= visibleProcesses.length - 1) {
     return state
   }
-  return FocusIndex.focusIndex(state, state.focusedIndex + 1)
+  return FocusIndex.focusIndex(state, focusedIndex + 1)
 }

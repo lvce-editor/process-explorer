@@ -4,17 +4,18 @@ import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses
 export const collapseAll = (
   state: ProcessExplorerState,
 ): ProcessExplorerState => {
-  const parentPids = new Set<number>()
-  for (const process of state.processes) {
-    parentPids.add(process.ppid)
+  const { processes, rootPid } = state
+  const parentPids = new Set<number | string>()
+  for (const process of processes) {
+    parentPids.add(process.parentTreeId ?? process.ppid)
   }
-  const collapsedPids = state.processes
-    .filter((process) => parentPids.has(process.pid))
-    .map((process) => process.pid)
+  const collapsedPids = processes
+    .filter((process) => parentPids.has(process.treeId ?? process.pid))
+    .map((process) => process.treeId ?? process.pid)
   const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
-    state.processes,
+    processes,
     collapsedPids,
-    state.rootPid,
+    rootPid,
   )
   return {
     ...state,

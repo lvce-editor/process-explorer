@@ -41,8 +41,18 @@ test('setError', async () => {
     message: 'Fixture error',
     stack: 'Error: Fixture error\n    at fixture (/tmp/fixture.ts:1:1)',
   })
+  expect(result.errorCode).toBe('ERR_TEST')
   expect(result.errorCodeFrame).toBe('1 | throw new Error()')
   expect(result.errorMessage).toBe('Pretty fixture error')
   expect(result.errorStack).toBe('Pretty stack')
   expect(result.initial).toBe(false)
+})
+
+test('setError - uses fallback code', async () => {
+  using _mockErrorRpc = registerErrorWorkerMock({})
+
+  const result = await SetError.setError(createDefaultState(), 'Fixture error')
+
+  expect(result.errorCode).toBe('E_PROCESS_EXPLORER_ERROR')
+  expect(result.errorMessage).toBe('Fixture error')
 })

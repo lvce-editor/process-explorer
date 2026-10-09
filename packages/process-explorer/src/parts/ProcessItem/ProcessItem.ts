@@ -13,6 +13,7 @@ export interface ProcessItemWithDepth extends ProcessItem {
 export interface ParsedProcessItem {
   readonly cmd: string
   readonly depth: number
+  readonly memory: number
   readonly name: string
   readonly pid: number
   readonly ppid: number
