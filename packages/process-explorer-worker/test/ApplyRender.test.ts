@@ -22,5 +22,5 @@ test('applyRender - returns render commands', () => {
 
   expect(
     ApplyRender.applyRender(oldState, newState, [DiffType.RenderFocus]),
-  ).toEqual([[ViewletCommand.FocusSelector, '[data-index="0"]']])
+  ).toEqual([[ViewletCommand.FocusSelector, newState.uid, '[data-index="0"]']])
 })
