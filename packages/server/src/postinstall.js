@@ -101,6 +101,13 @@ await replace({
 })
 
 await replace({
+  path: join(serverStaticPath, 'index.html'),
+  marker: `"develop.processExplorerWorkerPath": "${workerRemoteUrl}"`,
+  occurrence: `"develop.processExplorerWorkerPath": "/${commitHash}/packages/process-explorer-worker/index.js"`,
+  replacement: `"develop.processExplorerWorkerPath": "${workerRemoteUrl}"`,
+})
+
+await replace({
   path: rendererWorkerMainPath,
   marker: `\`${workerRemoteUrl}\``,
   occurrence:

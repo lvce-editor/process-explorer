@@ -64,6 +64,20 @@ if (!content.includes(occurrence)) {
 const newContent = content.replace(occurrence, replacement)
 await writeFile(rendererWorkerPath, newContent)
 
+const indexHtmlPath = join(root, 'dist', 'index.html')
+const indexHtml = await readFile(indexHtmlPath, 'utf8')
+const configOccurrence = `"develop.processExplorerWorkerPath": "${remoteUrl}"`
+if (!indexHtml.includes(configOccurrence)) {
+  throw new Error('process explorer runtime worker URL not found')
+}
+await writeFile(
+  indexHtmlPath,
+  indexHtml.replace(
+    configOccurrence,
+    `"develop.processExplorerWorkerPath": "/${commitHash}/packages/process-explorer-worker/index.js"`,
+  ),
+)
+
 const staticDist = join(root, '.tmp', 'static')
 await rm(staticDist, { recursive: true, force: true })
 await cp(join(root, 'dist'), staticDist, { recursive: true })

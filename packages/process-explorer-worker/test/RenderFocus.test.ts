@@ -40,6 +40,7 @@ test('renderFocus - focus selected row when entering focus context', () => {
 
   expect(RenderFocus.renderFocus(oldState, newState)).toEqual([
     ViewletCommand.FocusSelector,
+    newState.uid,
     '[data-index="1"]',
   ])
 })
@@ -57,6 +58,7 @@ test('renderFocus - focus table', () => {
 
   expect(RenderFocus.renderFocus(oldState, newState)).toEqual([
     ViewletCommand.FocusSelector,
+    newState.uid,
     '.ProcessExplorerTable',
   ])
 })
@@ -74,6 +76,7 @@ test('renderFocus - focus row', () => {
 
   expect(RenderFocus.renderFocus(oldState, newState)).toEqual([
     ViewletCommand.FocusSelector,
+    newState.uid,
     '[data-index="2"]',
   ])
 })
