@@ -2,6 +2,7 @@ import type { ProcessInfo } from '../ProcessInfo/ProcessInfo.ts'
 
 const conceptualChildNames: readonly string[] = [
   'embeds-process',
+  'extension-builtin.remote-ssh:remote-SSH',
   'file-system-process',
   'file-watcher-process',
   'process-explorer',

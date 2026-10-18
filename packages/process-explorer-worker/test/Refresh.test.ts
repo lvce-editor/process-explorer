@@ -196,7 +196,25 @@ test('refresh - success - electron', async () => {
 })
 
 test('refresh - electron with remote workspace', async () => {
-  const localProcesses = [processes[0], processes[1]]
+  const localProcesses = [
+    { cmd: 'main', memory: 1, name: 'main', pid: 1, ppid: 0 },
+    { cmd: 'shared', memory: 2, name: 'shared-process', pid: 2, ppid: 1 },
+    {
+      cmd: 'remote ssh extension',
+      memory: 3,
+      name: 'extension-builtin.remote-ssh:remote-SSH',
+      pid: 3,
+      ppid: 1,
+    },
+    { cmd: 'ssh', memory: 4, name: 'ssh', pid: 4, ppid: 3 },
+    {
+      cmd: 'other extension',
+      memory: 5,
+      name: 'extension-builtin.other:other',
+      pid: 5,
+      ppid: 1,
+    },
+  ]
   const remoteProcesses = [
     { cmd: 'remote main', memory: 3, name: 'remote-main', pid: 1, ppid: 0 },
     { cmd: 'remote child', memory: 4, name: 'remote-child', pid: 2, ppid: 1 },
@@ -223,18 +241,52 @@ test('refresh - electron with remote workspace', async () => {
   })
 
   expect(
-    result.visibleProcesses.map(({ depth, name, source }) => ({
+    result.visibleProcesses.map(({ depth, memory, name, pid, source }) => ({
       depth,
+      memory,
       name,
+      pid,
       source,
     })),
   ).toEqual([
-    { depth: 1, name: 'Local', source: 'local' },
-    { depth: 2, name: 'main', source: 'local' },
-    { depth: 3, name: 'child', source: 'local' },
-    { depth: 1, name: 'Remote', source: 'remote' },
-    { depth: 2, name: 'remote-main', source: 'remote' },
-    { depth: 3, name: 'remote-child', source: 'remote' },
+    { depth: 1, memory: 0, name: 'Local', pid: 0, source: 'local' },
+    { depth: 2, memory: 1, name: 'main', pid: 1, source: 'local' },
+    { depth: 3, memory: 2, name: 'shared-process', pid: 2, source: 'local' },
+    {
+      depth: 4,
+      memory: 3,
+      name: 'extension-builtin.remote-ssh:remote-SSH',
+      pid: 3,
+      source: 'local',
+    },
+    { depth: 5, memory: 4, name: 'ssh', pid: 4, source: 'local' },
+    {
+      depth: 3,
+      memory: 5,
+      name: 'extension-builtin.other:other',
+      pid: 5,
+      source: 'local',
+    },
+    { depth: 1, memory: 0, name: 'Remote', pid: 0, source: 'remote' },
+    { depth: 2, memory: 3, name: 'remote-main', pid: 1, source: 'remote' },
+    { depth: 3, memory: 4, name: 'remote-child', pid: 2, source: 'remote' },
+  ])
+
+  const collapsedResult = await Refresh.refresh({
+    ...createDefaultState(),
+    collapsedPids: ['local:2'],
+    platform: PlatformType.Electron,
+  })
+  expect(
+    collapsedResult.visibleProcesses.map((process) => process.name),
+  ).toEqual([
+    'Local',
+    'main',
+    'shared-process',
+    'extension-builtin.other:other',
+    'Remote',
+    'remote-main',
+    'remote-child',
   ])
 })
 
