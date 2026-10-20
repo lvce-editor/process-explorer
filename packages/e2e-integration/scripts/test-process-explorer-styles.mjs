@@ -90,7 +90,13 @@ try {
   }
 } finally {
   try {
-    await app?.close()
+    if (app) {
+      // LVCE can cancel app.quit() while persisting window state. On macOS
+      // closing the last window then keeps the process alive. This isolated
+      // acceptance app has no user state to save, so exit it explicitly.
+      await app.evaluate(({ app }) => app.exit(0)).catch(() => {})
+      await app.close().catch(() => {})
+    }
   } finally {
     await rm(profile, { recursive: true, force: true })
   }
