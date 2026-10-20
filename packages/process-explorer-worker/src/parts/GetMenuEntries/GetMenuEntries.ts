@@ -41,5 +41,14 @@ export const getMenuEntries = (
       label: MenuItemLabels.TakeHeapSnapshot,
     })
   }
+  if (IsRendererProcess.isRendererProcess(process)) {
+    menuEntries.push({
+      args: [focusedIndex],
+      command: 'ProcessExplorer.showWorkers',
+      flags: MenuItemFlags.None,
+      id: 'showWorkers',
+      label: MenuItemLabels.ShowWorkers,
+    })
+  }
   return menuEntries
 }
