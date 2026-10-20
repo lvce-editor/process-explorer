@@ -14,7 +14,6 @@ export const test: Test = async ({ Command, expect, KeyBoard, Locator }) => {
     await expect(firstRow).toBeVisible()
     await expect(secondRow).toBeVisible()
 
-    // eslint-disable-next-line e2e/no-direct-click -- verify focus style after mouse focus
     await firstRow.click()
     await expect(firstRow).toBeFocused()
     await expect(firstRow).toHaveCSS('outline-style', 'none')
