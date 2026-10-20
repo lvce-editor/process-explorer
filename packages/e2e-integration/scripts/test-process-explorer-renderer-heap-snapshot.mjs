@@ -142,8 +142,19 @@ try {
   const snapshot = JSON.parse(await readFile(join(downloads, files[0]), 'utf8'))
   assert.ok(snapshot.snapshot.node_count > 0)
   assert.ok(snapshot.nodes.length > 0)
+
+  await row.click({ button: 'right' })
+  const showWorkers = processExplorer.getByRole('menuitem', {
+    name: 'Show Workers',
+    exact: true,
+  })
+  await expect(showWorkers).toBeVisible()
+  await showWorkers.click()
+  await expect(processExplorer.locator('.WorkersView')).toBeVisible({
+    timeout: 60000,
+  })
   console.log(
-    `Process Explorer renderer heap snapshot passed: ${join(downloads, files[0])}`,
+    `Process Explorer renderer context menu passed: Show Workers opened the Workers view after heap snapshot ${join(downloads, files[0])}`,
   )
 } finally {
   await processExplorer?.close()
