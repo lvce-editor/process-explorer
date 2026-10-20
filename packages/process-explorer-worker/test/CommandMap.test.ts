@@ -32,4 +32,7 @@ test('commandMap exposes context menu commands', () => {
   expect(CommandMap.commandMap['ProcessExplorer.takeHeapSnapshot']).toEqual(
     expect.any(Function),
   )
+  expect(CommandMap.commandMap['ProcessExplorer.showWorkers']).toEqual(
+    expect.any(Function),
+  )
 })

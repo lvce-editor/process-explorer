@@ -104,6 +104,13 @@ test('getMenuEntries - local renderer process', () => {
       id: 'takeHeapSnapshot',
       label: 'Take Heap Snapshot',
     },
+    {
+      args: [1],
+      command: 'ProcessExplorer.showWorkers',
+      flags: MenuItemFlags.None,
+      id: 'showWorkers',
+      label: 'Show Workers',
+    },
   ])
 })
 

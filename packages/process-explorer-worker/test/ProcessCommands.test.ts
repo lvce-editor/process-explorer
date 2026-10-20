@@ -7,6 +7,7 @@ import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibl
 import * as KillProcess from '../src/parts/KillProcess/KillProcess.ts'
 import * as ProcessExplorer from '../src/parts/ProcessExplorer/ProcessExplorer.ts'
 import * as RemoteProcessExplorer from '../src/parts/RemoteProcessExplorer/RemoteProcessExplorer.ts'
+import * as ShowWorkers from '../src/parts/ShowWorkers/ShowWorkers.ts'
 import * as TakeHeapSnapshot from '../src/parts/TakeHeapSnapshot/TakeHeapSnapshot.ts'
 
 interface DisposableMockRpc {
@@ -301,4 +302,40 @@ test('takeHeapSnapshot - local renderer process', async () => {
 test('takeHeapSnapshot - missing process', async () => {
   const state = createDefaultState()
   await expect(TakeHeapSnapshot.takeHeapSnapshot(state, 0)).resolves.toBe(state)
+})
+
+test('showWorkers - local renderer process', async () => {
+  const openUri = jest.fn()
+  using _rendererWorkerRpc = RendererWorker.registerMockRpc({
+    'Main.openUri': openUri,
+  })
+  const state = {
+    ...createDefaultState(),
+    visibleProcesses: [
+      {
+        cmd: 'electron --type=renderer',
+        depth: 1,
+        flags: 0,
+        memory: 1,
+        name: 'renderer',
+        pid: 5,
+        ppid: 1,
+      },
+    ],
+  }
+  await expect(ShowWorkers.showWorkers(state, 0)).resolves.toBe(state)
+  expect(openUri).toHaveBeenCalledWith('workers:///1')
+})
+
+test('showWorkers - ineligible process', async () => {
+  const openUri = jest.fn()
+  using _rendererWorkerRpc = RendererWorker.registerMockRpc({
+    'Main.openUri': openUri,
+  })
+  const state = {
+    ...createDefaultState(),
+    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
+  }
+  await expect(ShowWorkers.showWorkers(state, 1)).resolves.toBe(state)
+  expect(openUri).not.toHaveBeenCalled()
 })
