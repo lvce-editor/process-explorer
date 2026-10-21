@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           repository: lvce-editor/lvce-editor
-          ref: 47ab560792961609f0c8a6e78226389253412b88
+          ref: d4459c61704c23ba239638b6fc011cb7d8972607
           path: .tmp/lvce-integration
       - uses: actions/setup-node@v6
         with:
@@ -30,19 +30,19 @@ jobs:
       - name: Install application dependencies
         working-directory: .tmp/lvce-integration
         run: npm ci
-      - name: Install Chromium
-        working-directory: .tmp/lvce-integration/packages/extension-host-worker-tests
-        run: npx playwright install --with-deps chromium
       - name: Prepare owned integration tests
         run: node packages/e2e-integration/prepare.mjs .tmp/lvce-integration
-      - name: Run owned integration tests
-        shell: bash
-        working-directory: .tmp/lvce-integration/packages/extension-host-worker-tests
-        run: npm run e2e:headless --
       - name: Install Electron
-        if: runner.os == 'Linux'
         working-directory: .tmp/lvce-integration
         run: node node_modules/electron/install.js
+      - name: Run owned integration tests (Linux)
+        if: runner.os == 'Linux'
+        working-directory: .tmp/lvce-integration
+        run: xvfb-run -a node scripts/test-process-explorer-styles.mjs
+      - name: Run owned integration tests (macOS and Windows)
+        if: runner.os != 'Linux'
+        working-directory: .tmp/lvce-integration
+        run: node scripts/test-process-explorer-styles.mjs
       - name: Test Process Explorer network service naming
         if: runner.os == 'Linux'
         working-directory: .tmp/lvce-integration

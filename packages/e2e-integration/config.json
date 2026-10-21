@@ -10,6 +10,7 @@
     ]
   ],
   "scripts": [
+    "scripts/test-process-explorer-styles.mjs",
     "scripts/test-process-explorer-renderer-heap-snapshot.mjs",
     "scripts/test-process-explorer-network-service.mjs"
   ]
