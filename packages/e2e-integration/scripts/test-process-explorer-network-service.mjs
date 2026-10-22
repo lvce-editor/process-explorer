@@ -27,7 +27,10 @@ try {
     'language-servers/typescript/lib/tsc',
   )
   await mkdir(dirname(typescriptServerPath), { recursive: true })
-  await writeFile(typescriptServerPath, '#!/bin/sh\nsleep 300\n')
+  await writeFile(
+    typescriptServerPath,
+    '#!/usr/bin/env node\nsetInterval(() => {}, 1000)\n',
+  )
   await chmod(typescriptServerPath, 0o755)
   await mkdir(join(profile, 'config/lvce-oss'), { recursive: true })
   await writeFile(
@@ -44,6 +47,7 @@ try {
     ...process.env,
     DEV: '1',
     LVCE_ROOT: root,
+    LVCE_TYPESCRIPT_SERVER_PATH: typescriptServerPath,
     LVCE_SHARED_PROCESS_PATH: join(
       root,
       'packages/shared-process/src/sharedProcessMain.ts',
@@ -67,6 +71,9 @@ try {
     env,
     timeout: 60000,
   })
+  app.on('console', (message) =>
+    console.log(`Electron main: ${message.text()}`),
+  )
   const childEnv = await app.evaluate(() =>
     Object.fromEntries(
       ['CONFIG', 'DATA', 'STATE', 'CACHE'].map((key) => [
@@ -77,18 +84,28 @@ try {
   )
   for (const key of ['CONFIG', 'DATA', 'STATE', 'CACHE'])
     assert.equal(childEnv[key], join(profile, key.toLowerCase()))
-  const typescriptServerPid = await app.evaluate((serverPath) => {
+  console.log('Electron XDG profile is isolated')
+  console.log('Requesting the Electron main process to spawn the fixture')
+  const typescriptServerPid = await app.evaluate(() => {
+    console.log('Electron main process is creating the TypeScript fixture')
     const { spawn } = process.getBuiltinModule('node:child_process')
-    const server = spawn(serverPath, ['--lsp', '--stdio'], {
-      stdio: 'ignore',
-    })
+    const server = spawn(
+      process.env.LVCE_TYPESCRIPT_SERVER_PATH,
+      ['--lsp', '--stdio'],
+      {
+        stdio: 'ignore',
+      },
+    )
     globalThis.__processExplorerTypeScriptServer = server
-    return new Promise((resolve, reject) => {
-      server.once('spawn', () => resolve(server.pid))
-      server.once('error', reject)
-    })
-  }, typescriptServerPath)
+    console.log(`Electron main process spawned fixture PID ${server.pid}`)
+    return server.pid
+  })
+  assert.ok(typescriptServerPid > 0)
+  console.log(
+    `Spawned TypeScript language-server fixture PID ${typescriptServerPid}`,
+  )
   const page = await app.firstWindow()
+  console.log('Connected to the LVCE integration window')
   page.setDefaultTimeout(15000)
   page.on('pageerror', (error) => console.error(error))
   await expect(page.locator('#Workbench')).toBeVisible()
@@ -116,6 +133,7 @@ try {
     }),
   })
   await expect(typescriptRow).toHaveCount(1)
+  console.log('Found the TypeScript language-server row')
   const typescriptCells = typescriptRow.locator('.ProcessExplorerCell')
   await expect(typescriptCells.nth(1)).toHaveText(String(typescriptServerPid))
   await expect(typescriptCells.nth(2)).not.toHaveText('')
