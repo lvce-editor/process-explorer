@@ -1,5 +1,9 @@
 [
   {
+    "pathRegex": "[/\\\\]language-servers[/\\\\]typescript[/\\\\]lib[/\\\\]tsc(?:\\.exe)?(?=[\\\"']?\\s|$)(?=.*\\s--lsp(?:\\s|$))",
+    "displayName": "TypeScript Language Server"
+  },
+  {
     "pathRegex": "[/\\\\]language-server[/\\\\]zls(?:\\.exe)?(?:[\\s\\\"']|$)",
     "displayName": "Zig Language Server"
   }

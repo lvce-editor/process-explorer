@@ -98,6 +98,37 @@ test('getName - detect Zig language server', () => {
   ).toBe('Zig Language Server')
 })
 
+test.each([
+  '/usr/lib/lvce/resources/app/packages/shared-process/language-servers/typescript/lib/tsc --lsp --stdio',
+  String.raw`"C:\Program Files\LVCE\resources\app\packages\shared-process\language-servers\typescript\lib\tsc.exe" --lsp --stdio`,
+])('getName - detect TypeScript language server %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(
+    'TypeScript Language Server',
+  )
+})
+
+test.each([
+  '/usr/lib/lvce/resources/app/packages/shared-process/language-servers/typescript/lib/tsc --pretty',
+  String.raw`C:\tools\typescript\lib\tsc.exe --pretty`,
+  '/usr/lib/lvce/resources/app/packages/shared-process/language-servers/typescript/lib/tsc-wrapper --lsp --stdio',
+])('getName - preserve other TypeScript commands %s', (cmd) => {
+  expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(cmd)
+})
+
+test('getName - preserve tsserver.js name', () => {
+  expect(ListProcessGetName.getName(123, 'node tsserver.js', 1, {})).toBe(
+    'tsserver.js',
+  )
+})
+
+test('getName - TypeScript language server keeps configured name ahead of pid map', () => {
+  const cmd =
+    '/usr/lib/lvce/resources/app/packages/shared-process/language-servers/typescript/lib/tsc --lsp --stdio'
+  expect(ListProcessGetName.getName(123, cmd, 1, { 123: 'utility' })).toBe(
+    'TypeScript Language Server',
+  )
+})
+
 test('getName - detect sublime', () => {
   const pid = 123
   const cmd = '/opt/sublime_text/sublime_text --fwdargv0 /usr/bin/subl'

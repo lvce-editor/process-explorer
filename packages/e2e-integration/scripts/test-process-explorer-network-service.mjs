@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict'
 import { createRequire } from 'node:module'
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import {
+  chmod,
+  mkdtemp,
+  mkdir,
+  readFile,
+  rm,
+  writeFile,
+} from 'node:fs/promises'
+import { spawn } from 'node:child_process'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -14,7 +22,22 @@ const { _electron } = requireTests('playwright')
 const { expect } = requireTests('@playwright/test')
 const profile = await mkdtemp(join(tmpdir(), 'lvce-network-service-'))
 let app
+let typescriptServer
 try {
+  const typescriptServerPath = join(
+    profile,
+    'language-servers/typescript/lib/tsc',
+  )
+  await mkdir(dirname(typescriptServerPath), { recursive: true })
+  await writeFile(typescriptServerPath, '#!/bin/sh\nsleep 300\n')
+  await chmod(typescriptServerPath, 0o755)
+  typescriptServer = spawn(typescriptServerPath, ['--lsp', '--stdio'], {
+    stdio: 'ignore',
+  })
+  await new Promise((resolve, reject) => {
+    typescriptServer.once('spawn', resolve)
+    typescriptServer.once('error', reject)
+  })
   await mkdir(join(profile, 'config/lvce-oss'), { recursive: true })
   await writeFile(
     join(profile, 'config/lvce-oss/keybindings.json'),
@@ -85,6 +108,18 @@ try {
     /(?:^|[\s\0])--utility-sub-type=network\.mojom\.NetworkService(?:[\s\0]|$)/,
   )
   await expect(cells.nth(2)).not.toHaveText('')
+  const typescriptRow = page.locator('.ProcessExplorerRow').filter({
+    has: page.locator('.ProcessExplorerNameCell', {
+      hasText: /^TypeScript Language Server$/,
+    }),
+  })
+  await expect(typescriptRow).toHaveCount(1)
+  const typescriptCells = typescriptRow.locator('.ProcessExplorerCell')
+  await expect(typescriptCells.nth(1)).toHaveText(String(typescriptServer.pid))
+  await expect(typescriptCells.nth(2)).not.toHaveText('')
+  const typescriptCommand = await typescriptRow.getAttribute('title')
+  assert.ok(typescriptCommand?.includes(typescriptServerPath))
+  assert.match(typescriptCommand, /--lsp --stdio/)
   await expect(
     page.locator('.ProcessExplorerNameCell', { hasText: /^main$/ }),
   ).toBeVisible()
@@ -100,13 +135,17 @@ try {
   })
   await expect(networkRow).toHaveCount(1)
   await expect(cells.nth(1)).toHaveText(String(pid))
+  await expect(typescriptRow).toHaveCount(1)
+  await expect(typescriptCells.nth(1)).toHaveText(String(typescriptServer.pid))
+  assert.equal(await typescriptRow.getAttribute('title'), typescriptCommand)
   await expect(page.locator('.ProcessExplorerError')).toBeHidden()
   if (process.env.PROCESS_EXPLORER_SCREENSHOT)
     await page.screenshot({ path: process.env.PROCESS_EXPLORER_SCREENSHOT })
   console.log(
-    `Electron NetworkService PID ${pid} displays utility-network-service before and after refresh`,
+    `Electron NetworkService PID ${pid} and TypeScript language-server PID ${typescriptServer.pid} display their concise names and retain their command tooltips before and after refresh`,
   )
 } finally {
+  typescriptServer?.kill()
   await app?.close()
   await rm(profile, { recursive: true, force: true })
 }
