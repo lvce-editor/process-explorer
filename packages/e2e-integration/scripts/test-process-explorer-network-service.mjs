@@ -129,7 +129,7 @@ try {
   await expect(cells.nth(2)).not.toHaveText('')
   const typescriptRow = page.locator('.ProcessExplorerRow').filter({
     has: page.locator('.ProcessExplorerNameCell', {
-      hasText: /^TypeScript Language Server$/,
+      hasText: /^typescript-language-server$/,
     }),
   })
   await expect(typescriptRow).toHaveCount(1)

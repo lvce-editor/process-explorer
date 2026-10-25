@@ -1,7 +1,7 @@
 [
   {
     "pathRegex": "[/\\\\]language-servers[/\\\\]typescript[/\\\\]lib[/\\\\]tsc(?:\\.exe)?(?=[\\\"']?\\s|$)(?=.*\\s--lsp(?:\\s|$))",
-    "displayName": "TypeScript Language Server"
+    "displayName": "typescript-language-server"
   },
   {
     "pathRegex": "[/\\\\]language-server[/\\\\]zls(?:\\.exe)?(?:[\\s\\\"']|$)",
