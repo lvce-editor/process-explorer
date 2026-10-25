@@ -103,7 +103,7 @@ test.each([
   String.raw`"C:\Program Files\LVCE\resources\app\packages\shared-process\language-servers\typescript\lib\tsc.exe" --lsp --stdio`,
 ])('getName - detect TypeScript language server %s', (cmd) => {
   expect(ListProcessGetName.getName(123, cmd, 1, {})).toBe(
-    'TypeScript Language Server',
+    'typescript-language-server',
   )
 })
 
@@ -125,7 +125,7 @@ test('getName - TypeScript language server keeps configured name ahead of pid ma
   const cmd =
     '/usr/lib/lvce/resources/app/packages/shared-process/language-servers/typescript/lib/tsc --lsp --stdio'
   expect(ListProcessGetName.getName(123, cmd, 1, { 123: 'utility' })).toBe(
-    'TypeScript Language Server',
+    'typescript-language-server',
   )
 })
 
