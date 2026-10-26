@@ -1,4 +1,5 @@
 import type { ProcessExplorerState } from '../ProcessExplorerState/ProcessExplorerState.ts'
+import * as GetUniqueIndents from '../GetUniqueIndents/GetUniqueIndents.ts'
 import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as ProcessFlag from '../ProcessFlag/ProcessFlag.ts'
 
@@ -10,6 +11,7 @@ export const toggleIndex = (
     collapsedPids: stateCollapsedPids,
     processes,
     rootPid,
+    uniqueIndents,
     visibleProcesses: stateVisibleProcesses,
   } = state
   const process = stateVisibleProcesses[index]
@@ -29,6 +31,10 @@ export const toggleIndex = (
     ...state,
     collapsedPids,
     focusedIndex: Math.min(index, visibleProcesses.length - 1),
+    uniqueIndents: GetUniqueIndents.getUniqueIndents(
+      visibleProcesses,
+      uniqueIndents,
+    ),
     visibleProcesses,
   }
 }

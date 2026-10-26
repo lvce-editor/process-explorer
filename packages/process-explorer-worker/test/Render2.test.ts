@@ -3,6 +3,7 @@ import { ViewletCommand } from '@lvce-editor/constants'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as Diff2 from '../src/parts/Diff2/Diff2.ts'
 import * as DiffType from '../src/parts/DiffType/DiffType.ts'
+import * as GetUniqueIndents from '../src/parts/GetUniqueIndents/GetUniqueIndents.ts'
 import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as ProcessExplorerStates from '../src/parts/ProcessExplorerStates/ProcessExplorerStates.ts'
 import * as Render2 from '../src/parts/Render2/Render2.ts'
@@ -42,9 +43,18 @@ test('render2', async () => {
   ProcessExplorerStates.clear()
   const uid = 1
   const oldState = createDefaultState()
+  const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
+    processes,
+    [],
+    1,
+  )
   const newState = {
     ...oldState,
-    visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
+    uniqueIndents: GetUniqueIndents.getUniqueIndents(
+      visibleProcesses,
+      oldState.uniqueIndents,
+    ),
+    visibleProcesses,
   }
   ProcessExplorerStates.set(uid, oldState, newState)
   expect(Diff2.diff2(uid)).toEqual([

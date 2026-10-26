@@ -20,6 +20,7 @@ export const createDefaultState = (): ProcessExplorerState => ({
   processes: [],
   rootPid: -1,
   uid: 1,
+  uniqueIndents: [],
   updateInterval: ProcessExplorerUpdateInterval.processExplorerUpdateInterval,
   visibleProcesses: [],
   width: 100,
