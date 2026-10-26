@@ -12,7 +12,7 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
-const owner = resolve(here, '../..')
+const owner = resolve(here, '../../..')
 if (!process.argv[2])
   throw new Error('Pass the path to a disposable LVCE checkout')
 const application = resolve(process.argv[2])
