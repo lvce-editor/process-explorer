@@ -4,7 +4,12 @@ export const name = 'viewlet.process-explorer.kill'
 
 const maxRefreshAttempts = 20
 
-export const test: Test = async ({ Command, expect, Locator, ProcessExplorer }) => {
+export const test: Test = async ({
+  Command,
+  expect,
+  Locator,
+  ProcessExplorer,
+}) => {
   // arrange
   await ProcessExplorer.open()
   const marker = `process-explorer-e2e-kill-${Date.now()}`

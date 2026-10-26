@@ -2,7 +2,13 @@ import type { Test } from '@lvce-editor/test-with-playwright'
 
 export const name = 'viewlet.process-explorer.node-process-killed'
 
-export const test: Test = async ({ Command, ContextMenu, expect, Locator, ProcessExplorer }) => {
+export const test: Test = async ({
+  Command,
+  ContextMenu,
+  expect,
+  Locator,
+  ProcessExplorer,
+}) => {
   // arrange
   await ProcessExplorer.open()
   // Keep the selected row stable while clicking and opening its context menu.
@@ -15,7 +21,7 @@ export const test: Test = async ({ Command, ContextMenu, expect, Locator, Proces
     await expect(processExplorerProcess).toBeVisible()
 
     // act
-    // eslint-disable-next-line e2e/no-direct-click -- focuses the exact process explorer node process
+    // eslint-disable-next-line e2e/no-direct-click, @typescript-eslint/no-deprecated -- focuses the exact process explorer process, whose row index is dynamic
     await processExplorerProcess.locator('.ProcessExplorerNameCell').click()
     const focusedProcessExplorerProcess = Locator(
       '.ProcessExplorerRowFocused[title*="processExplorerMain.ts"]',

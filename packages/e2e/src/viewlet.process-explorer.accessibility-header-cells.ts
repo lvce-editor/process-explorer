@@ -7,6 +7,8 @@ export const test: Test = async ({ expect, ProcessExplorer }) => {
   await ProcessExplorer.open()
 
   // assert
-  const headerCells = ProcessExplorer.root().locator('th.ProcessExplorerHeaderCell')
+  const headerCells = ProcessExplorer.root().locator(
+    'th.ProcessExplorerHeaderCell',
+  )
   await expect(headerCells).toHaveCount(3)
 }

@@ -7,7 +7,9 @@ export const test: Test = async ({ expect, ProcessExplorer }) => {
   await ProcessExplorer.open()
 
   // assert
-  const headerRow = ProcessExplorer.table().locator('.ProcessExplorerTableHead > tr.ProcessExplorerRow')
+  const headerRow = ProcessExplorer.table().locator(
+    '.ProcessExplorerTableHead > tr.ProcessExplorerRow',
+  )
   await expect(headerRow).toBeVisible()
   await expect(headerRow).toHaveAttribute('role', 'row')
 }

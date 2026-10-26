@@ -4,7 +4,13 @@ export const name = 'viewlet.process-explorer.keyboard-navigation'
 
 const defaultUpdateInterval = 1000
 
-export const test: Test = async ({ Command, expect, KeyBoard, Locator, ProcessExplorer }) => {
+export const test: Test = async ({
+  Command,
+  expect,
+  KeyBoard,
+  Locator,
+  ProcessExplorer,
+}) => {
   // arrange
   await ProcessExplorer.open()
   await Command.execute('ProcessExplorer.setUpdateInterval', -1)
@@ -18,8 +24,7 @@ export const test: Test = async ({ Command, expect, KeyBoard, Locator, ProcessEx
     await expect(secondRow).toBeVisible()
 
     // act
-    // eslint-disable-next-line e2e/no-direct-click -- verifies keyboard navigation after focusing a row with the mouse
-    await firstRow.click()
+    await ProcessExplorer.clickRow(0)
     await expect(firstRow).toHaveAttribute('tabindex', '0')
     await expect(firstRow).toBeFocused()
     await KeyBoard.press('ArrowDown')

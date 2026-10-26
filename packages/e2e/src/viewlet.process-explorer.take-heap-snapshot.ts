@@ -10,7 +10,13 @@ export const skip = navigator.platform === 'Win32'
 
 const maxRefreshAttempts = 20
 
-export const test: Test = async ({ Command, ContextMenu, expect, Locator, ProcessExplorer }) => {
+export const test: Test = async ({
+  Command,
+  ContextMenu,
+  expect,
+  Locator,
+  ProcessExplorer,
+}) => {
   await ProcessExplorer.open()
   const marker = `process-explorer-e2e-heap-snapshot-${Date.now()}`
 
@@ -28,7 +34,7 @@ export const test: Test = async ({ Command, ContextMenu, expect, Locator, Proces
     }
     await expect(row).toBeVisible()
 
-    // eslint-disable-next-line e2e/no-direct-click -- focuses the exact fixture process
+    // eslint-disable-next-line e2e/no-direct-click, @typescript-eslint/no-deprecated -- focuses the exact fixture process, whose row index is dynamic
     await row.click()
     await Command.execute('ProcessExplorer.handleContextMenu')
     const takeHeapSnapshot = Locator('.MenuItem', {

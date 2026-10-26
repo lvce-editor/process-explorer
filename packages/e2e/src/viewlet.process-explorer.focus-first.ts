@@ -4,7 +4,12 @@ export const name = 'viewlet.process-explorer.focus-first'
 
 const defaultUpdateInterval = 1000
 
-export const test: Test = async ({ Command, expect, Locator, ProcessExplorer }) => {
+export const test: Test = async ({
+  Command,
+  expect,
+  Locator,
+  ProcessExplorer,
+}) => {
   // arrange
   await ProcessExplorer.open()
   await Command.execute('ProcessExplorer.setUpdateInterval', -1)

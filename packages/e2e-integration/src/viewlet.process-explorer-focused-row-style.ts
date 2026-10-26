@@ -4,7 +4,13 @@ const focusedRowClass = /ProcessExplorerRowFocused/
 
 export const name = 'viewlet.process-explorer-focused-row-style'
 
-export const test: Test = async ({ Command, expect, KeyBoard, Locator }) => {
+export const test: Test = async ({
+  Command,
+  expect,
+  KeyBoard,
+  Locator,
+  ProcessExplorer,
+}) => {
   await Command.execute('Developer.openProcessExplorer')
   await Command.execute('ProcessExplorer.setUpdateInterval', -1)
   const table = Locator('.ProcessExplorerTable')
@@ -16,7 +22,7 @@ export const test: Test = async ({ Command, expect, KeyBoard, Locator }) => {
     await expect(firstRow).toBeVisible()
     await expect(secondRow).toBeVisible()
 
-    await firstRow.click()
+    await ProcessExplorer.clickRow(0)
     await expect(firstRow).toBeFocused()
     await expect(firstRow).toHaveCSS('outline-style', 'none')
     await expect(firstRow).toHaveAttribute('tabindex', '0')

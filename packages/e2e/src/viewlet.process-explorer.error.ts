@@ -12,7 +12,12 @@ const getFixtureUrl = (): string => {
   )
 }
 
-export const test: Test = async ({ Command, expect, Locator, ProcessExplorer }) => {
+export const test: Test = async ({
+  Command,
+  expect,
+  Locator,
+  ProcessExplorer,
+}) => {
   // arrange
   await ProcessExplorer.open()
   const fixtureUrl = getFixtureUrl()
