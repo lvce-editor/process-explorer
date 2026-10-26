@@ -48,11 +48,16 @@ test('getMainProcessId - remote uses the current parent as the child by default'
   expect(await ProcessId.getMainProcessId({ includeElectronData: false })).toBe(
     process.ppid,
   )
-  expect(execFile).toHaveBeenCalledWith(
-    'ps',
-    ['-o', 'ppid=', '-p', String(process.ppid)],
-    expect.any(Function),
-  )
+  const command = process.platform === 'win32' ? 'powershell.exe' : 'ps'
+  const args =
+    process.platform === 'win32'
+      ? [
+          '-NoProfile',
+          '-Command',
+          `(Get-CimInstance Win32_Process -Filter "ProcessId = ${process.ppid}").ParentProcessId`,
+        ]
+      : ['-o', 'ppid=', '-p', String(process.ppid)]
+  expect(execFile).toHaveBeenCalledWith(command, args, expect.any(Function))
 })
 
 test('getMainProcessId - remote falls back when the parent process id is zero', async () => {

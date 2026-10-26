@@ -13,7 +13,10 @@ test('returns undefined when procfs no longer has the process', () => {
   ).toBeUndefined()
 })
 
-test('reads the current process command line', () => {
+test('reads the current process command line on Linux', () => {
+  if (process.platform !== 'linux') {
+    return
+  }
   const commandLine = ReadLinuxProcessCommandLine.readLinuxProcessCommandLine({
     command: 'fallback',
     depth: 1,
