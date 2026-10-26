@@ -1,10 +1,5 @@
 import { KeyCode, KeyModifier, WhenExpression } from '@lvce-editor/constants'
-
-export interface KeyBinding {
-  readonly command: string
-  readonly key: number
-  readonly when: number
-}
+import type { KeyBinding } from '../KeyBinding/KeyBinding.ts'
 
 export const getKeyBindings = (): readonly KeyBinding[] => {
   return [
