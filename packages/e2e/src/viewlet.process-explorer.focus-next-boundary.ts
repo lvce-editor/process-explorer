@@ -4,16 +4,21 @@ export const name = 'viewlet.process-explorer.focus-next-boundary'
 
 const defaultUpdateInterval = 1000
 
-export const test: Test = async ({ Command, expect, Locator }) => {
+export const test: Test = async ({
+  Command,
+  expect,
+  Locator,
+  ProcessExplorer,
+}) => {
   // arrange
-  await Command.execute('Developer.openProcessExplorer')
+  await ProcessExplorer.open()
   await Command.execute('ProcessExplorer.setUpdateInterval', -1)
 
   try {
-    await Command.execute('ProcessExplorer.focusLast')
+    await ProcessExplorer.focusLast()
 
     // act
-    await Command.execute('ProcessExplorer.focusNext')
+    await ProcessExplorer.focusNext()
 
     // assert
     const focusedRow = Locator(
