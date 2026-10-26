@@ -10,15 +10,21 @@ export const skip = navigator.platform === 'Win32'
 
 const maxRefreshAttempts = 20
 
-export const test: Test = async ({ Command, ContextMenu, expect, Locator }) => {
-  await Command.execute('Developer.openProcessExplorer')
+export const test: Test = async ({
+  Command,
+  ContextMenu,
+  expect,
+  Locator,
+  ProcessExplorer,
+}) => {
+  await ProcessExplorer.open()
   const marker = `process-explorer-e2e-heap-snapshot-${Date.now()}`
 
   try {
     await Command.execute('ProcessExplorer.createE2eFixtureProcess', marker)
     const row = Locator(`.ProcessExplorerRow[title*="${marker}"]`)
     for (let i = 0; i < maxRefreshAttempts; i++) {
-      await Command.execute('ProcessExplorer.refresh')
+      await ProcessExplorer.refresh()
       try {
         await expect(row).toBeVisible()
         break
@@ -28,7 +34,7 @@ export const test: Test = async ({ Command, ContextMenu, expect, Locator }) => {
     }
     await expect(row).toBeVisible()
 
-    // eslint-disable-next-line e2e/no-direct-click -- focuses the exact fixture process
+    // eslint-disable-next-line e2e/no-direct-click, @typescript-eslint/no-deprecated -- focuses the exact fixture process, whose row index is dynamic
     await row.click()
     await Command.execute('ProcessExplorer.handleContextMenu')
     const takeHeapSnapshot = Locator('.MenuItem', {
@@ -47,6 +53,6 @@ export const test: Test = async ({ Command, ContextMenu, expect, Locator }) => {
   } finally {
     await Command.execute('ProcessExplorer.disposeE2eFixtureProcess', marker)
     await Command.execute('ProcessExplorer.setRootProcessId', -1)
-    await Command.execute('ProcessExplorer.refresh')
+    await ProcessExplorer.refresh()
   }
 }

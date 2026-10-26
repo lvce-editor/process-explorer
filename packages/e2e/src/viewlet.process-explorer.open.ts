@@ -4,25 +4,12 @@ export const name = 'viewlet.process-explorer.open'
 
 // export const skip = 1
 
-export const test: Test = async ({ Command, expect, Locator }) => {
+export const test: Test = async ({ ProcessExplorer }) => {
   // act
-  await Command.execute('Developer.openProcessExplorer')
+  await ProcessExplorer.open()
 
   // assert
-  const processExplorer = Locator('.ProcessExplorer')
-  const processExplorerGrid = Locator('[aria-label="Process Explorer"]')
-  const processExplorerError = processExplorer.locator('.ProcessExplorerError')
-  const nameHeader = processExplorer
-    .locator('.ProcessExplorerHeaderCell')
-    .nth(0)
-  const pidHeader = processExplorer.locator('.ProcessExplorerHeaderCell').nth(1)
-  const memoryHeader = processExplorer
-    .locator('.ProcessExplorerHeaderCell')
-    .nth(2)
-  await expect(processExplorer).toBeVisible()
-  await expect(processExplorerError).toBeHidden()
-  await expect(processExplorerGrid).toBeVisible()
-  await expect(nameHeader).toHaveText('Name')
-  await expect(pidHeader).toHaveText('PID')
-  await expect(memoryHeader).toHaveText('Memory')
+  await ProcessExplorer.shouldBeOpen()
+  await ProcessExplorer.shouldBeHealthy()
+  await ProcessExplorer.shouldHaveHeaders()
 }

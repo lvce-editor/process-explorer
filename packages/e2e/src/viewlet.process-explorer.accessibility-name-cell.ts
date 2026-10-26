@@ -2,12 +2,12 @@ import type { Test } from '@lvce-editor/test-with-playwright'
 
 export const name = 'viewlet.process-explorer.accessibility-name-cell'
 
-export const test: Test = async ({ Command, expect, Locator }) => {
+export const test: Test = async ({ expect, ProcessExplorer }) => {
   // arrange
-  await Command.execute('Developer.openProcessExplorer')
+  await ProcessExplorer.open()
 
   // assert
-  const nameCell = Locator('td.ProcessExplorerNameCell[data-index="0"]')
+  const nameCell = ProcessExplorer.nameCell(1)
   await expect(nameCell).toBeVisible()
   await expect(nameCell).toHaveAttribute('role', 'gridcell')
   await expect(nameCell).toHaveAttribute('tabindex', '-1')

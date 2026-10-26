@@ -1,18 +1,9 @@
-import { readFileSync } from 'node:fs'
-
-interface ConfiguredProcessName {
-  readonly displayName: string
-  readonly pathRegex: string
-}
+import configuredProcessNames from './configuredProcessNames.json' with { type: 'json' }
 
 interface CompiledProcessName {
   readonly displayName: string
   readonly pathRegex: RegExp
 }
-
-const configuredProcessNames = JSON.parse(
-  readFileSync(new URL('configuredProcessNames.json', import.meta.url), 'utf8'),
-) as readonly ConfiguredProcessName[]
 
 const compiledProcessNames: readonly CompiledProcessName[] =
   configuredProcessNames.map(({ displayName, pathRegex }) => ({

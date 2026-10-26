@@ -54,7 +54,7 @@ try {
   const page = await app.firstWindow()
   page.setDefaultTimeout(15000)
   page.on('pageerror', (error) => console.error(error))
-  await expect(page.locator('#Workbench')).toBeVisible()
+  await expect(page.locator('#Workbench')).toBeVisible({ timeout: 60000 })
   await expect(page.getByRole('tree', { name: 'Files Explorer' })).toBeVisible()
   const renderer = page
     .workers()

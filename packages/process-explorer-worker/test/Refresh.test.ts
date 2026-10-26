@@ -188,6 +188,9 @@ test('refresh - success - electron', async () => {
     platform: PlatformType.Electron,
   })
 
+  expect(result.processes.find((process) => process.pid === 2)?.name).toBe(
+    'shared-process',
+  )
   expect(result.rootPid).toBe(1)
   expect(initializeProcessExplorer).toHaveBeenCalledWith(PlatformType.Electron)
   expect(getMainProcessId).toHaveBeenCalledWith({ includeElectronData: true })
@@ -198,7 +201,13 @@ test('refresh - success - electron', async () => {
 test('refresh - electron with remote workspace', async () => {
   const localProcesses = [
     { cmd: 'main', memory: 1, name: 'main', pid: 1, ppid: 0 },
-    { cmd: 'shared', memory: 2, name: 'shared-process', pid: 2, ppid: 1 },
+    {
+      cmd: 'node sharedProcessMain.js',
+      memory: 2,
+      name: 'shared-process',
+      pid: 2,
+      ppid: 1,
+    },
     {
       cmd: 'remote ssh extension',
       memory: 3,
@@ -232,7 +241,10 @@ test('refresh - electron with remote workspace', async () => {
     'ProcessId.getMainProcessId': jest.fn(() => 1),
   })
   using _mockMainProcessRpc = registerMainProcessMock({
-    'CreatePidMap.createPidMap': jest.fn(() => ({})),
+    'CreatePidMap.createPidMap': jest.fn(() => ({
+      3: 'extension-builtin.remote-ssh:remote-SSH',
+      5: 'extension-builtin.other:other',
+    })),
   })
 
   const result = await Refresh.refresh({
@@ -268,8 +280,8 @@ test('refresh - electron with remote workspace', async () => {
       source: 'local',
     },
     { depth: 1, memory: 0, name: 'Remote', pid: 0, source: 'remote' },
-    { depth: 2, memory: 3, name: 'remote-main', pid: 1, source: 'remote' },
-    { depth: 3, memory: 4, name: 'remote-child', pid: 2, source: 'remote' },
+    { depth: 2, memory: 3, name: 'main', pid: 1, source: 'remote' },
+    { depth: 3, memory: 4, name: 'remote child', pid: 2, source: 'remote' },
   ])
 
   const collapsedResult = await Refresh.refresh({
@@ -285,8 +297,8 @@ test('refresh - electron with remote workspace', async () => {
     'shared-process',
     'extension-builtin.other:other',
     'Remote',
-    'remote-main',
-    'remote-child',
+    'main',
+    'remote child',
   ])
 })
 
@@ -294,14 +306,14 @@ test('refresh - groups conceptual processes below shared process on electron', a
   const electronProcesses = [
     processes[0],
     {
-      cmd: 'shared',
+      cmd: 'node sharedProcessMain.js',
       memory: 1,
       name: 'shared-process',
       pid: 10,
       ppid: 1,
     },
     {
-      cmd: 'terminal',
+      cmd: 'electron --type=utility',
       memory: 1,
       name: 'terminal-process',
       pid: 11,
@@ -322,7 +334,7 @@ test('refresh - groups conceptual processes below shared process on electron', a
     'ProcessId.getMainProcessId': jest.fn(() => 1),
   })
   using _mockMainProcessRpc = registerMainProcessMock({
-    'CreatePidMap.createPidMap': jest.fn(() => ({})),
+    'CreatePidMap.createPidMap': jest.fn(() => ({ 11: 'terminal-process' })),
   })
 
   const result = await Refresh.refresh({
@@ -535,3 +547,36 @@ test('refresh - non error prepare fails', async () => {
   expect(result.errorStack).toBe('')
   expect(result.initial).toBe(false)
 })
+
+// A legacy collector may still send friendly names. Command metadata is the
+// source of truth, and the remote root must not inherit local Electron labels.
+test.each(['legacy label', 'node /tmp/language-server/zls'])(
+  'refresh - names remote records from commands (%s)',
+  async (name) => {
+    const remoteProcesses = [
+      { cmd: 'node remote-main.js', memory: 123, name, pid: 50, ppid: 0 },
+      {
+        cmd: 'node /tmp/language-server/zls',
+        memory: 456,
+        name,
+        pid: 51,
+        ppid: 50,
+      },
+    ]
+    using _mockRpc = registerProcessExplorerMock({
+      'ListProcessesWithMemoryUsage.listProcessesWithMemoryUsage': jest.fn(
+        () => remoteProcesses,
+      ),
+      'ProcessId.getMainProcessId': jest.fn(() => 50),
+    })
+    const result = await Refresh.refresh({
+      ...createDefaultState(),
+      platform: PlatformType.Remote,
+    })
+    expect(result.processes).toEqual([
+      { ...remoteProcesses[0], name: 'main' },
+      { ...remoteProcesses[1], name: 'Zig Language Server' },
+    ])
+    expect(remoteProcesses.map((process) => process.name)).toEqual([name, name])
+  },
+)

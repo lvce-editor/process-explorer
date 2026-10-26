@@ -2,14 +2,12 @@ import type { Test } from '@lvce-editor/test-with-playwright'
 
 export const name = 'viewlet.process-explorer.accessibility-memory-cell'
 
-export const test: Test = async ({ Command, expect, Locator }) => {
+export const test: Test = async ({ expect, ProcessExplorer }) => {
   // arrange
-  await Command.execute('Developer.openProcessExplorer')
+  await ProcessExplorer.open()
 
   // assert
-  const memoryCell = Locator(
-    '.ProcessExplorerRow[data-index="0"] > td.ProcessExplorerCell',
-  ).nth(2)
+  const memoryCell = ProcessExplorer.memoryCell(1)
   await expect(memoryCell).toBeVisible()
   await expect(memoryCell).toHaveAttribute('role', 'gridcell')
   await expect(memoryCell).toHaveAttribute('data-index', '0')
