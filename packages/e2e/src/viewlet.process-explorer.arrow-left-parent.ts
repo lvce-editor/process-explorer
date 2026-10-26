@@ -16,6 +16,11 @@ export const test: Test = async ({ Command, expect, KeyBoard, Locator }) => {
     await expect(parent).toBeVisible()
     await expect(parent).toHaveAttribute('aria-expanded', 'true')
     await expect(child).toBeVisible()
+    // Collapse descendants so ArrowLeft moves to the parent instead of collapsing the child.
+    await Command.execute('ProcessExplorer.collapseAll')
+    await Command.execute('ProcessExplorer.handleClickAt', 0)
+    await Command.execute('ProcessExplorer.handleArrowRight')
+    await expect(child).toBeVisible()
     await Command.execute('ProcessExplorer.handleClickAt', childIndex)
     await expect(child).toBeFocused()
     await KeyBoard.press('ArrowLeft')
