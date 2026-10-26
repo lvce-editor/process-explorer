@@ -15,8 +15,9 @@ export const test: Test = async ({
   await Command.execute('ProcessExplorer.setUpdateInterval', -1)
   try {
     await ProcessExplorer.refresh()
+    // The server also mentions the entry point in its --process-explorer flag.
     const processExplorerProcess = Locator(
-      '.ProcessExplorerRow[title*="processExplorerMain.ts"]',
+      '.ProcessExplorerRow[title*="processExplorerMain.ts"]:not([title*="--process-explorer="])',
     )
     await expect(processExplorerProcess).toBeVisible()
 
@@ -24,7 +25,7 @@ export const test: Test = async ({
     // eslint-disable-next-line e2e/no-direct-click, @typescript-eslint/no-deprecated -- focuses the exact process explorer process, whose row index is dynamic
     await processExplorerProcess.locator('.ProcessExplorerNameCell').click()
     const focusedProcessExplorerProcess = Locator(
-      '.ProcessExplorerRowFocused[title*="processExplorerMain.ts"]',
+      '.ProcessExplorerRowFocused[title*="processExplorerMain.ts"]:not([title*="--process-explorer="])',
     )
     await expect(focusedProcessExplorerProcess).toBeVisible()
     try {
