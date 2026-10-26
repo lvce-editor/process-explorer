@@ -1,7 +1,12 @@
 import type { Test } from '@lvce-editor/test-with-playwright'
 
 export const name = 'viewlet.process-explorer.double-click-toggle'
-export const test: Test = async ({ Command, expect, Locator }) => {
+export const test: Test = async ({
+  Command,
+  expect,
+  Locator,
+  ProcessExplorer,
+}) => {
   await Command.execute('Developer.openProcessExplorer')
   const table = Locator('.ProcessExplorerTable')
   const parent = Locator('.ProcessExplorerRow[data-index="0"]')
@@ -15,7 +20,7 @@ export const test: Test = async ({ Command, expect, Locator }) => {
     await expect(parent).toBeVisible()
     await expect(parent).toHaveAttribute('aria-expanded', 'true')
     await expect(child).toBeVisible()
-    await parent.dispatchEvent('dblclick', { bubbles: true } as any)
+    await ProcessExplorer.doubleClickRow(0)
     await expect(parent).toHaveAttribute('aria-expanded', 'false')
     await expect(child).toBeHidden()
   } finally {

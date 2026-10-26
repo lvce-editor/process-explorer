@@ -19,8 +19,8 @@ export const test: Test = async ({ Command, expect, KeyBoard, Locator }) => {
       '.ProcessExplorerTableBody > .ProcessExplorerRow:not([aria-expanded]):last-child',
     )
     await expect(leaf).toBeVisible()
-    // eslint-disable-next-line e2e/no-direct-click -- focuses the target tree row
-    await leaf.click()
+    await Command.execute('ProcessExplorer.focusLast')
+    await expect(leaf).toBeFocused()
     await KeyBoard.press('ArrowRight')
     await expect(leaf).toBeFocused()
     await expect(child).toBeVisible()
