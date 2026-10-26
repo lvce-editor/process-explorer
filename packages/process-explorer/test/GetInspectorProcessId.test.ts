@@ -57,6 +57,22 @@ test('returns zero for a non-number process id', async () => {
   }
 })
 
+test('ignores inspector messages with another request id', async () => {
+  const server = await createTestServer((webSocket) => {
+    webSocket.send(JSON.stringify({ id: 2, result: { result: { value: 1 } } }))
+    webSocket.send(
+      JSON.stringify({ id: 1, result: { result: { value: 123 } } }),
+    )
+  })
+  try {
+    await expect(
+      GetInspectorProcessId.getInspectorProcessId(server.url),
+    ).resolves.toBe(123)
+  } finally {
+    await server.close()
+  }
+})
+
 test('returns zero for an invalid inspector message', async () => {
   const server = await createTestServer((webSocket) => {
     webSocket.send('invalid json')

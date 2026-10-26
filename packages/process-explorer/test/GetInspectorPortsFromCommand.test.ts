@@ -22,3 +22,11 @@ test('ignores random and invalid inspector ports', () => {
     ),
   ).toEqual([9000, 9229])
 })
+
+test('ignores an inspector option with no port after a colon', () => {
+  expect(
+    GetInspectorPortsFromCommand.getInspectorPortsFromCommand(
+      'node --inspect=: app.js',
+    ),
+  ).toEqual([9000, 9229])
+})

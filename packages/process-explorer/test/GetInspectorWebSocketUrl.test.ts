@@ -1,4 +1,7 @@
+import type { AddressInfo } from 'node:net'
 import { afterEach, expect, jest, test } from '@jest/globals'
+import { once } from 'node:events'
+import { WebSocketServer } from 'ws'
 import * as GetInspectorWebSocketUrl from '../src/parts/GetInspectorWebSocketUrl/GetInspectorWebSocketUrl.ts'
 
 afterEach(() => {
@@ -36,6 +39,36 @@ test('ignores inspector targets for other processes', async () => {
   await expect(
     GetInspectorWebSocketUrl.getInspectorWebSocketUrlAtPort(123, 9229),
   ).resolves.toBe('')
+})
+
+test('matches inspector targets by the process id returned over websocket', async () => {
+  const server = new WebSocketServer({ port: 0 })
+  await once(server, 'listening')
+  server.on('connection', (webSocket) => {
+    webSocket.on('message', () => {
+      webSocket.send(
+        JSON.stringify({ id: 1, result: { result: { value: 123 } } }),
+      )
+    })
+  })
+  const { port } = server.address() as AddressInfo
+  const webSocketDebuggerUrl = `ws://127.0.0.1:${port}`
+  jest.spyOn(globalThis, 'fetch').mockResolvedValue(
+    Response.json([
+      {
+        title: 'node[456]',
+        webSocketDebuggerUrl,
+      },
+    ]),
+  )
+
+  try {
+    await expect(
+      GetInspectorWebSocketUrl.getInspectorWebSocketUrlAtPort(123, 9229),
+    ).resolves.toBe(webSocketDebuggerUrl)
+  } finally {
+    await new Promise<void>((resolve) => server.close(() => resolve()))
+  }
 })
 
 test('ignores unsuccessful inspector responses', async () => {
@@ -83,3 +116,23 @@ test('ignores failed inspector requests', async () => {
     GetInspectorWebSocketUrl.getInspectorWebSocketUrlAtPort(123, 9229),
   ).resolves.toBe('')
 })
+
+test('ignores inspector targets without a websocket url', async () => {
+  jest
+    .spyOn(globalThis, 'fetch')
+    .mockResolvedValue(Response.json([{ title: 'node[123]' }, {}]))
+
+  await expect(
+    GetInspectorWebSocketUrl.getInspectorWebSocketUrlAtPort(123, 9229),
+  ).resolves.toBe('')
+})
+
+test('rejects after no inspector URL is found', async () => {
+  jest
+    .spyOn(globalThis, 'fetch')
+    .mockResolvedValue(new Response('', { status: 500 }))
+
+  await expect(
+    GetInspectorWebSocketUrl.getInspectorWebSocketUrl(123, 'node app.js'),
+  ).rejects.toThrow('Could not find the inspector for process 123')
+}, 10_000)
