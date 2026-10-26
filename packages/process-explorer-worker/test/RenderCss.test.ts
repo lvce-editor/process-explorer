@@ -9,6 +9,7 @@ test('renderCss - creates unique indent classes', () => {
   const newState = {
     ...oldState,
     uid: 123,
+    uniqueIndents: [1, 2],
     visibleProcesses: GetVisibleProcesses.getVisibleProcesses(
       [
         { cmd: 'main', memory: 1, name: 'main', pid: 1, ppid: 0 },

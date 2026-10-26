@@ -6,6 +6,7 @@ import * as ErrorCodes from '../ErrorCodes/ErrorCodes.ts'
 import * as GetErrorCode from '../GetErrorCode/GetErrorCode.ts'
 import * as GetFrontendMemoryUsage from '../GetFrontendMemoryUsage/GetFrontendMemoryUsage.ts'
 import * as GetProcessDisplayName from '../GetProcessDisplayName/GetProcessDisplayName.ts'
+import * as GetUniqueIndents from '../GetUniqueIndents/GetUniqueIndents.ts'
 import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as GroupProcesses from '../GroupProcesses/GroupProcesses.ts'
 import * as InitializeProcessExplorer from '../InitializeProcessExplorer/InitializeProcessExplorer.ts'
@@ -76,6 +77,7 @@ export const refresh = async (
     includeFrontendMemoryUsage,
     platform,
     rootPid: stateRootPid,
+    uniqueIndents,
   } = state
   if (platform === PlatformType.Web) {
     return {
@@ -160,6 +162,10 @@ export const refresh = async (
       message: '',
       processes: displayedProcesses,
       rootPid,
+      uniqueIndents: GetUniqueIndents.getUniqueIndents(
+        visibleProcesses,
+        uniqueIndents,
+      ),
       visibleProcesses,
     }
   } catch (error) {
