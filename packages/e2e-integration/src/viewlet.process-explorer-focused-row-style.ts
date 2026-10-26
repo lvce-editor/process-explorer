@@ -16,6 +16,7 @@ export const test: Test = async ({ Command, expect, KeyBoard, Locator }) => {
     await expect(firstRow).toBeVisible()
     await expect(secondRow).toBeVisible()
 
+    // eslint-disable-next-line @typescript-eslint/no-deprecated -- verifies mouse focus styling before keyboard navigation
     await firstRow.click()
     await expect(firstRow).toBeFocused()
     await expect(firstRow).toHaveCSS('outline-style', 'none')

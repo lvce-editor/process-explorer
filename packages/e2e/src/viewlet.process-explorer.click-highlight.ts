@@ -14,7 +14,7 @@ export const test: Test = async ({ Command, expect, Locator }) => {
 
   try {
     // act
-    // eslint-disable-next-line e2e/no-direct-click -- verifies real process explorer row click updates the highlight immediately
+    // eslint-disable-next-line e2e/no-direct-click, @typescript-eslint/no-deprecated -- verifies real process explorer row click updates the highlight immediately
     await nameCell.click()
 
     // assert

@@ -18,7 +18,7 @@ export const test: Test = async ({ Command, expect, KeyBoard, Locator }) => {
     await expect(secondRow).toBeVisible()
 
     // act
-    // eslint-disable-next-line e2e/no-direct-click -- verifies keyboard navigation after focusing a row with the mouse
+    // eslint-disable-next-line e2e/no-direct-click, @typescript-eslint/no-deprecated -- verifies keyboard navigation after focusing a row with the mouse
     await firstRow.click()
     await expect(firstRow).toHaveAttribute('tabindex', '0')
     await expect(firstRow).toBeFocused()

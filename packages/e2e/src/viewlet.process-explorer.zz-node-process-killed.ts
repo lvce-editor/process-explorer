@@ -15,7 +15,7 @@ export const test: Test = async ({ Command, ContextMenu, expect, Locator }) => {
     await expect(processExplorerProcess).toBeVisible()
 
     // act
-    // eslint-disable-next-line e2e/no-direct-click -- focuses the exact process explorer node process
+    // eslint-disable-next-line e2e/no-direct-click, @typescript-eslint/no-deprecated -- focuses the exact process explorer node process
     await processExplorerProcess.locator('.ProcessExplorerNameCell').click()
     const focusedProcessExplorerProcess = Locator(
       '.ProcessExplorerRowFocused[title*="processExplorerMain.ts"]',

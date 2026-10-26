@@ -28,7 +28,7 @@ export const test: Test = async ({ Command, ContextMenu, expect, Locator }) => {
     }
     await expect(row).toBeVisible()
 
-    // eslint-disable-next-line e2e/no-direct-click -- focuses the exact fixture process
+    // eslint-disable-next-line e2e/no-direct-click, @typescript-eslint/no-deprecated -- focuses the exact fixture process
     await row.click()
     await Command.execute('ProcessExplorer.handleContextMenu')
     const takeHeapSnapshot = Locator('.MenuItem', {
