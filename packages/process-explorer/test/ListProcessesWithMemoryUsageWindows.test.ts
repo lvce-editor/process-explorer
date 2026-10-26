@@ -31,6 +31,46 @@ jest.unstable_mockModule(
 const WindowsProcessTree = await import('@vscode/windows-process-tree')
 const ListProcessesWithMemoryUsage =
   await import('../src/parts/ListProcessesWithMemoryUsageWindows/ListProcessesWithMemoryUsageWindows.js')
+const ListProcessesWithMemoryUsageEntryPoint =
+  await import('../src/parts/ListProcessesWithMemoryUsage/ListProcessesWithMemoryUsage.ts')
+
+test('entry point delegates with explicit and default options on Windows', async () => {
+  if (process.platform !== 'win32') {
+    return
+  }
+
+  // @ts-ignore
+  WindowsProcessTree.getProcessList.mockImplementation((rootPid, callback) => {
+    callback([
+      {
+        commandLine: 'node',
+        cpu: 0,
+        memory: 1,
+        name: 'node.exe',
+        pid: rootPid,
+        ppid: 0,
+      },
+    ])
+  })
+  // @ts-ignore
+  WindowsProcessTree.getProcessCpuUsage.mockImplementation((list, callback) => {
+    callback(list)
+  })
+
+  await expect(
+    ListProcessesWithMemoryUsageEntryPoint.listProcessesWithMemoryUsage(
+      123,
+      false,
+    ),
+  ).resolves.toEqual([
+    { cmd: 'node', memory: 1, name: 'node.exe', pid: 123, ppid: 0 },
+  ])
+  await expect(
+    ListProcessesWithMemoryUsageEntryPoint.listProcessesWithMemoryUsage(123),
+  ).resolves.toEqual([
+    { cmd: 'node', memory: 1, name: 'node.exe', pid: 123, ppid: 0 },
+  ])
+})
 
 test('listProcessesWithMemoryUsage', async () => {
   // @ts-ignore
