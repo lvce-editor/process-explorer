@@ -6,6 +6,7 @@ import * as ErrorCodes from '../ErrorCodes/ErrorCodes.ts'
 import * as GetErrorCode from '../GetErrorCode/GetErrorCode.ts'
 import * as GetFrontendMemoryUsage from '../GetFrontendMemoryUsage/GetFrontendMemoryUsage.ts'
 import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses.ts'
+import * as GetProcessDisplayName from '../GetProcessDisplayName/GetProcessDisplayName.ts'
 import * as GroupProcesses from '../GroupProcesses/GroupProcesses.ts'
 import * as InitializeProcessExplorer from '../InitializeProcessExplorer/InitializeProcessExplorer.ts'
 import * as PrepareError from '../PrepareError/PrepareError.ts'
@@ -36,7 +37,7 @@ const getFocusedIndex = (
 const listProcesses = async (
   processExplorer: ProcessExplorerRpc,
   rootPid: number,
-  pidMap?: unknown,
+  pidMap?: Readonly<Record<number, string>>,
 ): Promise<readonly ProcessInfo[]> => {
   if (pidMap) {
     return processExplorer.invoke(
@@ -102,7 +103,18 @@ export const refresh = async (
     const frontendMemoryProcesses = includeFrontendMemoryUsage
       ? await GetFrontendMemoryUsage.getFrontendMemoryUsage(rootPid)
       : []
-    const allProcesses = [...processes, ...frontendMemoryProcesses]
+    const allProcesses = [
+      ...processes.map((process) => ({
+        ...process,
+        name: GetProcessDisplayName.getName(
+          process.pid,
+          process.cmd,
+          rootPid,
+          pidMap || {},
+        ),
+      })),
+      ...frontendMemoryProcesses,
+    ]
     const localProcesses =
       platform === PlatformType.Electron
         ? ReparentSharedProcessChildren.reparentSharedProcessChildren(
@@ -116,10 +128,19 @@ export const refresh = async (
         RemoteProcessExplorer,
         remoteRootPid,
       )
+      const namedRemoteProcesses = remoteProcesses.map((process) => ({
+        ...process,
+        name: GetProcessDisplayName.getName(
+          process.pid,
+          process.cmd,
+          remoteRootPid,
+          {},
+        ),
+      }))
       displayedProcesses = GroupProcesses.groupProcesses(
         localProcesses,
         rootPid,
-        remoteProcesses,
+        namedRemoteProcesses,
         remoteRootPid,
       )
     }
