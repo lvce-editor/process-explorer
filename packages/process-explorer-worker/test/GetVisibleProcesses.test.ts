@@ -60,3 +60,7 @@ test('getVisibleProcesses - uses first process when root pid is missing', () => 
 test('getVisibleProcesses - missing root process', () => {
   expect(GetVisibleProcesses.getVisibleProcesses(processes, [], 99)).toEqual([])
 })
+
+test('getVisibleProcesses - returns no processes for an empty list', () => {
+  expect(GetVisibleProcesses.getVisibleProcesses([], [], 0)).toEqual([])
+})

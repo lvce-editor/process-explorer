@@ -213,6 +213,31 @@ test('debugProcess - missing process', async () => {
   expect(attachDebugger).not.toHaveBeenCalled()
 })
 
+test('debugProcess - ignores synthetic processes', async () => {
+  const attachDebugger = jest.fn()
+  using _mockRpc = RendererWorker.registerMockRpc({
+    'AttachDebugger.attachDebugger': attachDebugger,
+  })
+  const state = {
+    ...createDefaultState(),
+    visibleProcesses: [
+      {
+        cmd: 'Processes',
+        depth: 0,
+        flags: 0,
+        memory: 0,
+        name: 'Processes',
+        pid: 0,
+        ppid: 0,
+        synthetic: true as const,
+      },
+    ],
+  }
+
+  await expect(DebugProcess.debugProcess(state, 0)).resolves.toBe(state)
+  expect(attachDebugger).not.toHaveBeenCalled()
+})
+
 test('takeHeapSnapshot', async () => {
   const takeHeapSnapshot = jest.fn<
     (_pid: number, _command: string) => Promise<string>
@@ -337,5 +362,30 @@ test('showWorkers - ineligible process', async () => {
     visibleProcesses: GetVisibleProcesses.getVisibleProcesses(processes, [], 1),
   }
   await expect(ShowWorkers.showWorkers(state, 1)).resolves.toBe(state)
+  expect(openUri).not.toHaveBeenCalled()
+})
+
+test('showWorkers - ignores synthetic renderer processes', async () => {
+  const openUri = jest.fn()
+  using _rendererWorkerRpc = RendererWorker.registerMockRpc({
+    'Main.openUri': openUri,
+  })
+  const state = {
+    ...createDefaultState(),
+    visibleProcesses: [
+      {
+        cmd: 'electron --type=renderer',
+        depth: 1,
+        flags: 0,
+        memory: 1,
+        name: 'renderer',
+        pid: 5,
+        ppid: 1,
+        synthetic: true as const,
+      },
+    ],
+  }
+
+  await expect(ShowWorkers.showWorkers(state, 0)).resolves.toBe(state)
   expect(openUri).not.toHaveBeenCalled()
 })
