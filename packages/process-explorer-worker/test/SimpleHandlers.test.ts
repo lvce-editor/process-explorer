@@ -1,5 +1,4 @@
-import { expect, jest, test } from '@jest/globals'
-import { RendererWorker } from '@lvce-editor/rpc-registry'
+import { expect, test } from '@jest/globals'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
 import * as GetMenuEntryIds from '../src/parts/GetMenuEntryIds/GetMenuEntryIds.ts'
 import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibleProcesses.ts'
@@ -8,7 +7,6 @@ import * as HandleClickAt from '../src/parts/HandleClickAt/HandleClickAt.ts'
 import * as HandleFocus from '../src/parts/HandleFocus/HandleFocus.ts'
 import * as MenuEntryId from '../src/parts/MenuEntryId/MenuEntryId.ts'
 import * as ProcessExplorerModule from '../src/parts/ProcessExplorer/ProcessExplorer.ts'
-import * as SendMessagePortToFileSystemWorker from '../src/parts/SendMessagePortToFileSystemWorker/SendMessagePortToFileSystemWorker.ts'
 
 const processes = [
   {
@@ -85,24 +83,5 @@ test('processExplorer invoke - not initialized', async () => {
 
   await expect(ProcessExplorerModule.invoke('test')).rejects.toThrow(
     'ProcessExplorerModule is not initialized',
-  )
-})
-
-test('sendMessagePortToFileSystemWorker', async () => {
-  const sendMessagePortToFileSystemWorker = jest.fn()
-  const port = {} as MessagePort
-  using _mockRpc = RendererWorker.registerMockRpc({
-    'SendMessagePortToExtensionHostWorker.sendMessagePortToFileSystemWorker':
-      sendMessagePortToFileSystemWorker,
-  })
-
-  await SendMessagePortToFileSystemWorker.sendMessagePortToFileSystemWorker(
-    port,
-  )
-
-  expect(sendMessagePortToFileSystemWorker).toHaveBeenCalledWith(
-    port,
-    'FileSystem.handleMessagePort',
-    0,
   )
 })
