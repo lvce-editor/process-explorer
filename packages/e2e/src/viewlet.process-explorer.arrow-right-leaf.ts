@@ -19,6 +19,7 @@ export const test: Test = async ({ Command, expect, KeyBoard, Locator }) => {
       '.ProcessExplorerTableBody > .ProcessExplorerRow:not([aria-expanded]):last-child',
     )
     await expect(leaf).toBeVisible()
+    await Command.execute('ProcessExplorer.handleClickAt', 0)
     await Command.execute('ProcessExplorer.focusLast')
     await expect(leaf).toBeFocused()
     await KeyBoard.press('ArrowRight')
