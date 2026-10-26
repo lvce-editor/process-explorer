@@ -135,6 +135,10 @@ await writeJson(
   join(processExplorerWorkerDist, 'package.json'),
   workerPackageJson,
 )
+await cp(
+  join(root, 'packages', 'process-explorer-worker', 'settings.json'),
+  join(processExplorerWorkerDist, 'settings.json'),
+)
 await cp(join(root, 'README.md'), join(dist, 'README.md'))
 await cp(join(root, 'LICENSE'), join(dist, 'LICENSE'))
 await cp(join(root, 'README.md'), join(processExplorerWorkerDist, 'README.md'))
