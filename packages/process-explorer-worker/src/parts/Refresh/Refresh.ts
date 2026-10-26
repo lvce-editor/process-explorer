@@ -5,7 +5,7 @@ import type { ProcessInfo } from '../ProcessInfo/ProcessInfo.ts'
 import * as ErrorCodes from '../ErrorCodes/ErrorCodes.ts'
 import * as GetErrorCode from '../GetErrorCode/GetErrorCode.ts'
 import * as GetFrontendMemoryUsage from '../GetFrontendMemoryUsage/GetFrontendMemoryUsage.ts'
-import * as GetProcessDisplayName from '../GetProcessDisplayName/GetProcessDisplayName.ts'
+import * as GetProcessDisplayNameCached from '../GetProcessDisplayNameCached/GetProcessDisplayNameCached.ts'
 import * as GetUniqueIndents from '../GetUniqueIndents/GetUniqueIndents.ts'
 import * as GetVisibleProcesses from '../GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as GroupProcesses from '../GroupProcesses/GroupProcesses.ts'
@@ -73,6 +73,7 @@ export const refresh = async (
 ): Promise<ProcessExplorerState> => {
   const {
     collapsedPids,
+    displayNameCache: stateDisplayNameCache,
     focusedIndex,
     includeFrontendMemoryUsage,
     platform,
@@ -105,18 +106,21 @@ export const refresh = async (
     const frontendMemoryProcesses = includeFrontendMemoryUsage
       ? await GetFrontendMemoryUsage.getFrontendMemoryUsage(rootPid)
       : []
-    const allProcesses = [
-      ...processes.map((process) => ({
-        ...process,
-        name: GetProcessDisplayName.getName(
-          process.pid,
-          process.cmd,
-          rootPid,
-          pidMap || {},
-        ),
-      })),
-      ...frontendMemoryProcesses,
-    ]
+    const displayNameCacheDraft = Object.assign(
+      Object.create(null),
+      stateDisplayNameCache,
+    )
+    const namedProcesses = processes.map((process) => {
+      const name = GetProcessDisplayNameCached.getName(
+        process.pid,
+        process.cmd,
+        rootPid,
+        pidMap || {},
+        displayNameCacheDraft,
+      )
+      return { ...process, name }
+    })
+    const allProcesses = [...namedProcesses, ...frontendMemoryProcesses]
     const localProcesses =
       platform === PlatformType.Electron
         ? ReparentSharedProcessChildren.reparentSharedProcessChildren(
@@ -130,15 +134,16 @@ export const refresh = async (
         RemoteProcessExplorer,
         remoteRootPid,
       )
-      const namedRemoteProcesses = remoteProcesses.map((process) => ({
-        ...process,
-        name: GetProcessDisplayName.getName(
+      const namedRemoteProcesses = remoteProcesses.map((process) => {
+        const name = GetProcessDisplayNameCached.getName(
           process.pid,
           process.cmd,
           remoteRootPid,
           {},
-        ),
-      }))
+          displayNameCacheDraft,
+        )
+        return { ...process, name }
+      })
       displayedProcesses = GroupProcesses.groupProcesses(
         localProcesses,
         rootPid,
@@ -153,6 +158,9 @@ export const refresh = async (
     )
     return {
       ...state,
+      displayNameCache: GetProcessDisplayNameCached.trimCache(
+        displayNameCacheDraft,
+      ),
       errorCode: '',
       errorCodeFrame: '',
       errorMessage: '',
