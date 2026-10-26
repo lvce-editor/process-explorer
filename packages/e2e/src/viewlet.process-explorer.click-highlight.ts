@@ -4,9 +4,14 @@ export const name = 'viewlet.process-explorer.click-highlight'
 
 const defaultUpdateInterval = 1000
 
-export const test: Test = async ({ Command, expect, Locator }) => {
+export const test: Test = async ({
+  Command,
+  expect,
+  Locator,
+  ProcessExplorer,
+}) => {
   // arrange
-  await Command.execute('Developer.openProcessExplorer')
+  await ProcessExplorer.open()
   await Command.execute('ProcessExplorer.setUpdateInterval', -1)
   const nameCell = Locator('.ProcessExplorerNameCell[data-index="0"]')
   const focusedRow = Locator('.ProcessExplorerRowFocused[data-index="0"]')
@@ -14,8 +19,7 @@ export const test: Test = async ({ Command, expect, Locator }) => {
 
   try {
     // act
-    // eslint-disable-next-line e2e/no-direct-click -- verifies real process explorer row click updates the highlight immediately
-    await nameCell.click()
+    await ProcessExplorer.clickRow(0)
 
     // assert
     await expect(focusedRow).toBeVisible()

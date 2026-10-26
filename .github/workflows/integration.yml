@@ -31,7 +31,7 @@ jobs:
         working-directory: .tmp/lvce-integration
         run: npm ci
       - name: Prepare owned integration tests
-        run: node packages/e2e-integration/prepare.mjs .tmp/lvce-integration
+        run: node packages/e2e/integration/prepare.mjs .tmp/lvce-integration
       - name: Install Electron
         working-directory: .tmp/lvce-integration
         run: node node_modules/electron/install.js

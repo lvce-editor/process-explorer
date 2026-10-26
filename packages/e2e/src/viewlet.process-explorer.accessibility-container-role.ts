@@ -2,12 +2,12 @@ import type { Test } from '@lvce-editor/test-with-playwright'
 
 export const name = 'viewlet.process-explorer.accessibility-container-role'
 
-export const test: Test = async ({ Command, expect, Locator }) => {
+export const test: Test = async ({ expect, ProcessExplorer }) => {
   // arrange
-  await Command.execute('Developer.openProcessExplorer')
+  await ProcessExplorer.open()
 
   // assert
-  const processExplorer = Locator('.ProcessExplorer')
+  const processExplorer = ProcessExplorer.root()
   await expect(processExplorer).toBeVisible()
   await expect(processExplorer).toHaveAttribute('role', 'none')
 }

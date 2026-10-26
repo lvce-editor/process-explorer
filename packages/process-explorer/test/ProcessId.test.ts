@@ -51,3 +51,39 @@ test('getMainProcessId - remote falls back to parent process id when lookup fail
     }),
   ).toBe(process.ppid)
 })
+
+test.each(['', '0', '-1', 'not-a-pid', 'Infinity'])(
+  'getMainProcessId - remote falls back when parent lookup returns %j',
+  async (stdout) => {
+    execFile.mockImplementation((_command, _args, callback) => {
+      callback(null, { stdout })
+    })
+    expect(
+      await ProcessId.getMainProcessId({ includeElectronData: false }),
+    ).toBe(process.ppid)
+  },
+)
+
+test('getMainProcessId - remote uses its own root instead of the local parent', async () => {
+  const remoteRootPid = process.ppid + 100
+  execFile.mockImplementation((_command, _args, callback) => {
+    callback(null, { stdout: `  ${remoteRootPid}\n` })
+  })
+  expect(
+    await ProcessId.getMainProcessId({
+      childProcessId: 42,
+      includeElectronData: false,
+    }),
+  ).toBe(remoteRootPid)
+  expect(execFile).toHaveBeenCalledWith(
+    process.platform === 'win32' ? 'powershell.exe' : 'ps',
+    process.platform === 'win32'
+      ? [
+          '-NoProfile',
+          '-Command',
+          '(Get-CimInstance Win32_Process -Filter "ProcessId = 42").ParentProcessId',
+        ]
+      : ['-o', 'ppid=', '-p', '42'],
+    expect.any(Function),
+  )
+})

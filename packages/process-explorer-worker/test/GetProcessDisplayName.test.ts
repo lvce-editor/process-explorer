@@ -1,0 +1,366 @@
+import { expect, test } from '@jest/globals'
+import * as GetProcessDisplayName from '../src/parts/GetProcessDisplayName/GetProcessDisplayName.ts'
+
+test('getName - detect chrome devtools', () => {
+  const pid = 200_152
+  const cmd =
+    'packages/main-process/node_modules/electron/dist/electron --type=renderer --enable-crashpad --enable-crash-reporter=d476773f-ae60-4c60-85c5-d4f2eb675cee,no_channel --user-data-dir=/test.config/main-process --standard-schemes=lvce-oss --enable-sandbox --secure-schemes=lvce-oss --bypasscsp-schemes --cors-schemes --fetch-schemes=lvce-oss --service-worker-schemes --streaming-schemes=lvce-oss --app-path=/packages/main-process --lang=en-US --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=7 --launch-time-ticks=6086771284 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=0,i,17047493330214191737,6951987383812573163,131072 --disable-features=SpareRendererForSitePerProcess'
+  const rootPid = 1
+  const pidMap = {
+    200_152: 'chrome-devtools',
+  }
+  expect(GetProcessDisplayName.getName(pid, cmd, rootPid, pidMap)).toBe(
+    'chrome-devtools',
+  )
+})
+
+test('getName - detect renderer', () => {
+  const pid = 200_152
+  const cmd =
+    '/packages/main-process/node_modules/electron/dist/electron --type=renderer --enable-crashpad --enable-crash-reporter=d476773f-ae60-4c60-85c5-d4f2eb675cee,no_channel --user-data-dir=/test.config/main-process --standard-schemes=lvce-oss --enable-sandbox --secure-schemes=lvce-oss --bypasscsp-schemes --cors-schemes --fetch-schemes=lvce-oss --service-worker-schemes --streaming-schemes=lvce-oss --app-path=/packages/main-process --lang=en-US --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=7 --launch-time-ticks=6086771284 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=0,i,17047493330214191737,6951987383812573163,131072 --disable-features=SpareRendererForSitePerProcess'
+  const rootPid = 1
+  const pidMap = {
+    200_152: 'renderer',
+  }
+  expect(GetProcessDisplayName.getName(pid, cmd, rootPid, pidMap)).toBe(
+    'renderer',
+  )
+})
+
+test('getName - unknown renderer', () => {
+  const pid = 200_152
+  const cmd =
+    '/packages/main-process/node_modules/electron/dist/electron --type=renderer --enable-crashpad --enable-crash-reporter=d476773f-ae60-4c60-85c5-d4f2eb675cee,no_channel --user-data-dir=/test.config/main-process --standard-schemes=lvce-oss --enable-sandbox --secure-schemes=lvce-oss --bypasscsp-schemes --cors-schemes --fetch-schemes=lvce-oss --service-worker-schemes --streaming-schemes=lvce-oss --app-path=/packages/main-process --lang=en-US --num-raster-threads=4 --enable-main-frame-before-activation --renderer-client-id=7 --launch-time-ticks=6086771284 --shared-files=v8_context_snapshot_data:100 --field-trial-handle=0,i,17047493330214191737,6951987383812573163,131072 --disable-features=SpareRendererForSitePerProcess'
+  const rootPid = 1
+  const pidMap = {}
+  expect(GetProcessDisplayName.getName(pid, cmd, rootPid, pidMap)).toBe(
+    'renderer',
+  )
+})
+
+test('getName - detect pty host', () => {
+  const pid = 123
+  const cmd = 'node dist/ptyHostMain.js'
+  const rootPid = 1
+  const pidMap = {}
+  expect(GetProcessDisplayName.getName(pid, cmd, rootPid, pidMap)).toBe(
+    'pty-host',
+  )
+})
+
+test.each([
+  'C:\\nvm4w\\nodejs\\node.exe C:\\Users\\simon\\Documents\\levivilet\\wsl\\.tmp\\dist\\dist\\node\\wslNodeMain.js --ipc-type=node-forked-process',
+  String.raw`node .tmp/dist/dist/node/wslNodeMain.js --ipc-type=node-forked-process`,
+  String.raw`node /tmp/dist/node/wslNodeMain.js --ipc-type=node-forked-process`,
+  String.raw`"C:\Program Files\nodejs\node.exe" "C:\Users\simon\Documents\LVCE Editor\wsl\dist\wslNodeMain.js" --ipc-type=node-forked-process`,
+])('getName - detect WSL node helper %s', (cmd) => {
+  expect(GetProcessDisplayName.getName(123, cmd, 1, {})).toBe('wsl')
+})
+
+test('getName - preserve unrelated commands mentioning wslNodeMain.js', () => {
+  const cmd = 'node --description=wslNodeMain.js --ipc-type=node-forked-process'
+  expect(GetProcessDisplayName.getName(123, cmd, 1, {})).toBe(cmd)
+  expect(
+    GetProcessDisplayName.getName(123, 'node dist/wslNodeMain.jsx', 1, {}),
+  ).toBe('node dist/wslNodeMain.jsx')
+})
+
+test('getName - root process keeps main name for WSL node helper', () => {
+  const cmd = 'node dist/wslNodeMain.js --ipc-type=node-forked-process'
+  expect(GetProcessDisplayName.getName(123, cmd, 123, {})).toBe('main')
+})
+
+test('getName - detect extension host helper process', () => {
+  const pid = 123
+  const cmd = 'node dist/extensionHostHelperProcessMain.js'
+  const rootPid = 1
+  const pidMap = {}
+  expect(GetProcessDisplayName.getName(pid, cmd, rootPid, pidMap)).toBe(
+    'extension-host-helper-process',
+  )
+})
+
+test('getName - detect Zig language server', () => {
+  const pid = 123
+  const rootPid = 1
+  const pidMap = {
+    123: 'utility',
+  }
+  expect(
+    GetProcessDisplayName.getName(
+      pid,
+      '/home/simon/.local/share/lvce/extensions/language-features-zig/dist/language-server/zls',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('Zig Language Server')
+  expect(
+    GetProcessDisplayName.getName(
+      pid,
+      'C:\\Users\\simon\\extensions\\language-features-zig\\dist\\language-server\\zls.exe --enable-debug-log',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('Zig Language Server')
+})
+
+test.each([
+  '/usr/lib/lvce/resources/app/packages/shared-process/language-servers/typescript/lib/tsc --lsp --stdio',
+  String.raw`"C:\Program Files\LVCE\resources\app\packages\shared-process\language-servers\typescript\lib\tsc.exe" --lsp --stdio`,
+])('getName - detect TypeScript language server %s', (cmd) => {
+  expect(GetProcessDisplayName.getName(123, cmd, 1, {})).toBe(
+    'typescript-language-server',
+  )
+})
+
+test.each([
+  '/usr/lib/lvce/resources/app/packages/shared-process/language-servers/typescript/lib/tsc --pretty',
+  String.raw`C:\tools\typescript\lib\tsc.exe --pretty`,
+  '/usr/lib/lvce/resources/app/packages/shared-process/language-servers/typescript/lib/tsc-wrapper --lsp --stdio',
+])('getName - preserve other TypeScript commands %s', (cmd) => {
+  expect(GetProcessDisplayName.getName(123, cmd, 1, {})).toBe(cmd)
+})
+
+test('getName - preserve tsserver.js name', () => {
+  expect(GetProcessDisplayName.getName(123, 'node tsserver.js', 1, {})).toBe(
+    'tsserver.js',
+  )
+})
+
+test('getName - TypeScript language server keeps configured name ahead of pid map', () => {
+  const cmd =
+    '/usr/lib/lvce/resources/app/packages/shared-process/language-servers/typescript/lib/tsc --lsp --stdio'
+  expect(GetProcessDisplayName.getName(123, cmd, 1, { 123: 'utility' })).toBe(
+    'typescript-language-server',
+  )
+})
+
+test('getName - detect sublime', () => {
+  const pid = 123
+  const cmd = '/opt/sublime_text/sublime_text --fwdargv0 /usr/bin/subl'
+  const rootPid = 1
+  const pidMap = {}
+  expect(GetProcessDisplayName.getName(pid, cmd, rootPid, pidMap)).toBe(
+    'sublime-text',
+  )
+})
+
+test('getName - detect root process', () => {
+  const pid = 123
+  const cmd = 'node ./main.js'
+  const rootPid = 123
+  const pidMap = {}
+  expect(GetProcessDisplayName.getName(pid, cmd, rootPid, pidMap)).toBe('main')
+})
+
+test('getName - detect common process patterns', () => {
+  const rootPid = 1
+  const pidMap = {}
+  expect(
+    GetProcessDisplayName.getName(2, 'electron --type=zygote', rootPid, pidMap),
+  ).toBe('zygote')
+  expect(
+    GetProcessDisplayName.getName(
+      3,
+      'electron --type=gpu-process',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('gpu-process')
+  expect(
+    GetProcessDisplayName.getName(
+      4,
+      'node dist/extensionHostMain.js',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('extension-host')
+  expect(
+    GetProcessDisplayName.getName(
+      5,
+      'electron --lvce-window-kind=process-explorer',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('process-explorer')
+  expect(
+    GetProcessDisplayName.getName(
+      6,
+      'node /test/node_modules/@lvce-editor/file-system-process/dist/index.js',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('file-system-process')
+  expect(
+    GetProcessDisplayName.getName(
+      7,
+      'node C:\\test\\node_modules\\@lvce-editor\\file-watcher-process\\dist\\index.js',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('file-watcher-process')
+  expect(
+    GetProcessDisplayName.getName(
+      8,
+      'node /test/node_modules/@lvce-editor/typescript-compile-process/dist/index.js',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('typescript-compile-process')
+  expect(
+    GetProcessDisplayName.getName(
+      9,
+      'node /test/node_modules/@lvce-editor/process-explorer/dist/index.js --ipc-type=node-forked-process',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('process-explorer')
+  expect(
+    GetProcessDisplayName.getName(
+      10,
+      'node C:\\test\\node_modules\\@lvce-editor\\process-explorer\\dist\\index.js --ipc-type=node-forked-process',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('process-explorer')
+  expect(
+    GetProcessDisplayName.getName(
+      11,
+      'node /test/packages/process-explorer/src/processExplorerMain.ts',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('process-explorer')
+  expect(
+    GetProcessDisplayName.getName(
+      12,
+      'node /test/packages/shared-process/src/sharedProcessMain.js',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('shared-process')
+  expect(
+    GetProcessDisplayName.getName(13, 'node tsserver.js', rootPid, pidMap),
+  ).toBe('tsserver.js')
+  expect(
+    GetProcessDisplayName.getName(
+      14,
+      'node typingsInstaller.js',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('typingsInstaller.js')
+  expect(
+    GetProcessDisplayName.getName(15, '/usr/bin/bash -i', rootPid, pidMap),
+  ).toBe('/usr/bin/bash -i')
+  expect(GetProcessDisplayName.getName(16, 'bash -i', rootPid, pidMap)).toBe(
+    'bash',
+  )
+  expect(
+    GetProcessDisplayName.getName(17, '/bin/rg test', rootPid, pidMap),
+  ).toBe('ripgrep')
+  expect(
+    GetProcessDisplayName.getName(
+      18,
+      'C:\\tools\\rg.exe test',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('ripgrep')
+  expect(
+    GetProcessDisplayName.getName(
+      19,
+      'C:\\Windows\\System32\\conhost.exe',
+      rootPid,
+      pidMap,
+    ),
+  ).toBe('conhost.exe')
+})
+
+test('getName - pid map empty name', () => {
+  const pid = 123
+  const cmd = 'electron --type=renderer'
+  const rootPid = 1
+  const pidMap = {
+    123: '',
+  }
+  expect(GetProcessDisplayName.getName(pid, cmd, rootPid, pidMap)).toBe(
+    '<unknown>',
+  )
+})
+
+test('getName - fallback to command', () => {
+  const pid = 123
+  const cmd = 'custom-process --flag'
+  const rootPid = 1
+  const pidMap = {}
+  expect(GetProcessDisplayName.getName(pid, cmd, rootPid, pidMap)).toBe(cmd)
+})
+
+test.each([
+  'ssh',
+  'ssh user@host',
+  '/usr/bin/ssh -T -D 54321 user@host',
+  '/opt/custom/bin/ssh user@host node sharedProcessMain.js',
+  'ssh.exe user@host',
+  String.raw`C:\Windows\System32\OpenSSH\ssh.exe user@host`,
+  String.raw`"C:\Program Files\OpenSSH\ssh.exe" user@host`,
+  '"/usr/local/bin/ssh" user@host',
+])('getName - ssh command %s', (cmd) => {
+  expect(GetProcessDisplayName.getName(123, cmd, 1, {})).toBe('ssh')
+})
+
+test.each([
+  '/usr/sbin/sshd -D',
+  'ssh-agent -s',
+  '/usr/bin/ssh-keygen -t ed25519',
+  'custom-process /usr/bin/ssh user@host',
+  '/usr/bin/ssh-wrapper user@host',
+  '/usr/bin/ssh/somethinglong',
+])('getName - does not rename other commands %s', (cmd) => {
+  expect(GetProcessDisplayName.getName(123, cmd, 1, {})).toBe(cmd)
+})
+
+test.each([
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioService',
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioService --lang=en',
+  String.raw`"C:\\Program Files\\LVCE\\lvce.exe" --type=utility --utility-sub-type=audio.mojom.AudioService --lang=en-US`,
+])('getName - audio service %s', (cmd) => {
+  expect(GetProcessDisplayName.getName(123, cmd, 1, {})).toBe(
+    'audio utility process',
+  )
+  expect(GetProcessDisplayName.getName(123, cmd, 123, {})).toBe('main')
+  expect(
+    GetProcessDisplayName.getName(123, cmd, 1, { 123: 'custom-name' }),
+  ).toBe('custom-name')
+})
+
+test.each([
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioServiceOther',
+  'electron --type=utility --utility-sub-type=not-audio.mojom.AudioService',
+  'electron --type=utility --utility-sub-type=audio.mojom.AudioServiceOther --lang=en',
+])('getName - preserve other utilities near audio service %s', (cmd) => {
+  expect(GetProcessDisplayName.getName(123, cmd, 1, {})).toBe('utility')
+})
+
+test.each([
+  'electron --type=utility --utility-sub-type=network.mojom.NetworkService',
+  'electron --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en',
+])('getName - network service %s', (cmd) => {
+  expect(GetProcessDisplayName.getName(123, cmd, 1, {})).toBe(
+    'utility-network-service',
+  )
+  expect(GetProcessDisplayName.getName(123, cmd, 123, {})).toBe('main')
+  expect(
+    GetProcessDisplayName.getName(123, cmd, 1, { 123: 'custom-name' }),
+  ).toBe('custom-name')
+})
+
+test.each([
+  'electron --type=utility',
+  'electron --type=utility --utility-sub-type=node.mojom.NodeService',
+  'electron --type=utility --utility-sub-type=unknown',
+  'electron --type=utility --utility-sub-type=network.mojom.NetworkServiceOther',
+])('getName - preserve other utilities %s', (cmd) => {
+  expect(GetProcessDisplayName.getName(123, cmd, 1, {})).toBe('utility')
+})
