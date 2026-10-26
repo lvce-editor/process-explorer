@@ -12,3 +12,9 @@ test('loads the Unix process enumeration module', async () => {
 
   expect(module.listProcessesWithMemoryUsage).toEqual(expect.any(Function))
 })
+
+test('defaults to the process enumeration module for the current platform', async () => {
+  const module = await GetListProcessesWithMemoryUsageModule.getModule()
+
+  expect(module.listProcessesWithMemoryUsage).toEqual(expect.any(Function))
+})

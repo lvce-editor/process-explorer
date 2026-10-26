@@ -19,3 +19,22 @@ test('returns no ports on non-Linux platforms', async () => {
     })
   }
 })
+
+test('delegates to procfs on Linux', async () => {
+  const { platform } = process
+  Object.defineProperty(process, 'platform', {
+    configurable: true,
+    value: 'linux',
+  })
+
+  try {
+    await expect(
+      GetProcessListeningPorts.getProcessListeningPorts(-1),
+    ).resolves.toEqual([])
+  } finally {
+    Object.defineProperty(process, 'platform', {
+      configurable: true,
+      value: platform,
+    })
+  }
+})
