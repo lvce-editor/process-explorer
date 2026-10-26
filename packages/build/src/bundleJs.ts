@@ -3,6 +3,7 @@ import { VError } from '@lvce-editor/verror'
 import pluginTypeScript from '@babel/preset-typescript'
 import { babel } from '@rollup/plugin-babel'
 import commonjs from '@rollup/plugin-commonjs'
+import json from '@rollup/plugin-json'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import {
   rollup,
@@ -13,6 +14,9 @@ import {
 
 const commonjsPlugin =
   commonjs as unknown as typeof import('@rollup/plugin-commonjs').default
+
+const jsonPlugin =
+  json as unknown as typeof import('@rollup/plugin-json').default
 
 interface BundleJsOptions {
   readonly cwd: string
@@ -40,6 +44,7 @@ export const bundleJs = async ({
         preferBuiltins: true,
       }),
       commonjsPlugin(),
+      jsonPlugin(),
     ]
     if (typescript) {
       plugins.push(

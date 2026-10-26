@@ -32,6 +32,13 @@ try {
     '#!/usr/bin/env node\nsetInterval(() => {}, 1000)\n',
   )
   await chmod(typescriptServerPath, 0o755)
+  const zigServerPath = join(profile, 'language-server/zls')
+  await mkdir(dirname(zigServerPath), { recursive: true })
+  await writeFile(
+    zigServerPath,
+    '#!/usr/bin/env node\nsetInterval(() => {}, 1000)\n',
+  )
+  await chmod(zigServerPath, 0o755)
   await mkdir(join(profile, 'config/lvce-oss'), { recursive: true })
   await writeFile(
     join(profile, 'config/lvce-oss/keybindings.json'),
@@ -48,6 +55,7 @@ try {
     DEV: '1',
     LVCE_ROOT: root,
     LVCE_TYPESCRIPT_SERVER_PATH: typescriptServerPath,
+    LVCE_ZIG_SERVER_PATH: zigServerPath,
     LVCE_SHARED_PROCESS_PATH: join(
       root,
       'packages/shared-process/src/sharedProcessMain.ts',
@@ -101,6 +109,15 @@ try {
     return server.pid
   })
   assert.ok(typescriptServerPid > 0)
+  const zigServerPid = await app.evaluate(() => {
+    const { spawn } = process.getBuiltinModule('node:child_process')
+    const server = spawn(process.env.LVCE_ZIG_SERVER_PATH, [], {
+      stdio: 'ignore',
+    })
+    globalThis.__processExplorerZigServer = server
+    return server.pid
+  })
+  assert.ok(zigServerPid > 0)
   console.log(
     `Spawned TypeScript language-server fixture PID ${typescriptServerPid}`,
   )
@@ -133,6 +150,17 @@ try {
     }),
   })
   await expect(typescriptRow).toHaveCount(1)
+  const zigRow = page.locator('.ProcessExplorerRow').filter({
+    has: page.locator('.ProcessExplorerNameCell', {
+      hasText: /^Zig Language Server$/,
+    }),
+  })
+  await expect(zigRow).toHaveCount(1)
+  await expect(zigRow.locator('.ProcessExplorerCell').nth(1)).toHaveText(
+    String(zigServerPid),
+  )
+  const zigCommand = await zigRow.getAttribute('title')
+  assert.ok(zigCommand?.includes(zigServerPath))
   console.log('Found the TypeScript language-server row')
   const typescriptCells = typescriptRow.locator('.ProcessExplorerCell')
   await expect(typescriptCells.nth(1)).toHaveText(String(typescriptServerPid))
@@ -158,6 +186,11 @@ try {
   await expect(typescriptRow).toHaveCount(1)
   await expect(typescriptCells.nth(1)).toHaveText(String(typescriptServerPid))
   assert.equal(await typescriptRow.getAttribute('title'), typescriptCommand)
+  await expect(zigRow).toHaveCount(1)
+  await expect(zigRow.locator('.ProcessExplorerCell').nth(1)).toHaveText(
+    String(zigServerPid),
+  )
+  assert.equal(await zigRow.getAttribute('title'), zigCommand)
   await expect(page.locator('.ProcessExplorerError')).toBeHidden()
   if (process.env.PROCESS_EXPLORER_SCREENSHOT)
     await page.screenshot({ path: process.env.PROCESS_EXPLORER_SCREENSHOT })
@@ -165,9 +198,10 @@ try {
     `Electron NetworkService PID ${pid} and TypeScript language-server PID ${typescriptServerPid} display their concise names and retain their command tooltips before and after refresh`,
   )
 } finally {
-  await app?.evaluate(() =>
-    globalThis.__processExplorerTypeScriptServer?.kill(),
-  )
+  await app?.evaluate(() => {
+    globalThis.__processExplorerTypeScriptServer?.kill()
+    globalThis.__processExplorerZigServer?.kill()
+  })
   await app?.close()
   await rm(profile, { recursive: true, force: true })
 }

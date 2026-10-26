@@ -93,19 +93,6 @@ await bundleJs({
 await cp(join(root, 'packages', 'process-explorer', 'bin'), join(dist, 'bin'), {
   recursive: true,
 })
-await cp(
-  join(
-    root,
-    'packages',
-    'process-explorer',
-    'src',
-    'parts',
-    'ConfiguredProcessNames',
-    'configuredProcessNames.json',
-  ),
-  join(dist, 'dist', 'configuredProcessNames.json'),
-)
-
 await replace({
   path: join(dist, 'bin', 'processExplorer.js'),
   occurrence: 'src/processExplorerMain.js',
