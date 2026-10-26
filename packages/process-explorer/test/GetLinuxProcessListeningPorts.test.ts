@@ -20,6 +20,14 @@ test('parseProcNetTcp ignores non-listening and malformed rows', () => {
   ).toEqual([])
 })
 
+test('parseProcNetTcp ignores listening sockets without a port', () => {
+  const content = `${header}\n   0: 0100007F:0000 00000000:0000 0A 00000000:00000000 00:00000000 00000000  1000 0 12345 1\n`
+
+  expect(
+    GetLinuxProcessListeningPorts.parseProcNetTcp(content, new Set(['12345'])),
+  ).toEqual([])
+})
+
 test('getLinuxProcessListeningPorts returns an empty list when procfs is unavailable', async () => {
   await expect(
     GetLinuxProcessListeningPorts.getLinuxProcessListeningPorts(-1),

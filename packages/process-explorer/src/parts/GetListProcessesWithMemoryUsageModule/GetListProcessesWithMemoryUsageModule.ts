@@ -13,10 +13,11 @@ export interface ListProcessesWithMemoryUsageModule {
   ) => Promise<readonly ProcessItem[] | readonly ProcessItemWithDepth[]>
 }
 
-export const getModule =
-  async (): Promise<ListProcessesWithMemoryUsageModule> => {
-    if (IsWindows.isWindows) {
-      return import('../ListProcessesWithMemoryUsageWindows/ListProcessesWithMemoryUsageWindows.ts')
-    }
-    return import('../ListProcessesWithMemoryUsageUnix/ListProcessesWithMemoryUsageUnix.ts')
+export const getModule = async (
+  isWindows = IsWindows.isWindows,
+): Promise<ListProcessesWithMemoryUsageModule> => {
+  if (isWindows) {
+    return import('../ListProcessesWithMemoryUsageWindows/ListProcessesWithMemoryUsageWindows.ts')
   }
+  return import('../ListProcessesWithMemoryUsageUnix/ListProcessesWithMemoryUsageUnix.ts')
+}
