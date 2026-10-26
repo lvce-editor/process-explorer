@@ -58,6 +58,7 @@ export const create = (
     rootPid: -1,
     uid: id,
     updateInterval: getUpdateInterval(args),
+    uniqueIndents: [],
     visibleProcesses: [],
     width,
     x,

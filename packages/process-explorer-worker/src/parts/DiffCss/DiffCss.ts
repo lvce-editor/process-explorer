@@ -4,5 +4,5 @@ export const isEqual = (
   oldState: ProcessExplorerState,
   newState: ProcessExplorerState,
 ): boolean => {
-  return oldState.visibleProcesses === newState.visibleProcesses
+  return oldState.uniqueIndents === newState.uniqueIndents
 }
