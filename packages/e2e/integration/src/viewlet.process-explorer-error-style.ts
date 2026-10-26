@@ -17,9 +17,9 @@ export const test: Test = async ({ Command, expect, Locator }) => {
     await expect(error).toContainText('ERR_PROCESS_EXPLORER_TEST')
     await expect(error).toContainText('Process explorer connection was closed')
     await expect(icon).toBeVisible()
-    await expect(icon).toHaveClass('ProcessExplorerErrorIcon')
-    await expect(icon).toHaveClass('MaskIcon')
-    await expect(icon).toHaveClass('MaskIconError')
+    await expect(icon).toHaveClass(
+      'ProcessExplorerErrorIcon MaskIcon MaskIconError',
+    )
     await expect(icon).toHaveCSS('width', '48px')
     await expect(icon).toHaveCSS('height', '48px')
     await expect(table).toBeHidden()
