@@ -11,6 +11,7 @@ export const toggleIndex = (
     collapsedPids: stateCollapsedPids,
     processes,
     rootPid,
+    uniqueIndents,
     visibleProcesses: stateVisibleProcesses,
   } = state
   const process = stateVisibleProcesses[index]
@@ -32,7 +33,7 @@ export const toggleIndex = (
     focusedIndex: Math.min(index, visibleProcesses.length - 1),
     uniqueIndents: GetUniqueIndents.getUniqueIndents(
       visibleProcesses,
-      state.uniqueIndents,
+      uniqueIndents,
     ),
     visibleProcesses,
   }

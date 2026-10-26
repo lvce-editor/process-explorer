@@ -77,6 +77,7 @@ export const refresh = async (
     includeFrontendMemoryUsage,
     platform,
     rootPid: stateRootPid,
+    uniqueIndents,
   } = state
   if (platform === PlatformType.Web) {
     return {
@@ -163,7 +164,7 @@ export const refresh = async (
       rootPid,
       uniqueIndents: GetUniqueIndents.getUniqueIndents(
         visibleProcesses,
-        state.uniqueIndents,
+        uniqueIndents,
       ),
       visibleProcesses,
     }

@@ -9,7 +9,9 @@ test('DiffCss - ignores process updates when unique indents are unchanged', () =
   }
   const newState = {
     ...oldState,
-    processes: [{ cmd: 'updated', memory: 2, name: 'updated', pid: 1, ppid: 0 }],
+    processes: [
+      { cmd: 'updated', memory: 2, name: 'updated', pid: 1, ppid: 0 },
+    ],
     uniqueIndents: oldState.uniqueIndents,
     visibleProcesses: [],
   }
