@@ -10,7 +10,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@lvce-editor/server": "0.125.21"
+    "@lvce-editor/server": "0.125.24"
   },
   "devDependencies": {
     "@types/node": "^26.1.0"
