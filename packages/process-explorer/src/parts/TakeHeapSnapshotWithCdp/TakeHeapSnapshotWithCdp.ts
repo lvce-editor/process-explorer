@@ -19,7 +19,8 @@ export const takeHeapSnapshotWithCdp = (
   webSocket: WebSocket,
   output: WriteStream,
 ): Promise<void> => {
-  return new Promise((resolve, reject) => {
+  const { promise, resolve, reject } = Promise.withResolvers<void>()
+  try {
     let settled = false
     const timeout = setTimeout(() => {
       fail(new Error('Timed out while taking the heap snapshot'))
@@ -86,5 +87,8 @@ export const takeHeapSnapshotWithCdp = (
         }),
       )
     })
-  })
+  } catch (error) {
+    reject(error)
+  }
+  return promise
 }
