@@ -3,13 +3,53 @@ import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibl
 import * as GroupProcesses from '../src/parts/GroupProcesses/GroupProcesses.ts'
 
 const localProcesses = [
-  { cmd: 'local main', memory: 1, name: 'main', pid: 1, ppid: 0 },
-  { cmd: 'local child', memory: 2, name: 'child', pid: 2, ppid: 1 },
+  {
+    cmd: 'local main',
+    memory: 1,
+    name: 'main',
+    parentTreeId: 0,
+    pid: 1,
+    ppid: 0,
+    source: 'local' as const,
+    synthetic: false,
+    treeId: 1,
+  },
+  {
+    cmd: 'local child',
+    memory: 2,
+    name: 'child',
+    parentTreeId: 1,
+    pid: 2,
+    ppid: 1,
+    source: 'local' as const,
+    synthetic: false,
+    treeId: 2,
+  },
 ]
 
 const remoteProcesses = [
-  { cmd: 'remote main', memory: 3, name: 'remote-main', pid: 1, ppid: 0 },
-  { cmd: 'remote child', memory: 4, name: 'remote-child', pid: 2, ppid: 1 },
+  {
+    cmd: 'remote main',
+    memory: 3,
+    name: 'remote-main',
+    parentTreeId: 0,
+    pid: 1,
+    ppid: 0,
+    source: 'local' as const,
+    synthetic: false,
+    treeId: 1,
+  },
+  {
+    cmd: 'remote child',
+    memory: 4,
+    name: 'remote-child',
+    parentTreeId: 1,
+    pid: 2,
+    ppid: 1,
+    source: 'local' as const,
+    synthetic: false,
+    treeId: 2,
+  },
 ]
 
 test('groupProcesses creates independent local and remote trees', () => {

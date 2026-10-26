@@ -11,8 +11,12 @@ const createProcess = (
   cmd: name,
   memory: 1,
   name,
+  parentTreeId: ppid,
   pid,
   ppid,
+  source: 'local',
+  synthetic: false,
+  treeId: pid,
 })
 
 test('reparents conceptual children below the shared process', () => {
@@ -33,6 +37,9 @@ test('reparents conceptual children below the shared process', () => {
     ReparentSharedProcessChildren.reparentSharedProcessChildren(processes)
 
   expect(result.map((process) => process.ppid)).toEqual([
+    0, 1, 2, 2, 2, 2, 2, 2, 7, 1,
+  ])
+  expect(result.map((process) => process.parentTreeId)).toEqual([
     0, 1, 2, 2, 2, 2, 2, 2, 7, 1,
   ])
 })

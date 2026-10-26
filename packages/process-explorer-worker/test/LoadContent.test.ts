@@ -56,8 +56,12 @@ test('loadContent - refreshes and starts auto refresh', async () => {
         cmd: 'main',
         memory: 1,
         name: 'main',
+        parentTreeId: 0,
         pid: 1,
         ppid: 0,
+        source: 'local' as const,
+        synthetic: false,
+        treeId: 1,
       },
     ],
   )

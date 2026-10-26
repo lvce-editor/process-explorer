@@ -28,6 +28,7 @@ export const reparentSharedProcessChildren = (
     }
     return {
       ...process,
+      parentTreeId: sharedProcess.treeId,
       ppid: sharedProcess.pid,
     }
   })
