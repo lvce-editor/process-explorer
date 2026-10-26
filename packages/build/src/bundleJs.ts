@@ -15,6 +15,9 @@ import {
 const commonjsPlugin =
   commonjs as unknown as typeof import('@rollup/plugin-commonjs').default
 
+const jsonPlugin =
+  json as unknown as typeof import('@rollup/plugin-json').default
+
 interface BundleJsOptions {
   readonly cwd: string
   readonly from: string
@@ -41,7 +44,7 @@ export const bundleJs = async ({
         preferBuiltins: true,
       }),
       commonjsPlugin(),
-      json(),
+      jsonPlugin(),
     ]
     if (typescript) {
       plugins.push(
