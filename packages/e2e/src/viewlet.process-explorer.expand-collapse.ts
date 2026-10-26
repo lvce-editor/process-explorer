@@ -4,9 +4,9 @@ export const name = 'viewlet.process-explorer.expand-collapse'
 
 export const skip = 1
 
-export const test: Test = async ({ Command, expect, Locator }) => {
+export const test: Test = async ({ expect, Locator, ProcessExplorer }) => {
   // arrange
-  await Command.execute('Developer.openProcessExplorer')
+  await ProcessExplorer.open()
   const table = Locator('.ProcessExplorerTable')
   const expandableRow = Locator(
     '.ProcessExplorerRow[aria-expanded="true"]',
@@ -25,13 +25,13 @@ export const test: Test = async ({ Command, expect, Locator }) => {
   }
 
   // act
-  await Command.execute('ProcessExplorer.collapseAll')
+  await ProcessExplorer.collapseAll()
 
   // assert
   await expect(collapsedRow).toBeVisible()
 
   // act
-  await Command.execute('ProcessExplorer.expandAll')
+  await ProcessExplorer.expandAll()
 
   // assert
   await expect(expandedRow).toBeVisible()

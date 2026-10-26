@@ -7,7 +7,7 @@ The Integration workflow runs both style scenarios on Linux, macOS and Windows. 
 Build this repository and install the pinned application's dependencies, then run:
 
 ```sh
-node packages/e2e-integration/prepare.mjs /path/to/disposable/lvce-editor
+node packages/e2e/integration/prepare.mjs /path/to/disposable/lvce-editor
 cd /path/to/disposable/lvce-editor
 node node_modules/electron/install.js
 node scripts/test-process-explorer-styles.mjs

@@ -2,14 +2,12 @@ import type { Test } from '@lvce-editor/test-with-playwright'
 
 export const name = 'viewlet.process-explorer.accessibility-process-row'
 
-export const test: Test = async ({ Command, expect, Locator }) => {
+export const test: Test = async ({ expect, ProcessExplorer }) => {
   // arrange
-  await Command.execute('Developer.openProcessExplorer')
+  await ProcessExplorer.open()
 
   // assert
-  const firstRow = Locator(
-    '.ProcessExplorerTableBody > tr.ProcessExplorerRow[data-index="0"]',
-  )
+  const firstRow = ProcessExplorer.row(1)
   await expect(firstRow).toBeVisible()
   await expect(firstRow).toHaveAttribute('role', 'row')
   await expect(firstRow).toHaveAttribute('aria-level', '1')

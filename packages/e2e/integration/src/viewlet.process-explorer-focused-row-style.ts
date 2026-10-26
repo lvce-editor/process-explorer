@@ -1,7 +1,5 @@
 import type { Test } from '@lvce-editor/test-with-playwright'
 
-const focusedRowClass = /ProcessExplorerRowFocused/
-
 export const name = 'viewlet.process-explorer-focused-row-style'
 
 export const test: Test = async ({ Command, expect, KeyBoard, Locator }) => {
@@ -16,12 +14,13 @@ export const test: Test = async ({ Command, expect, KeyBoard, Locator }) => {
     await expect(firstRow).toBeVisible()
     await expect(secondRow).toBeVisible()
 
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- verifies mouse focus styling before keyboard navigation
-    await firstRow.click()
+    await Command.execute('ProcessExplorer.handleClickAt', 0)
     await expect(firstRow).toBeFocused()
     await expect(firstRow).toHaveCSS('outline-style', 'none')
     await expect(firstRow).toHaveAttribute('tabindex', '0')
-    await expect(firstRow).toHaveClass(focusedRowClass)
+    await expect(firstRow).toHaveClass(
+      'ProcessExplorerRow ProcessExplorerRowFocused',
+    )
     await expect(firstRow).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
     await expect(firstRow).toHaveAttribute('role', 'row')
 
@@ -30,7 +29,9 @@ export const test: Test = async ({ Command, expect, KeyBoard, Locator }) => {
     await expect(secondRow).toHaveCSS('outline-style', 'none')
     await expect(secondRow).toHaveAttribute('tabindex', '0')
     await expect(firstRow).toHaveAttribute('tabindex', '-1')
-    await expect(secondRow).toHaveClass(focusedRowClass)
+    await expect(secondRow).toHaveClass(
+      'ProcessExplorerRow ProcessExplorerRowFocused',
+    )
 
     await KeyBoard.press('ArrowUp')
     await expect(firstRow).toBeFocused()
