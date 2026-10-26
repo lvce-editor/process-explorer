@@ -2,13 +2,13 @@ import type { Test } from '@lvce-editor/test-with-playwright'
 
 export const name = 'viewlet.process-explorer.node-process-killed'
 
-export const test: Test = async ({ Command, ContextMenu, expect, Locator }) => {
+export const test: Test = async ({ Command, ContextMenu, expect, Locator, ProcessExplorer }) => {
   // arrange
-  await Command.execute('Developer.openProcessExplorer')
+  await ProcessExplorer.open()
   // Keep the selected row stable while clicking and opening its context menu.
   await Command.execute('ProcessExplorer.setUpdateInterval', -1)
   try {
-    await Command.execute('ProcessExplorer.refresh')
+    await ProcessExplorer.refresh()
     const processExplorerProcess = Locator(
       '.ProcessExplorerRow[title*="processExplorerMain.ts"]',
     )

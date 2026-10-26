@@ -4,9 +4,9 @@ export const name = 'viewlet.process-explorer.keyboard-navigation'
 
 const defaultUpdateInterval = 1000
 
-export const test: Test = async ({ Command, expect, KeyBoard, Locator }) => {
+export const test: Test = async ({ Command, expect, KeyBoard, Locator, ProcessExplorer }) => {
   // arrange
-  await Command.execute('Developer.openProcessExplorer')
+  await ProcessExplorer.open()
   await Command.execute('ProcessExplorer.setUpdateInterval', -1)
   const table = Locator('.ProcessExplorerTable')
   await expect(table).toBeVisible()

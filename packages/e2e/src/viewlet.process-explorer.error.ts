@@ -12,9 +12,9 @@ const getFixtureUrl = (): string => {
   )
 }
 
-export const test: Test = async ({ Command, expect, Locator }) => {
+export const test: Test = async ({ Command, expect, Locator, ProcessExplorer }) => {
   // arrange
-  await Command.execute('Developer.openProcessExplorer')
+  await ProcessExplorer.open()
   const fixtureUrl = getFixtureUrl()
   const stackLine = `createProcessExplorerE2eError (${fixtureUrl}:2:9)`
 
@@ -44,7 +44,7 @@ export const test: Test = async ({ Command, expect, Locator }) => {
     await expect(icon).toHaveCount(1)
     await expect(error).toContainText(fixtureMessage.repeat(30))
   } finally {
-    await Command.execute('ProcessExplorer.refresh')
+    await ProcessExplorer.refresh()
   }
   await expect(error).toBeHidden()
   await expect(icon).toBeHidden()

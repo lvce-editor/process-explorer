@@ -2,16 +2,13 @@ import type { Test } from '@lvce-editor/test-with-playwright'
 
 export const name = 'viewlet.process-explorer.refresh'
 
-export const test: Test = async ({ Command, expect, Locator }) => {
+export const test: Test = async ({ ProcessExplorer }) => {
   // arrange
-  await Command.execute('Developer.openProcessExplorer')
-  const table = Locator('.ProcessExplorerTable')
+  await ProcessExplorer.open()
 
   // act
-  await Command.execute('ProcessExplorer.refresh')
+  await ProcessExplorer.refresh()
 
   // assert
-  const error = Locator('.ProcessExplorerError')
-  await expect(table).toBeVisible()
-  await expect(error).toBeHidden()
+  await ProcessExplorer.shouldBeHealthy()
 }

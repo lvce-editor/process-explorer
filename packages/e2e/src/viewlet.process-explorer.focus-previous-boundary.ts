@@ -4,16 +4,16 @@ export const name = 'viewlet.process-explorer.focus-previous-boundary'
 
 const defaultUpdateInterval = 1000
 
-export const test: Test = async ({ Command, expect, Locator }) => {
+export const test: Test = async ({ Command, expect, Locator, ProcessExplorer }) => {
   // arrange
-  await Command.execute('Developer.openProcessExplorer')
+  await ProcessExplorer.open()
   await Command.execute('ProcessExplorer.setUpdateInterval', -1)
 
   try {
-    await Command.execute('ProcessExplorer.focusFirst')
+    await ProcessExplorer.focusFirst()
 
     // act
-    await Command.execute('ProcessExplorer.focusPrevious')
+    await ProcessExplorer.focusPrevious()
 
     // assert
     const focusedRow = Locator('.ProcessExplorerRowFocused[data-index="0"]')
