@@ -63,12 +63,12 @@ test('entry point delegates with explicit and default options on Windows', async
       false,
     ),
   ).resolves.toEqual([
-    { cmd: 'node', memory: 1, name: 'node.exe', pid: 123, ppid: 0 },
+    { cmd: 'node', memory: 1, name: 'node', pid: 123, ppid: 0 },
   ])
   await expect(
     ListProcessesWithMemoryUsageEntryPoint.listProcessesWithMemoryUsage(123),
   ).resolves.toEqual([
-    { cmd: 'node', memory: 1, name: 'node.exe', pid: 123, ppid: 0 },
+    { cmd: 'node', memory: 1, name: 'node', pid: 123, ppid: 0 },
   ])
 })
 
