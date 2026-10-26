@@ -4,6 +4,7 @@ import * as ProcessExplorerUpdateInterval from '../ProcessExplorerUpdateInterval
 export const createDefaultState = (): ProcessExplorerState => ({
   assetDir: '',
   collapsedPids: [],
+  displayNameCache: Object.create(null),
   errorCode: '',
   errorCodeFrame: '',
   errorMessage: '',

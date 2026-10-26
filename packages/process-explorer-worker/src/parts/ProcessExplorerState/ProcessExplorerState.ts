@@ -1,9 +1,11 @@
+import type { DisplayNameCache } from '../DisplayNameCache/DisplayNameCache.ts'
 import type { ProcessInfo } from '../ProcessInfo/ProcessInfo.ts'
 import type { VisibleProcess } from '../VisibleProcess/VisibleProcess.ts'
 
 export interface ProcessExplorerState {
   readonly assetDir: string
   readonly collapsedPids: readonly (number | string)[]
+  readonly displayNameCache: DisplayNameCache
   readonly errorCode: string
   readonly errorCodeFrame: string
   readonly errorMessage: string
