@@ -55,6 +55,18 @@ const listProcesses = async (
   )
 }
 
+const normalizeProcesses = (
+  processes: readonly ProcessInfo[],
+  source: 'local' | 'remote',
+): readonly ProcessInfo[] =>
+  processes.map((process) => ({
+    ...process,
+    parentTreeId: process.ppid,
+    source,
+    synthetic: false,
+    treeId: process.pid,
+  }))
+
 const getRootPid = async (
   processExplorer: ProcessExplorerRpc,
   rootPid: number,
@@ -98,10 +110,9 @@ export const refresh = async (
     const pidMap = includeElectronData
       ? await MainProcess.invoke('CreatePidMap.createPidMap')
       : undefined
-    const processes = await listProcesses(
-      ProcessExplorerModule,
-      rootPid,
-      pidMap,
+    const processes = normalizeProcesses(
+      await listProcesses(ProcessExplorerModule, rootPid, pidMap),
+      'local',
     )
     const frontendMemoryProcesses = includeFrontendMemoryUsage
       ? await GetFrontendMemoryUsage.getFrontendMemoryUsage(rootPid)
@@ -130,9 +141,9 @@ export const refresh = async (
     let displayedProcesses = localProcesses
     if (platform === PlatformType.Electron && RemoteProcessExplorer.has()) {
       const remoteRootPid = await getRootPid(RemoteProcessExplorer, -1, false)
-      const remoteProcesses = await listProcesses(
-        RemoteProcessExplorer,
-        remoteRootPid,
+      const remoteProcesses = normalizeProcesses(
+        await listProcesses(RemoteProcessExplorer, remoteRootPid),
+        'remote',
       )
       const namedRemoteProcesses = remoteProcesses.map((process) => {
         const name = GetProcessDisplayNameCached.getName(

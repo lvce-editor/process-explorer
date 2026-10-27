@@ -3,11 +3,11 @@ import type { VisibleProcess } from '../VisibleProcess/VisibleProcess.ts'
 import * as ProcessFlag from '../ProcessFlag/ProcessFlag.ts'
 
 const getTreeId = (process: ProcessInfo): number | string => {
-  return process.treeId ?? process.pid
+  return process.treeId
 }
 
 const getParentTreeId = (process: ProcessInfo): number | string => {
-  return process.parentTreeId ?? process.ppid
+  return process.parentTreeId
 }
 
 const getRootProcesses = (

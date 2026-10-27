@@ -28,9 +28,12 @@ export const getFrontendMemoryUsage = async (
         cmd: 'window',
         memory: measurement.bytes,
         name: 'window',
+        parentTreeId: rootPid,
         pid: WindowPid.WindowPid,
         ppid: rootPid,
+        source: 'local',
         synthetic: true,
+        treeId: WindowPid.WindowPid,
       },
       ...breakdownProcesses,
     ]

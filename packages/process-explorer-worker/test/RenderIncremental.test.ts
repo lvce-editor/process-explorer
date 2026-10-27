@@ -9,15 +9,23 @@ const processes = [
     cmd: 'main',
     memory: 1,
     name: 'main',
+    parentTreeId: 0,
     pid: 1,
     ppid: 0,
+    source: 'local' as const,
+    synthetic: false,
+    treeId: 1,
   },
   {
     cmd: 'node child.js',
     memory: 1500,
     name: 'child',
+    parentTreeId: 1,
     pid: 2,
     ppid: 1,
+    source: 'local' as const,
+    synthetic: false,
+    treeId: 2,
   },
 ]
 

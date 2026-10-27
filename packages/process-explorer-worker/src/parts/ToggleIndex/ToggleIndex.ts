@@ -18,7 +18,7 @@ export const toggleIndex = (
   if (!process || process.flags === ProcessFlag.None) {
     return state
   }
-  const treeId = process.treeId ?? process.pid
+  const { treeId } = process
   const collapsedPids = stateCollapsedPids.includes(treeId)
     ? stateCollapsedPids.filter((pid) => pid !== treeId)
     : [...stateCollapsedPids, treeId]

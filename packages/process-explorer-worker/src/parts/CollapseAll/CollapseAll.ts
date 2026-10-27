@@ -7,11 +7,11 @@ export const collapseAll = (
   const { processes, rootPid } = state
   const parentPids = new Set<number | string>()
   for (const process of processes) {
-    parentPids.add(process.parentTreeId ?? process.ppid)
+    parentPids.add(process.parentTreeId)
   }
   const collapsedPids = processes
-    .filter((process) => parentPids.has(process.treeId ?? process.pid))
-    .map((process) => process.treeId ?? process.pid)
+    .filter((process) => parentPids.has(process.treeId))
+    .map((process) => process.treeId)
   const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
     processes,
     collapsedPids,

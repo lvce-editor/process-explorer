@@ -74,9 +74,12 @@ test('getFrontendMemoryUsage - window process without breakdown', async () => {
       cmd: 'window',
       memory: 100,
       name: 'window',
+      parentTreeId: 1,
       pid: -1,
       ppid: 1,
+      source: 'local' as const,
       synthetic: true,
+      treeId: -1,
     },
   ])
   expect(measureUserAgentSpecificMemory.mock.contexts[0]).toBe(

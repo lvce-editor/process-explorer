@@ -12,8 +12,11 @@ export const toBreakdownProcess = (
     cmd: name,
     memory: entry.bytes,
     name,
+    parentTreeId: WindowPid.WindowPid,
     pid: -2 - index,
     ppid: WindowPid.WindowPid,
+    source: 'local',
     synthetic: true,
+    treeId: -2 - index,
   }
 }
