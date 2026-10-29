@@ -24,18 +24,24 @@ test('getName reuses command results and preserves immutable cache state', () =>
   expect(cache).toEqual({})
 })
 
-test('getName normalizes remote ssh extension names from pid map', () => {
-  const displayNameCache = Object.create(null)
-  expect(
-    GetProcessDisplayNameCached.getName(
-      123,
-      'remote ssh extension',
-      1,
-      { 123: 'extension-builtin.remote-ssh:remote-SSH' },
-      displayNameCache,
-    ),
-  ).toBe('remote-ssh')
-})
+test.each([
+  'extension-builtin.remote-ssh:remote-SSH',
+  'extension-builtin.remote-ssh:-remote-SSH',
+])(
+  'getName normalizes remote ssh extension name %s from pid map',
+  (processName) => {
+    const displayNameCache = Object.create(null)
+    expect(
+      GetProcessDisplayNameCached.getName(
+        123,
+        'remote ssh extension',
+        1,
+        { 123: processName },
+        displayNameCache,
+      ),
+    ).toBe('remote-ssh')
+  },
+)
 
 test('getName retains root and pid map overrides for cached commands', () => {
   const cmd = 'unknown command'

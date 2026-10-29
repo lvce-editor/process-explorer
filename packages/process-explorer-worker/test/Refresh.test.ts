@@ -310,7 +310,7 @@ test('refresh - electron with remote workspace', async () => {
   })
   using _mockMainProcessRpc = registerMainProcessMock({
     'CreatePidMap.createPidMap': jest.fn(() => ({
-      3: 'extension-builtin.remote-ssh:remote-SSH',
+      3: 'extension-builtin.remote-ssh:-remote-SSH',
       5: 'extension-builtin.other:other',
     })),
   })
