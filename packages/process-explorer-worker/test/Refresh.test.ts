@@ -241,7 +241,7 @@ test('refresh - electron with remote workspace', async () => {
     {
       cmd: 'remote ssh extension',
       memory: 3,
-      name: 'extension-builtin.remote-ssh:remote-SSH',
+      name: 'remote-ssh',
       parentTreeId: 1,
       pid: 3,
       ppid: 1,
@@ -335,7 +335,7 @@ test('refresh - electron with remote workspace', async () => {
     {
       depth: 4,
       memory: 3,
-      name: 'extension-builtin.remote-ssh:remote-SSH',
+      name: 'remote-ssh',
       pid: 3,
       source: 'local',
     },

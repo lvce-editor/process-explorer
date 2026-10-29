@@ -289,6 +289,14 @@ test('getName - pid map empty name', () => {
   )
 })
 
+test('getName - remote ssh extension', () => {
+  expect(
+    GetProcessDisplayName.getName(123, 'remote ssh extension', 1, {
+      123: 'extension-builtin.remote-ssh:remote-SSH',
+    }),
+  ).toBe('remote-ssh')
+})
+
 test('getName - fallback to command', () => {
   const pid = 123
   const cmd = 'custom-process --flag'
