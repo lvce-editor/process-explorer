@@ -2,12 +2,17 @@ import * as ConfiguredProcessNames from '../ConfiguredProcessNames/ConfiguredPro
 import * as GetFallbackPatternName from '../GetFallbackPatternName/GetFallbackPatternName.ts'
 import * as GetPatternName from '../GetPatternName/GetPatternName.ts'
 
+const remoteSshProcessNames = new Set([
+  'extension-builtin.remote-ssh:remote-SSH',
+  'extension-builtin.remote-ssh:-remote-SSH',
+])
+
 export const getPidMapName = (
   pid: number,
   pidMap: Readonly<Record<number, string>>,
 ): string => {
   const processName = pidMap[pid] || '<unknown>'
-  if (processName === 'extension-builtin.remote-ssh:remote-SSH') {
+  if (remoteSshProcessNames.has(processName)) {
     return 'remote-ssh'
   }
   return processName

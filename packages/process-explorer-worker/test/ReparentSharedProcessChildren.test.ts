@@ -24,6 +24,7 @@ test('reparents conceptual children below the shared process', () => {
     createProcess('main', 1, 0),
     createProcess('shared-process', 2, 1),
     createProcess('extension-builtin.remote-ssh:remote-SSH', 10, 1),
+    createProcess('extension-builtin.remote-ssh:-remote-SSH', 11, 1),
     createProcess('file-system-process', 3, 1),
     createProcess('file-watcher-process', 4, 1),
     createProcess('embeds-process', 5, 1),
@@ -37,10 +38,10 @@ test('reparents conceptual children below the shared process', () => {
     ReparentSharedProcessChildren.reparentSharedProcessChildren(processes)
 
   expect(result.map((process) => process.ppid)).toEqual([
-    0, 1, 2, 2, 2, 2, 2, 2, 7, 1,
+    0, 1, 2, 2, 2, 2, 2, 2, 2, 7, 1,
   ])
   expect(result.map((process) => process.parentTreeId)).toEqual([
-    0, 1, 2, 2, 2, 2, 2, 2, 7, 1,
+    0, 1, 2, 2, 2, 2, 2, 2, 2, 7, 1,
   ])
 })
 

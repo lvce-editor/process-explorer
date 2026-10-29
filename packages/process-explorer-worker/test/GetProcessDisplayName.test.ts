@@ -289,10 +289,13 @@ test('getName - pid map empty name', () => {
   )
 })
 
-test('getName - remote ssh extension', () => {
+test.each([
+  'extension-builtin.remote-ssh:remote-SSH',
+  'extension-builtin.remote-ssh:-remote-SSH',
+])('getName - remote ssh extension %s', (processName) => {
   expect(
     GetProcessDisplayName.getName(123, 'remote ssh extension', 1, {
-      123: 'extension-builtin.remote-ssh:remote-SSH',
+      123: processName,
     }),
   ).toBe('remote-ssh')
 })
