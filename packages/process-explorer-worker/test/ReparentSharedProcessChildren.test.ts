@@ -117,3 +117,60 @@ test('search process is nested and collapses with shared process', () => {
   ).toEqual(['main', 'shared-process'])
   expect(processes[2].ppid).toBe(1)
 })
+
+test('auth process is nested and collapses with shared process', () => {
+  const processes: ProcessInfo[] = [
+    {
+      ...createProcess('main', 1, 0),
+      parentTreeId: '',
+      treeId: 1,
+    },
+    {
+      ...createProcess('shared-process', 2, 1),
+      parentTreeId: 1,
+      treeId: 2,
+    },
+    {
+      ...createProcess('auth-process', 3, 1),
+      parentTreeId: 1,
+      treeId: 3,
+    },
+    {
+      ...createProcess('auth-child', 4, 3),
+      parentTreeId: 3,
+      treeId: 4,
+    },
+    {
+      ...createProcess('unrelated-process', 5, 1),
+      parentTreeId: 1,
+      treeId: 5,
+    },
+  ]
+  const originalProcesses = structuredClone(processes)
+  const reparented =
+    ReparentSharedProcessChildren.reparentSharedProcessChildren(processes)
+
+  const visible = GetVisibleProcesses.getVisibleProcesses(reparented, [], 1)
+  expect(
+    visible.map(({ depth, memory, name, pid }) => ({
+      depth,
+      memory,
+      name,
+      pid,
+    })),
+  ).toEqual([
+    { depth: 1, memory: 1, name: 'main', pid: 1 },
+    { depth: 2, memory: 1, name: 'shared-process', pid: 2 },
+    { depth: 3, memory: 1, name: 'auth-process', pid: 3 },
+    { depth: 4, memory: 1, name: 'auth-child', pid: 4 },
+    { depth: 2, memory: 1, name: 'unrelated-process', pid: 5 },
+  ])
+  expect(
+    GetVisibleProcesses.getVisibleProcesses(reparented, [2], 1).map(
+      (process) => process.name,
+    ),
+  ).toEqual(['main', 'shared-process', 'unrelated-process'])
+  expect(processes).toEqual(originalProcesses)
+  expect(reparented[2].parentTreeId).toBe(2)
+  expect(reparented[2].ppid).toBe(2)
+})
