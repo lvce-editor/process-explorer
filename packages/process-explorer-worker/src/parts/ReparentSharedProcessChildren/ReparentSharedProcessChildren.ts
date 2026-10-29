@@ -6,6 +6,7 @@ const conceptualChildNames: readonly string[] = [
   'file-system-process',
   'file-watcher-process',
   'process-explorer',
+  'remote-ssh',
   'search-process',
   'terminal-process',
 ]

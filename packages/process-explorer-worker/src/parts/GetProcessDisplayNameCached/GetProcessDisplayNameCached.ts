@@ -4,6 +4,7 @@ import type {
 } from '../DisplayNameCache/DisplayNameCache.ts'
 import * as ConfiguredProcessNames from '../ConfiguredProcessNames/ConfiguredProcessNames.ts'
 import * as GetFallbackPatternName from '../GetFallbackPatternName/GetFallbackPatternName.ts'
+import * as GetProcessDisplayName from '../GetProcessDisplayName/GetProcessDisplayName.ts'
 import * as GetPatternName from '../GetPatternName/GetPatternName.ts'
 
 const maxDisplayNameCacheSize = 1000
@@ -40,7 +41,7 @@ export const getName = (
     displayNameCache[cmd] = entry
   }
   if (entry.usesPidMap && pid in pidMap) {
-    return pidMap[pid] || '<unknown>'
+    return GetProcessDisplayName.getPidMapName(pid, pidMap)
   }
   return entry.name
 }

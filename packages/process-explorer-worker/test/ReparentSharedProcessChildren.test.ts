@@ -48,7 +48,7 @@ test('remote ssh extension is nested under shared process with its ssh child', (
   const processes = [
     createProcess('main', 1, 0),
     createProcess('shared-process', 2, 1),
-    createProcess('extension-builtin.remote-ssh:remote-SSH', 3, 1),
+    createProcess('remote-ssh', 3, 1),
     createProcess('ssh', 4, 3),
     createProcess('extension-builtin.other:other', 5, 1),
   ]
@@ -59,7 +59,7 @@ test('remote ssh extension is nested under shared process with its ssh child', (
   expect(visible.map(({ depth, name }) => ({ depth, name }))).toEqual([
     { depth: 1, name: 'main' },
     { depth: 2, name: 'shared-process' },
-    { depth: 3, name: 'extension-builtin.remote-ssh:remote-SSH' },
+    { depth: 3, name: 'remote-ssh' },
     { depth: 4, name: 'ssh' },
     { depth: 2, name: 'extension-builtin.other:other' },
   ])
@@ -75,7 +75,7 @@ test('remote ssh extension is nested under shared process with its ssh child', (
   ).toEqual([
     'main',
     'shared-process',
-    'extension-builtin.remote-ssh:remote-SSH',
+    'remote-ssh',
     'extension-builtin.other:other',
   ])
   expect(processes.map((process) => process.ppid)).toEqual([0, 1, 1, 3, 1])
