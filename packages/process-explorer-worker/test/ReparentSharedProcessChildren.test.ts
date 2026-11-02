@@ -45,13 +45,15 @@ test('reparents conceptual children below the shared process', () => {
   ])
 })
 
-test('remote ssh extension is nested under shared process with its ssh child', () => {
+test('extension processes are nested under shared process with their children', () => {
   const processes = [
     createProcess('main', 1, 0),
     createProcess('shared-process', 2, 1),
     createProcess('remote-ssh', 3, 1),
     createProcess('ssh', 4, 3),
-    createProcess('extension-builtin.other:other', 5, 1),
+    createProcess('extension-builtin.git:git', 5, 1),
+    createProcess('git', 6, 5),
+    createProcess('extension-builtin.other:other', 7, 1),
   ]
   const reparented =
     ReparentSharedProcessChildren.reparentSharedProcessChildren(processes)
@@ -62,13 +64,15 @@ test('remote ssh extension is nested under shared process with its ssh child', (
     { depth: 2, name: 'shared-process' },
     { depth: 3, name: 'remote-ssh' },
     { depth: 4, name: 'ssh' },
-    { depth: 2, name: 'extension-builtin.other:other' },
+    { depth: 3, name: 'extension-builtin.git:git' },
+    { depth: 4, name: 'git' },
+    { depth: 3, name: 'extension-builtin.other:other' },
   ])
   expect(
     GetVisibleProcesses.getVisibleProcesses(reparented, [2], 1).map(
       (process) => process.name,
     ),
-  ).toEqual(['main', 'shared-process', 'extension-builtin.other:other'])
+  ).toEqual(['main', 'shared-process'])
   expect(
     GetVisibleProcesses.getVisibleProcesses(reparented, [3], 1).map(
       (process) => process.name,
@@ -77,15 +81,23 @@ test('remote ssh extension is nested under shared process with its ssh child', (
     'main',
     'shared-process',
     'remote-ssh',
+    'extension-builtin.git:git',
+    'git',
     'extension-builtin.other:other',
   ])
-  expect(processes.map((process) => process.ppid)).toEqual([0, 1, 1, 3, 1])
+  expect(processes.map((process) => process.ppid)).toEqual([
+    0, 1, 1, 3, 1, 5, 1,
+  ])
+  expect(reparented.map((process) => process.ppid)).toEqual([
+    0, 1, 2, 3, 2, 5, 2,
+  ])
 })
 
 test('returns the processes unchanged when there is no shared process', () => {
   const processes = [
     createProcess('main', 1, 0),
     createProcess('terminal-process', 2, 1),
+    createProcess('extension-builtin.git:git', 3, 1),
   ]
 
   expect(
