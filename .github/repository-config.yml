@@ -5,6 +5,9 @@ requiredStatusChecks:
   - pr (ubuntu-22.04)
   - pr (windows-2022)
   - pr (macos-14)
+  - integration (ubuntu-24.04)
+  - integration (macos-15)
+  - integration (windows-2025)
 settings:
   description: Determine running processes and their memory usage
   homepage: https://lvce-editor.github.io/process-explorer/
