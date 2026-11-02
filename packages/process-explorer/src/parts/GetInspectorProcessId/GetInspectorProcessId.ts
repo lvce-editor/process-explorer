@@ -13,7 +13,8 @@ const commandId = 1
 const timeoutMs = 2000
 
 export const getInspectorProcessId = (url: string): Promise<number> => {
-  return new Promise((resolve) => {
+  const { promise, reject, resolve } = Promise.withResolvers<number>()
+  try {
     const webSocket = new WebSocket(url)
     let settled = false
     const finish = (pid: number): void => {
@@ -55,5 +56,8 @@ export const getInspectorProcessId = (url: string): Promise<number> => {
         }),
       )
     })
-  })
+  } catch (error) {
+    reject(error)
+  }
+  return promise
 }
