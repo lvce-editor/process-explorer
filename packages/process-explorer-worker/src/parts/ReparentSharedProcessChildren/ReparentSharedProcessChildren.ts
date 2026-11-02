@@ -25,7 +25,8 @@ export const reparentSharedProcessChildren = (
   return processes.map((process) => {
     if (
       process.ppid === sharedProcess.pid ||
-      !conceptualChildNames.includes(process.name)
+      (!conceptualChildNames.includes(process.name) &&
+        !process.name.startsWith('extension-builtin.'))
     ) {
       return process
     }

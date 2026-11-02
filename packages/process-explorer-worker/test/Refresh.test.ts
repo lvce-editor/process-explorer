@@ -261,9 +261,9 @@ test('refresh - electron with remote workspace', async () => {
       treeId: 4,
     },
     {
-      cmd: 'other extension',
+      cmd: 'Git extension',
       memory: 5,
-      name: 'extension-builtin.other:other',
+      name: 'extension-builtin.git:git',
       parentTreeId: 1,
       pid: 5,
       ppid: 1,
@@ -311,7 +311,7 @@ test('refresh - electron with remote workspace', async () => {
   using _mockMainProcessRpc = registerMainProcessMock({
     'CreatePidMap.createPidMap': jest.fn(() => ({
       3: 'extension-builtin.remote-ssh:-remote-SSH',
-      5: 'extension-builtin.other:other',
+      5: 'extension-builtin.git:git',
     })),
   })
 
@@ -341,9 +341,9 @@ test('refresh - electron with remote workspace', async () => {
     },
     { depth: 5, memory: 4, name: 'ssh', pid: 4, source: 'local' },
     {
-      depth: 3,
+      depth: 4,
       memory: 5,
-      name: 'extension-builtin.other:other',
+      name: 'extension-builtin.git:git',
       pid: 5,
       source: 'local',
     },
@@ -363,7 +363,6 @@ test('refresh - electron with remote workspace', async () => {
     'Local',
     'main',
     'shared-process',
-    'extension-builtin.other:other',
     'Remote',
     'main',
     'remote child',
