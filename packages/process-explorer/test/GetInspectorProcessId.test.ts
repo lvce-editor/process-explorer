@@ -91,3 +91,9 @@ test('returns zero when the inspector cannot be reached', async () => {
     GetInspectorProcessId.getInspectorProcessId('ws://127.0.0.1:1'),
   ).resolves.toBe(0)
 })
+
+test('rejects when the inspector url cannot be used to construct a websocket', async () => {
+  await expect(
+    GetInspectorProcessId.getInspectorProcessId('invalid'),
+  ).rejects.toThrow()
+})
