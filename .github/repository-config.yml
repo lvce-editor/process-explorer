@@ -1,0 +1,62 @@
+version: 1
+pages:
+  build_type: workflow
+requiredStatusChecks:
+  - pr (ubuntu-22.04)
+  - pr (windows-2022)
+  - pr (macos-14)
+settings:
+  description: Determine running processes and their memory usage
+  homepage: https://lvce-editor.github.io/process-explorer/
+  has_wiki: false
+  has_projects: false
+  allow_squash_merge: true
+  allow_merge_commit: false
+  allow_rebase_merge: false
+  allow_auto_merge: true
+  delete_branch_on_merge: true
+topics:
+  - lvce-editor
+labels:
+  - name: bug
+    color: d73a4a
+    description: Something isn't working
+  - name: documentation
+    color: 0075ca
+    description: Improvements or additions to documentation
+  - name: duplicate
+    color: cfd3d7
+    description: This issue or pull request already exists
+  - name: enhancement
+    color: a2eeef
+    description: New feature or request
+  - name: good first issue
+    color: 7057ff
+    description: Good for newcomers
+  - name: help wanted
+    color: '008672'
+    description: Extra attention is needed
+  - name: invalid
+    color: e4e669
+    description: This doesn't seem right
+  - name: manual-review-needed
+    color: d93f0b
+    description: Needs manual review before CI can be fixed
+  - name: question
+    color: d876e3
+    description: Further information is requested
+  - name: wontfix
+    color: ffffff
+    description: This will not be worked on
+milestones: []
+branches:
+  - name: main
+    protection:
+      enforce_admins: true
+      required_signatures: false
+      required_pull_request_reviews:
+        required_approving_review_count: 0
+        dismiss_stale_reviews: false
+        require_code_owner_reviews: false
+        require_last_push_approval: false
+rulesets: []
