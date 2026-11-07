@@ -6,8 +6,8 @@ import * as ProcessExplorerStates from '../ProcessExplorerStates/ProcessExplorer
 import * as Refresh from '../Refresh/Refresh.ts'
 
 // DEBUG-retry-6aef: temporary Windows CI probe.
-let debugStage = 'not called'
-export const getDebugStage = (): string => debugStage
+const diagnostics = { stage: 'not called' }
+export const getDebugStage = (): string => diagnostics.stage
 
 const pending = new Map<number, Promise<ProcessExplorerState>>()
 
@@ -15,14 +15,14 @@ const reconnect = async (
   state: ProcessExplorerState,
 ): Promise<ProcessExplorerState> => {
   const { errorCode, uid } = state
-  debugStage = 'retiring endpoint'
+  diagnostics.stage = 'retiring endpoint'
   AutoRefresh.dispose(uid)
   if (errorCode === ErrorCodes.ProcessExplorerRpcConnectionClosed) {
     await InitializeProcessExplorer.retireClosedConnection()
   }
-  debugStage = 'refreshing'
+  diagnostics.stage = 'refreshing'
   const newState = await Refresh.refresh({ ...state, rootPid: -1 })
-  debugStage = `completed: ${newState.errorCode} ${newState.errorMessage}`
+  diagnostics.stage = `completed: ${newState.errorCode} ${newState.errorMessage}`
   if (
     ProcessExplorerStates.get(uid) &&
     !newState.errorMessage &&
