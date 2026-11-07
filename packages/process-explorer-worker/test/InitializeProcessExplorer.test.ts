@@ -192,3 +192,54 @@ test('dispose - remote rpc', async () => {
   expect(disposeMainProcess).not.toHaveBeenCalled()
   expect(disposeProcessExplorer).toHaveBeenCalledTimes(1)
 })
+
+test('reconnecting SSH keeps healthy Electron endpoints and reuses the new remote connection', async () => {
+  rendererInvoke.mockResolvedValue(true)
+  await InitializeProcessExplorer.initializeProcessExplorer(
+    PlatformType.Electron,
+  )
+  const onClose = launchProcessExplorerNode.mock.calls[0][0]
+  onClose()
+  await InitializeProcessExplorer.initializeProcessExplorer(
+    PlatformType.Electron,
+  )
+  await InitializeProcessExplorer.initializeProcessExplorer(
+    PlatformType.Electron,
+  )
+  expect(launchProcessExplorerElectron).toHaveBeenCalledTimes(1)
+  expect(launchProcessExplorerNode).toHaveBeenCalledTimes(2)
+  expect(clearRemoteProcessExplorer).toHaveBeenCalledTimes(1)
+  expect(clear).not.toHaveBeenCalled()
+  await InitializeProcessExplorer.dispose()
+  expect(disposeRemoteProcessExplorer).toHaveBeenCalledTimes(1)
+  rendererInvoke.mockResolvedValue(false)
+})
+
+test('retry retires an endpoint before its close event and ignores that stale close after reconnecting', async () => {
+  await InitializeProcessExplorer.initializeProcessExplorer(PlatformType.Remote)
+  const oldClose = launchProcessExplorerNode.mock.calls[0][0]
+  await InitializeProcessExplorer.retireClosedConnection()
+  await InitializeProcessExplorer.initializeProcessExplorer(PlatformType.Remote)
+  oldClose()
+  await InitializeProcessExplorer.initializeProcessExplorer(PlatformType.Remote)
+  expect(disposeProcessExplorer).toHaveBeenCalledTimes(1)
+  expect(launchProcessExplorerNode).toHaveBeenCalledTimes(2)
+  expect(handleProcessExplorerRpcClose).not.toHaveBeenCalled()
+})
+
+test('retiring a closed Electron endpoint preserves the optional SSH endpoint', async () => {
+  rendererInvoke.mockResolvedValue(true)
+  await InitializeProcessExplorer.initializeProcessExplorer(
+    PlatformType.Electron,
+  )
+  await InitializeProcessExplorer.retireClosedConnection()
+  await InitializeProcessExplorer.initializeProcessExplorer(
+    PlatformType.Electron,
+  )
+  expect(disposeMainProcess).toHaveBeenCalledTimes(1)
+  expect(disposeProcessExplorer).toHaveBeenCalledTimes(1)
+  expect(disposeRemoteProcessExplorer).not.toHaveBeenCalled()
+  expect(launchProcessExplorerElectron).toHaveBeenCalledTimes(2)
+  expect(launchProcessExplorerNode).toHaveBeenCalledTimes(1)
+  rendererInvoke.mockResolvedValue(false)
+})

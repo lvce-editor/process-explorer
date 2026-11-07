@@ -29,6 +29,12 @@ export const test: Test = async ({ Command, expect, Locator }) => {
     await expect(error).toContainText(message.trim())
     await expect(icon).toBeVisible()
     await expect(error).toHaveCSS('overflow-wrap', 'anywhere')
+    const retry = Locator('.ProcessExplorerError button')
+    await expect(retry).toHaveText('Retry connection')
+    // eslint-disable-next-line e2e/no-direct-click, @typescript-eslint/no-deprecated -- exercise the recovery button's DOM event wiring
+    await retry.click()
+    await expect(error).toBeHidden()
+    await expect(table).toBeVisible()
   } finally {
     await Command.execute('ProcessExplorer.refresh')
   }

@@ -7,16 +7,22 @@ import * as ProcessExplorerModule from '../ProcessExplorer/ProcessExplorer.ts'
 import * as RemoteProcessExplorer from '../RemoteProcessExplorer/RemoteProcessExplorer.ts'
 
 interface State {
+  connectionId: number
   initializedPlatform: number
   remoteInitialized: boolean
 }
 
 const state: State = {
+  connectionId: 0,
   initializedPlatform: 0,
   remoteInitialized: false,
 }
 
-const handleClose = async (): Promise<void> => {
+const handleClose = async (connectionId: number): Promise<void> => {
+  const { connectionId: currentConnectionId } = state
+  if (connectionId !== currentConnectionId) {
+    return
+  }
   state.initializedPlatform = 0
   ProcessExplorerModule.clear()
   await HandleProcessExplorerRpcClose.handleProcessExplorerRpcClose()
@@ -81,9 +87,10 @@ export const initializeProcessExplorer = async (
     return
   }
   if (platform === PlatformType.Remote) {
+    const connectionId = ++state.connectionId
     const rpc = await LaunchProcessExplorerNode.launchProcessExplorerNode(
       () => {
-        void handleClose()
+        void handleClose(connectionId)
       },
     )
     ProcessExplorerModule.set(rpc)
@@ -91,13 +98,30 @@ export const initializeProcessExplorer = async (
   }
 }
 
+// Killing the process marks the view closed before the transport's close event arrives.
+// Retire that endpoint before retrying, and ignore its eventual close notification.
+export const retireClosedConnection = async (): Promise<void> => {
+  const { initializedPlatform } = state
+  if (!initializedPlatform) {
+    return
+  }
+  state.connectionId++
+  state.initializedPlatform = 0
+  await ProcessExplorerModule.dispose()
+  if (initializedPlatform === PlatformType.Electron) {
+    await MainProcess.dispose()
+  }
+}
+
 export const clear = (): void => {
+  state.connectionId++
   state.initializedPlatform = 0
   state.remoteInitialized = false
   RemoteProcessExplorer.clear()
 }
 
 export const dispose = async (): Promise<void> => {
+  state.connectionId++
   const { initializedPlatform } = state
   state.initializedPlatform = 0
   state.remoteInitialized = false

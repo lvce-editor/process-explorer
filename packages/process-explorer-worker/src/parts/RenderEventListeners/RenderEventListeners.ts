@@ -5,6 +5,10 @@ import * as DomEventListenerFunctions from '../DomEventListenerFunctions/DomEven
 export const renderEventListeners = (): readonly DomEventListener[] => {
   return [
     {
+      name: DomEventListenerFunctions.HandleRetry,
+      params: ['retry'],
+    },
+    {
       name: DomEventListenerFunctions.HandleFocus,
       params: ['handleFocus'],
     },

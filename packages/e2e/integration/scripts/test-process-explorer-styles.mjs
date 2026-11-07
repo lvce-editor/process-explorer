@@ -88,6 +88,21 @@ try {
     })
     console.log(`PASS ${scenario.name} (Electron)`)
   }
+  await Command.execute('ProcessExplorer.setError', {
+    code: 'E_PROCESS_EXPLORER_RPC_CONNECTION_CLOSED',
+    message: 'Process explorer RPC connection was closed',
+  })
+  const retry = page.getByRole('button', {
+    name: 'Retry connection',
+    exact: true,
+  })
+  await expect(retry).toBeVisible()
+  await retry.focus()
+  await expect(retry).toBeFocused()
+  await page.keyboard.press('Space')
+  await expect(page.locator('.ProcessExplorerError')).toBeHidden()
+  await expect(page.locator('.ProcessExplorerTable')).toBeVisible()
+  console.log('PASS Process Explorer keyboard retry (Electron)')
 } finally {
   try {
     if (app) {
