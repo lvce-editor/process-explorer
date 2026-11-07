@@ -6,6 +6,7 @@ export const test: Test = async ({ Command, expect, Locator }) => {
   await Command.execute('Developer.openProcessExplorer')
   const table = Locator('.ProcessExplorerTable')
   await expect(table).toBeVisible()
+  await Command.execute('ProcessExplorer.setUpdateInterval', -1)
   await Command.execute('ProcessExplorer.setError', {
     code: 'ERR_PROCESS_EXPLORER_TEST',
     message: 'Process explorer connection was closed',
@@ -36,6 +37,7 @@ export const test: Test = async ({ Command, expect, Locator }) => {
     await expect(error).toBeHidden()
     await expect(table).toBeVisible()
   } finally {
+    await Command.execute('ProcessExplorer.setUpdateInterval', 1000)
     await Command.execute('ProcessExplorer.refresh')
   }
   await expect(error).toBeHidden()

@@ -88,6 +88,7 @@ try {
     })
     console.log(`PASS ${scenario.name} (Electron)`)
   }
+  await Command.execute('ProcessExplorer.setUpdateInterval', -1)
   await Command.execute('ProcessExplorer.setError', {
     code: 'E_PROCESS_EXPLORER_RPC_CONNECTION_CLOSED',
     message: 'Process explorer RPC connection was closed',
@@ -102,6 +103,7 @@ try {
   await page.keyboard.press('Space')
   await expect(page.locator('.ProcessExplorerError')).toBeHidden()
   await expect(page.locator('.ProcessExplorerTable')).toBeVisible()
+  await Command.execute('ProcessExplorer.setUpdateInterval', 1000)
   console.log('PASS Process Explorer keyboard retry (Electron)')
 } finally {
   try {
