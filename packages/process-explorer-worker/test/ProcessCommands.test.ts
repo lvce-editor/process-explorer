@@ -1,4 +1,5 @@
 import { expect, jest, test } from '@jest/globals'
+import { PlatformType } from '@lvce-editor/constants'
 import { createMockRpc } from '@lvce-editor/rpc'
 import { MainProcess, RendererWorker } from '@lvce-editor/rpc-registry'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
@@ -166,6 +167,35 @@ test('killProcess - does not wait for process explorer rpc response', async () =
     errorStack: '',
     initial: false,
   })
+  expect(kill).toHaveBeenCalledWith(3)
+})
+
+test('remote process kill waits for the transport close before offering retry', async () => {
+  const kill = jest.fn((_pid: number) => new Promise(() => {}))
+  using _mockRpc = registerProcessExplorerMock({
+    'Process.kill': kill,
+  })
+  const state = {
+    ...createDefaultState(),
+    platform: PlatformType.Remote,
+    visibleProcesses: [
+      {
+        cmd: 'processExplorerMain.ts',
+        depth: 0,
+        flags: 0,
+        memory: 1,
+        name: 'process-explorer',
+        parentTreeId: 1,
+        pid: 3,
+        ppid: 1,
+        source: 'local' as const,
+        synthetic: false,
+        treeId: 3,
+      },
+    ],
+  }
+
+  await expect(KillProcess.killProcess(state, 0)).resolves.toBe(state)
   expect(kill).toHaveBeenCalledWith(3)
 })
 
