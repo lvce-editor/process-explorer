@@ -52,6 +52,13 @@ export const test: Test = async ({
     await expect(error).toContainText(
       'Process explorer RPC connection was closed',
     )
+    const retry = Locator('.ProcessExplorerError button')
+    await expect(retry).toHaveText('Retry connection')
+    // eslint-disable-next-line e2e/no-direct-click, @typescript-eslint/no-deprecated -- exercise the recovery button's DOM event wiring
+    await retry.click()
+    await expect(error).toBeHidden()
+    await expect(table).toBeVisible()
+    await expect(processExplorerProcess).toBeVisible()
   } finally {
     await Command.execute('ProcessExplorer.setUpdateInterval', 1000)
   }

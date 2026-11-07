@@ -5,6 +5,10 @@ import * as RenderEventListeners from '../src/parts/RenderEventListeners/RenderE
 test('renderEventListeners', () => {
   expect(RenderEventListeners.renderEventListeners()).toEqual(
     expect.arrayContaining([
+      {
+        name: DomEventListenerFunctions.HandleRetry,
+        params: ['retry'],
+      },
       expect.objectContaining({
         name: DomEventListenerFunctions.HandleClick,
         params: ['handleClickAt', 'event.target.dataset.index'],

@@ -3,8 +3,10 @@ import { ViewletCommand } from '@lvce-editor/constants'
 import { VirtualDomElements } from '@lvce-editor/virtual-dom-worker'
 import type { VirtualDomNode } from '../src/parts/VirtualDomNode/VirtualDomNode.ts'
 import { createDefaultState } from '../src/parts/CreateDefaultState/CreateDefaultState.ts'
+import * as DomEventListenerFunctions from '../src/parts/DomEventListenerFunctions/DomEventListenerFunctions.ts'
 import * as GetVisibleProcesses from '../src/parts/GetVisibleProcesses/GetVisibleProcesses.ts'
 import * as RenderItems from '../src/parts/RenderItems/RenderItems.ts'
+import * as TabIndex from '../src/parts/TabIndex/TabIndex.ts'
 
 const processes = [
   {
@@ -252,7 +254,7 @@ test('renderItems - error only', () => {
   expect(result[0]).toBe(ViewletCommand.SetDom2)
   expect(result[2]).toContainEqual(
     expect.objectContaining({
-      childCount: 5,
+      childCount: 6,
       className: 'ProcessExplorerError',
       type: VirtualDomElements.Div,
     }),
@@ -309,7 +311,7 @@ test('renderItems - error message only', () => {
 
   expect(result[2]).toContainEqual(
     expect.objectContaining({
-      childCount: 2,
+      childCount: 3,
       className: 'ProcessExplorerError',
       type: VirtualDomElements.Div,
     }),
@@ -385,5 +387,24 @@ test('renderItems - ssh name keeps the full command as its hover title', () => {
   )
   expect(result[2]).toContainEqual(
     expect.objectContaining({ text: 'ssh', type: VirtualDomElements.Text }),
+  )
+})
+
+test('connection error offers a native keyboard-operable retry button', () => {
+  const dom = RenderItems.getDom({
+    ...createDefaultState(),
+    errorCode: 'E_PROCESS_EXPLORER_RPC_CONNECTION_CLOSED',
+    initial: false,
+  })
+  expect(dom).toContainEqual(
+    expect.objectContaining({
+      childCount: 1,
+      onClick: DomEventListenerFunctions.HandleRetry,
+      tabIndex: TabIndex.Focusable,
+      type: VirtualDomElements.Button,
+    }),
+  )
+  expect(dom).toContainEqual(
+    expect.objectContaining({ text: 'Retry connection' }),
   )
 })

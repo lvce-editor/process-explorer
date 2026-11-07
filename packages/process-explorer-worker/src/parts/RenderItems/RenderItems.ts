@@ -14,6 +14,14 @@ import * as FormatMemory from '../FormatMemory/FormatMemory.ts'
 import * as ProcessFlag from '../ProcessFlag/ProcessFlag.ts'
 import * as TabIndex from '../TabIndex/TabIndex.ts'
 
+const retryButtonNode: VirtualDomNode = {
+  childCount: 1,
+  className: mergeClassNames('Button', 'ButtonPrimary'),
+  onClick: DomEventListenerFunctions.HandleRetry,
+  tabIndex: TabIndex.Focusable,
+  type: VirtualDomElements.Button,
+}
+
 const tableHeadNode: VirtualDomNode = {
   childCount: 1,
   className: ClassNames.TableHead,
@@ -232,7 +240,7 @@ const getErrorDom = (
   return [
     processExplorer,
     {
-      childCount: childCount + 1,
+      childCount: childCount + 2,
       className: ClassNames.Error,
       type: VirtualDomElements.Div,
     },
@@ -241,6 +249,8 @@ const getErrorDom = (
     ...messageDom,
     ...codeFrameDom,
     ...stackDom,
+    retryButtonNode,
+    text('Retry connection'),
   ]
 }
 

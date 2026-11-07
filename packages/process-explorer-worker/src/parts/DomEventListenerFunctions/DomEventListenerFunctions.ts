@@ -4,3 +4,4 @@ export const HandleContextMenu = 3
 export const HandleDoubleClick = 4
 export const HandleFocus = 5
 export const HandlePointerDown = 6
+export const HandleRetry = 7
