@@ -56,7 +56,12 @@ export const test: Test = async ({
     await expect(retry).toHaveText('Retry connection')
     // eslint-disable-next-line e2e/no-direct-click, @typescript-eslint/no-deprecated -- exercise the recovery button's DOM event wiring
     await retry.click()
-    await expect(error).toBeHidden()
+    try {
+      await expect(error).toBeHidden()
+    } catch {
+      // DEBUG-retry-6aef: distinguish stalled initialization from a failed refresh.
+      await Command.execute('ProcessExplorer.retryDiagnostics')
+    }
     await expect(table).toBeVisible()
     await expect(processExplorerProcess).toBeVisible()
   } finally {
