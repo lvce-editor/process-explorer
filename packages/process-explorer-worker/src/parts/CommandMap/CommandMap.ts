@@ -117,20 +117,6 @@ export const commandMap = {
     Rerender.rerender,
   ),
   'ProcessExplorer.retry': ProcessExplorerStates.wrapCommand(Retry.retry),
-  // DEBUG-retry-6aef: throw the state only when the real recovery assertion fails.
-  'ProcessExplorer.retryDiagnostics': (uid: number): never => {
-    const { newState, scheduledState } = ProcessExplorerStates.get(uid)
-    throw new Error(
-      `DEBUG-retry-6aef ${JSON.stringify({
-        errorCode: newState.errorCode,
-        errorMessage: newState.errorMessage,
-        refreshStage: Refresh.getDebugStage(),
-        retryStage: Retry.getDebugStage(),
-        rootPid: newState.rootPid,
-        scheduledError: scheduledState.errorMessage,
-      })}`,
-    )
-  },
   'ProcessExplorer.setComponentState': SetComponentState.setComponentState,
   'ProcessExplorer.setError': ProcessExplorerStates.wrapCommand(
     SetError.setError,

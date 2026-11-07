@@ -59,8 +59,14 @@ export const test: Test = async ({
     try {
       await expect(error).toBeHidden()
     } catch {
-      // DEBUG-retry-6aef: distinguish stalled initialization from a failed refresh.
-      await Command.execute('ProcessExplorer.retryDiagnostics')
+      // The server can reject the first connection while retiring the killed
+      // process. Verify that this failed attempt remains recoverable.
+      await expect(error).toContainText('E_PROCESS_EXPLORER_REFRESH_FAILED')
+      await expect(error).toContainText('WebSocket connection error')
+      await expect(retry).toBeVisible()
+      // eslint-disable-next-line e2e/no-direct-click, @typescript-eslint/no-deprecated -- exercise retry after a failed connection attempt
+      await retry.click()
+      await expect(error).toBeHidden()
     }
     await expect(table).toBeVisible()
     await expect(processExplorerProcess).toBeVisible()

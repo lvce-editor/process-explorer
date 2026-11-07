@@ -15,10 +15,6 @@ import * as ProcessExplorerModule from '../ProcessExplorer/ProcessExplorer.ts'
 import * as RemoteProcessExplorer from '../RemoteProcessExplorer/RemoteProcessExplorer.ts'
 import * as ReparentSharedProcessChildren from '../ReparentSharedProcessChildren/ReparentSharedProcessChildren.ts'
 
-// DEBUG-retry-6aef: temporary Windows CI probe.
-const diagnostics = { stage: 'not called' }
-export const getDebugStage = (): string => diagnostics.stage
-
 interface ProcessExplorerRpc {
   readonly invoke: (
     method: string,
@@ -104,16 +100,13 @@ export const refresh = async (
     }
   }
   try {
-    diagnostics.stage = 'initializing'
     await InitializeProcessExplorer.initializeProcessExplorer(platform)
-    diagnostics.stage = 'getting root PID'
     const includeElectronData = platform === PlatformType.Electron
     const rootPid = await getRootPid(
       ProcessExplorerModule,
       stateRootPid,
       includeElectronData,
     )
-    diagnostics.stage = 'listing processes'
     const pidMap = includeElectronData
       ? await MainProcess.invoke('CreatePidMap.createPidMap')
       : undefined
@@ -169,7 +162,6 @@ export const refresh = async (
         remoteRootPid,
       )
     }
-    diagnostics.stage = 'success'
     const visibleProcesses = GetVisibleProcesses.getVisibleProcesses(
       displayedProcesses,
       collapsedPids,
@@ -196,7 +188,6 @@ export const refresh = async (
       visibleProcesses,
     }
   } catch (error) {
-    diagnostics.stage = `error: ${String(error)}`
     const prettyError = await PrepareError.prepareError(error)
     return {
       ...state,
