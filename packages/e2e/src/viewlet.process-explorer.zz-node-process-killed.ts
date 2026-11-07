@@ -56,18 +56,7 @@ export const test: Test = async ({
     await expect(retry).toHaveText('Retry connection')
     // eslint-disable-next-line e2e/no-direct-click, @typescript-eslint/no-deprecated -- exercise the recovery button's DOM event wiring
     await retry.click()
-    try {
-      await expect(error).toBeHidden()
-    } catch {
-      // The server can reject the first connection while retiring the killed
-      // process. Verify that this failed attempt remains recoverable.
-      await expect(error).toContainText('E_PROCESS_EXPLORER_REFRESH_FAILED')
-      await expect(error).toContainText('WebSocket connection error')
-      await expect(retry).toBeVisible()
-      // eslint-disable-next-line e2e/no-direct-click, @typescript-eslint/no-deprecated -- exercise retry after a failed connection attempt
-      await retry.click()
-      await expect(error).toBeHidden()
-    }
+    await expect(error).toBeHidden()
     await expect(table).toBeVisible()
     await expect(processExplorerProcess).toBeVisible()
   } finally {
